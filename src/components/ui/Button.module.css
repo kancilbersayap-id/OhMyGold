@@ -1,0 +1,48 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-heading-5-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+.button:hover {
+  opacity: 0.85;
+}
+
+.button:active {
+  opacity: 0.7;
+}
+
+/* Size M */
+.sizeM {
+  padding: 10px 14px;
+}
+
+/* Primary */
+.primary {
+  background-color: #ededed;
+  color: #000000;
+}
+
+/* Secondary */
+.secondary {
+  background-color: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+/* Danger */
+.danger {
+  background-color: #ef4444;
+  color: #ffffff;
+}

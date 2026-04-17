@@ -1,0 +1,85 @@
+:root {
+  /* Colors */
+  --color-background: #ffffff;
+  --color-background-2: #fafafa;
+  --color-secondary-subtle-background: #111111;
+  --color-text: #171717;
+  --color-text-muted: #4d4d4d;
+  --color-primary: #bd5200;
+  --color-secondary: #0070f3;
+  --color-accent: #0096ff;
+  --color-border: #d1d5db;
+
+  /* Typography */
+  --font-modal-title-size: 20px;
+  --font-modal-title-weight: 600;
+  --font-modal-title-line-height: 24px;
+  --font-modal-title-letter-spacing: -0.47px;
+
+  --font-heading-1-family: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --font-heading-1-size: 48px;
+  --font-heading-1-weight: 600;
+  --font-heading-1-line-height: 48px;
+  --font-heading-1-letter-spacing: -2.28px;
+  --font-heading-2-family: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  --font-heading-2-size: 14px;
+  --font-heading-2-weight: 500;
+  --font-heading-2-line-height: 20px;
+  --font-heading-2-letter-spacing: -0.28px;
+  --font-heading-3-family: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  --font-heading-3-size: 32px;
+  --font-heading-3-weight: 600;
+  --font-heading-3-line-height: 40px;
+  --font-heading-3-letter-spacing: -1.28px;
+  --font-heading-5-family: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --font-heading-5-size: 14px;
+  --font-heading-5-weight: 400;
+  --font-heading-5-line-height: 20px;
+  --font-body-family: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --font-body-size: 16px;
+  --font-body-weight: 400;
+  --font-body-line-height: normal;
+  --font-body-text-family: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --font-body-text-size: 14px;
+  --font-body-text-weight: 400;
+  --font-body-text-line-height: 16px;
+  --font-inline-text-family: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --font-inline-text-size: 14px;
+  --font-inline-text-weight: 400;
+  --font-inline-text-line-height: 14px;
+  --font-link-family: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --font-link-size: 16px;
+  --font-link-weight: 400;
+  --font-link-line-height: normal;
+  --font-button-family: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --font-button-size: 14px;
+  --font-button-weight: 400;
+  --font-button-line-height: 14px;
+  --font-navigation-family: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --font-navigation-size: 16px;
+  --font-navigation-weight: 400;
+  --font-navigation-line-height: normal;
+
+  /* Spacing */
+  --spacing-3xs: .03889em;
+  --spacing-2xs: 14px;
+  --spacing-xs: 30px;
+  --spacing-sm: 52px;
+  --spacing-md: 80px;
+  --spacing-lg: 110px;
+  --spacing-xl: 8rem;
+  --spacing-2xl: 160px;
+  --spacing-3xl: 11rem;
+  --spacing-4xl: 12rem;
+  --spacing-5xl: 13rem;
+  --spacing-6xl: 16rem;
+
+  /* Border Radius */
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 5px;
+  --radius-lg: 9px;
+  --radius-xl: 20px;
+  --radius-full: 32px;
+
+}

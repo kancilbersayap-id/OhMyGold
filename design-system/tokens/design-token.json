@@ -1,0 +1,232 @@
+{
+  "color": {
+    "background": {
+      "$type": "color",
+      "$value": "#ffffff",
+      "$description": "stylesheet, a background, var(--badge-color), var(--lighten-color), var(--scroller-0), var(--scroller-1), var(--scroller-2), var(--scroller-3), var(--scroller-4), var(--menu-bg), var(--geist-violet-background), var(--geist-background), var(--dropdown-triangle-stroke), var(--scroller-start), var(--scroller-end), var(--geist-foreground), var(--next-icon-border), var(--ds-contrast-fg), var(--ds-gray-alpha-100), var(--ds-gray-alpha-200), var(--ds-gray-alpha-300), var(--ds-gray-alpha-400), var(--ds-gray-alpha-500), var(--ds-gray-alpha-600), var(--ds-gray-alpha-700), var(--ds-gray-alpha-800), var(--ds-gray-alpha-900), var(--ds-gray-alpha-1000), var(--themed-fg), var(--caveats-toggle-false), var(--tw-ring-offset-color), var(--light-border-color), var(--color)"
+    },
+    "background-2": {
+      "$type": "color",
+      "$value": "#fafafa",
+      "$description": "stylesheet, body background, var(--header-import-flow-background), var(--accents-1), var(--accents-8)"
+    },
+    "text": {
+      "$type": "color",
+      "$value": "#171717",
+      "$description": "stylesheet, body color, h1 color, h3 color, nav color"
+    },
+    "text-muted": {
+      "$type": "color",
+      "$value": "#4d4d4d",
+      "$description": "h2 color, h5 color, p color, span color, button color"
+    },
+    "primary": {
+      "$type": "color",
+      "$value": "#bd5200",
+      "$description": "CSS variable hint"
+    },
+    "secondary": {
+      "$type": "color",
+      "$value": "#0070f3",
+      "$description": "stylesheet, var(--geist-success), var(--geist-console-text-color-blue)"
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "#0096ff",
+      "$description": "stylesheet"
+    },
+    "border": {
+      "$type": "color",
+      "$value": "#d1d5db",
+      "$description": "stylesheet"
+    }
+  },
+  "typography": {
+    "heading-1": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+        "fontSize": "48px",
+        "fontWeight": 600,
+        "lineHeight": "48px",
+        "letterSpacing": "-2.28px"
+      },
+      "$description": "Page titles"
+    },
+    "heading-2": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji",
+        "fontSize": "14px",
+        "fontWeight": 500,
+        "lineHeight": "20px",
+        "letterSpacing": "-0.28px"
+      },
+      "$description": "Section headings"
+    },
+    "heading-3": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji",
+        "fontSize": "32px",
+        "fontWeight": 600,
+        "lineHeight": "40px",
+        "letterSpacing": "-1.28px"
+      },
+      "$description": "Sub-section headings"
+    },
+    "heading-5": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+        "fontSize": "14px",
+        "fontWeight": 400,
+        "lineHeight": "20px",
+        "letterSpacing": "normal"
+      },
+      "$description": "Minor headings"
+    },
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+        "fontSize": "16px",
+        "fontWeight": 400,
+        "lineHeight": "normal",
+        "letterSpacing": "normal"
+      },
+      "$description": "Base body text"
+    },
+    "body-text": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+        "fontSize": "12px",
+        "fontWeight": 400,
+        "lineHeight": "16px",
+        "letterSpacing": "normal"
+      },
+      "$description": "Paragraph text"
+    },
+    "inline-text": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+        "fontSize": "14px",
+        "fontWeight": 400,
+        "lineHeight": "14px",
+        "letterSpacing": "normal"
+      },
+      "$description": "Inline text elements"
+    },
+    "link": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+        "fontSize": "16px",
+        "fontWeight": 400,
+        "lineHeight": "normal",
+        "letterSpacing": "normal"
+      },
+      "$description": "Hyperlinks"
+    },
+    "button": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+        "fontSize": "14px",
+        "fontWeight": 400,
+        "lineHeight": "14px",
+        "letterSpacing": "normal"
+      },
+      "$description": "Button labels"
+    },
+    "navigation": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+        "fontSize": "16px",
+        "fontWeight": 400,
+        "lineHeight": "normal",
+        "letterSpacing": "normal"
+      },
+      "$description": "Navigation text"
+    }
+  },
+  "spacing": {
+    "3xs": {
+      "$type": "dimension",
+      "$value": ".03889em"
+    },
+    "2xs": {
+      "$type": "dimension",
+      "$value": "14px"
+    },
+    "xs": {
+      "$type": "dimension",
+      "$value": "30px"
+    },
+    "sm": {
+      "$type": "dimension",
+      "$value": "52px"
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": "80px"
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": "110px"
+    },
+    "xl": {
+      "$type": "dimension",
+      "$value": "8rem"
+    },
+    "2xl": {
+      "$type": "dimension",
+      "$value": "160px"
+    },
+    "3xl": {
+      "$type": "dimension",
+      "$value": "11rem"
+    },
+    "4xl": {
+      "$type": "dimension",
+      "$value": "12rem"
+    },
+    "5xl": {
+      "$type": "dimension",
+      "$value": "13rem"
+    },
+    "6xl": {
+      "$type": "dimension",
+      "$value": "16rem"
+    }
+  },
+  "borderRadius": {
+    "none": {
+      "$type": "dimension",
+      "$value": "0"
+    },
+    "sm": {
+      "$type": "dimension",
+      "$value": "2px"
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": "5px"
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": "9px"
+    },
+    "xl": {
+      "$type": "dimension",
+      "$value": "20px"
+    },
+    "full": {
+      "$type": "dimension",
+      "$value": "32px"
+    }
+  }
+}

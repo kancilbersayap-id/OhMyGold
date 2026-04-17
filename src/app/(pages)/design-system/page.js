@@ -1,0 +1,247 @@
+import PageHeader from '@/components/ui/PageHeader';
+import Section from '@/components/ui/Section';
+import Card from '@/components/ui/Card';
+import CardGrid from '@/components/ui/CardGrid';
+import DataRow from '@/components/ui/DataRow';
+import Table from '@/components/ui/Table';
+import styles from './design-system.module.css';
+
+const colors = [
+  { name: '--color-background', value: '#000000', label: 'Background' },
+  { name: '--color-background-2', value: '#0a0a0a', label: 'Background 2' },
+  { name: '--color-text', value: '#ededed', label: 'Text' },
+  { name: '--color-text-muted', value: '#a1a1a1', label: 'Text Muted' },
+  { name: '--color-primary', value: '#bd5200', label: 'Primary' },
+  { name: '--color-secondary', value: '#0070f3', label: 'Secondary' },
+  { name: '--color-accent', value: '#0096ff', label: 'Accent' },
+  { name: '--color-border', value: '#1f1f1f', label: 'Border' },
+];
+
+const spacingTokens = [
+  { name: '--spacing-3xs', value: '.03889em' },
+  { name: '--spacing-2xs', value: '14px' },
+  { name: '--spacing-xs', value: '30px' },
+  { name: '--spacing-sm', value: '52px' },
+  { name: '--spacing-md', value: '80px' },
+  { name: '--spacing-lg', value: '110px' },
+  { name: '--spacing-xl', value: '8rem' },
+];
+
+const sampleColumns = [
+  { key: 'token', label: 'Token' },
+  { key: 'value', label: 'Value' },
+  { key: 'usage', label: 'Usage' },
+];
+
+const radiusData = [
+  { token: '--radius-none', value: '0', usage: 'No rounding' },
+  { token: '--radius-sm', value: '2px', usage: 'Subtle rounding' },
+  { token: '--radius-md', value: '6px', usage: 'Default components' },
+  { token: '--radius-lg', value: '9px', usage: 'Cards, panels' },
+  { token: '--radius-xl', value: '20px', usage: 'Large containers' },
+  { token: '--radius-full', value: '32px', usage: 'Pills, badges' },
+];
+
+const icons = [
+  {
+    name: 'Grid',
+    svg: (
+      <svg className={styles.iconPreview} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Wallet',
+    svg: (
+      <svg className={styles.iconPreview} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+        <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Dollar',
+    svg: (
+      <svg className={styles.iconPreview} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="12" y1="1" x2="12" y2="23" />
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      </svg>
+    ),
+  },
+  {
+    name: 'News',
+    svg: (
+      <svg className={styles.iconPreview} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
+        <path d="M18 14h-8" />
+        <path d="M15 18h-5" />
+        <path d="M10 6h8v4h-8V6z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Activity',
+    svg: (
+      <svg className={styles.iconPreview} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Palette',
+    svg: (
+      <svg className={styles.iconPreview} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="13.5" cy="6.5" r="2.5" />
+        <path d="M17.5 10.5a2.5 2.5 0 0 1 0 5" />
+        <circle cx="8.5" cy="13.5" r="2.5" />
+        <circle cx="13.5" cy="17.5" r="2.5" />
+        <path d="M6.5 10.5a2.5 2.5 0 0 0 0 5" />
+      </svg>
+    ),
+  },
+];
+
+const demoTableColumns = [
+  { key: 'name', label: 'Name' },
+  { key: 'type', label: 'Type' },
+  { key: 'status', label: 'Status' },
+];
+
+const demoTableData = [
+  { name: 'Antam 10g', type: 'Gold Bar', status: 'Active' },
+  { name: 'Antam 5g', type: 'Gold Bar', status: 'Active' },
+  { name: 'Antam 1g', type: 'Gold Bar', status: 'Sold' },
+];
+
+export default function DesignSystemPage() {
+  return (
+    <>
+      <PageHeader
+        title="Design System"
+        description="Internal documentation of tokens, styles, and components"
+      />
+
+      {/* Colors */}
+      <Section title="Colors">
+        <div className={styles.swatchGrid}>
+          {colors.map((color) => (
+            <div key={color.name} className={styles.swatch}>
+              <div
+                className={styles.swatchPreview}
+                style={{ backgroundColor: color.value }}
+              />
+              <div className={styles.swatchInfo}>
+                <div className={styles.swatchName}>{color.label}</div>
+                <div className={styles.swatchValue}>{color.name}</div>
+                <div className={styles.swatchValue}>{color.value}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Typography */}
+      <Section title="Typography">
+        <div className={styles.typographySample}>
+          <div className={styles.typographyLabel}>heading-1 — 48px / 600</div>
+          <div className={styles.heading1}>The quick brown fox</div>
+        </div>
+        <div className={styles.typographySample}>
+          <div className={styles.typographyLabel}>heading-3 — 32px / 600</div>
+          <div className={styles.heading3}>The quick brown fox</div>
+        </div>
+        <div className={styles.typographySample}>
+          <div className={styles.typographyLabel}>heading-2 — 14px / 500</div>
+          <div className={styles.heading2}>The quick brown fox</div>
+        </div>
+        <div className={styles.typographySample}>
+          <div className={styles.typographyLabel}>heading-5 — 14px / 400</div>
+          <div className={styles.heading5}>The quick brown fox</div>
+        </div>
+        <div className={styles.typographySample}>
+          <div className={styles.typographyLabel}>body — 16px / 400</div>
+          <div className={styles.bodyText}>The quick brown fox jumps over the lazy dog.</div>
+        </div>
+        <div className={styles.typographySample}>
+          <div className={styles.typographyLabel}>body-text — 12px / 400</div>
+          <div className={styles.bodyTextSmall}>The quick brown fox jumps over the lazy dog.</div>
+        </div>
+        <div className={styles.typographySample}>
+          <div className={styles.typographyLabel}>inline-text — 14px / 400</div>
+          <div className={styles.inlineText}>The quick brown fox jumps over the lazy dog.</div>
+        </div>
+      </Section>
+
+      {/* Spacing */}
+      <Section title="Spacing">
+        <div className={styles.spacingGrid}>
+          {spacingTokens.map((token) => (
+            <div key={token.name} className={styles.spacingRow}>
+              <span className={styles.spacingLabel}>{token.name.replace('--spacing-', '')} ({token.value})</span>
+              <div
+                className={styles.spacingBar}
+                style={{ width: token.value }}
+              />
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Icons */}
+      <Section title="Icons">
+        <div className={styles.iconGrid}>
+          {icons.map((icon) => (
+            <div key={icon.name} className={styles.iconCard}>
+              {icon.svg}
+              <span className={styles.iconName}>{icon.name}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Components */}
+      <Section title="Components">
+        {/* Card */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Card</div>
+          <CardGrid>
+            <Card title="Metric Label" value="1,234" description="Supporting text" />
+            <Card title="Another Card" value="Rp 500,000" description="Per gram" />
+            <Card title="Status" value="Active" description="Since Jan 2026" />
+          </CardGrid>
+        </div>
+
+        {/* Table */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Table</div>
+          <Table columns={demoTableColumns} data={demoTableData} />
+        </div>
+
+        {/* DataRow */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>DataRow</div>
+          <DataRow label="Label" value="Value" />
+          <DataRow label="Buy Price" value="Rp 1,125,000" />
+          <DataRow label="Status" value="Active" />
+        </div>
+
+        {/* PageHeader */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>PageHeader</div>
+          <PageHeader title="Sample Page Title" description="This is a sample description for the page header component." />
+        </div>
+
+        {/* Border Radius */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Border Radius</div>
+          <Table columns={sampleColumns} data={radiusData} />
+        </div>
+      </Section>
+    </>
+  );
+}

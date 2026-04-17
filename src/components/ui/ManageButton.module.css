@@ -1,0 +1,73 @@
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font-body-text-family);
+  font-size: var(--font-body-text-size);
+  font-weight: 500;
+  line-height: var(--font-body-text-line-height);
+  color: var(--color-text);
+  transition: opacity 0.15s;
+}
+
+.trigger:hover {
+  opacity: 0.7;
+}
+
+.gearIcon {
+  flex-shrink: 0;
+  color: var(--color-text);
+}
+
+.popover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #0a0a0a;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  min-width: 140px;
+  margin-top: 8px;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  animation: popoverIn 0.12s ease;
+}
+
+@keyframes popoverIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.popoverItem {
+  padding: 10px 8px;
+  font-family: var(--font-heading-5-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--color-text);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.12s;
+}
+
+.popoverItem:hover {
+  background-color: #1a1a1a;
+}
+
+.deleteItem {
+  color: #ef4444;
+}

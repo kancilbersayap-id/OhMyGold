@@ -1,0 +1,177 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.label {
+  font-family: var(--font-heading-5-family);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.input,
+.selectTrigger {
+  padding: 16px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background-color: rgba(17, 17, 17, 0.8);
+  color: var(--color-text);
+  font-family: var(--font-body-text-family);
+  font-size: 14px;
+  transition: border-color 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus,
+.selectTrigger:focus {
+  outline: none;
+  border-color: #ffffff;
+}
+
+/* Hide number input spinner */
+.input[type="number"]::-webkit-inner-spin-button,
+.input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Date input - dark calendar */
+.input[type="date"] {
+  color-scheme: dark;
+}
+
+.input[type="date"]::-webkit-calendar-picker-indicator {
+  width: 16px;
+  height: 16px;
+  filter: invert(65%) sepia(0%) saturate(0%) brightness(90%);
+  cursor: pointer;
+}
+
+/* Custom Select */
+.selectWrapper {
+  position: relative;
+}
+
+.selectTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+
+.selectTrigger.open {
+  border-color: #ffffff;
+}
+
+.selectPlaceholder {
+  color: var(--color-text-muted);
+}
+
+.selectChevron {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  transition: transform 0.15s;
+}
+
+.selectChevron.rotated {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background-color: #0a0a0a;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 6px;
+  z-index: 200;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  animation: dropdownIn 0.12s ease;
+}
+
+.dropdownOption {
+  padding: 10px 8px;
+  font-family: var(--font-heading-5-family);
+  font-size: 14px;
+  color: var(--color-text);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.1s;
+}
+
+.dropdownOption:hover {
+  background-color: #1a1a1a;
+}
+
+.dropdownOption.selected {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Stepper */
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 4px;
+  width: 100%;
+  flex: 1;
+  box-sizing: border-box;
+  background-color: rgba(17, 17, 17, 0.8);
+}
+
+.stepperButton {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: color 0.15s;
+}
+
+.stepperButton:hover:not(:disabled) {
+  color: var(--color-text);
+}
+
+.stepperButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.stepperValue {
+  padding: 0 12px;
+  min-width: 40px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}

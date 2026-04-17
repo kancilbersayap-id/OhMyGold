@@ -1,0 +1,140 @@
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dateWrapper > div {
+  height: auto;
+}
+
+.dateWrapper input {
+  padding: 10px 12px;
+  line-height: 1;
+}
+
+.tableSection {
+  margin-bottom: 48px;
+}
+
+.tableTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.tableTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.titleEditBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.titleEditBtn:hover {
+  color: var(--color-text);
+  background-color: var(--color-border);
+}
+
+.tableTitle {
+  font-family: var(--font-heading-5-family);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.tableDateMuted {
+  font-family: var(--font-body-text-family);
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--color-text-muted);
+}
+
+.tableCard {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.multiItemGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  position: relative;
+}
+
+.multiItemGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.multiItemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.multiItemLabel {
+  font-family: var(--font-heading-5-family);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.removeItemBtn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-family: var(--font-body-text-family);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.removeItemBtn:hover {
+  opacity: 0.7;
+}
+
+.addWeightBtn {
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-family: var(--font-body-text-family);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+
+.addWeightBtn:hover {
+  background-color: var(--color-border);
+}
+
+.editBrandWeightLabel {
+  font-family: var(--font-heading-5-family);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}

@@ -1,0 +1,27 @@
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: calc(var(--spacing-2xs) * 0.43) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-family: var(--font-inline-text-family);
+  font-size: var(--font-body-text-size);
+  font-weight: var(--font-inline-text-weight);
+  line-height: var(--font-body-text-line-height);
+  color: var(--color-text-muted);
+}
+
+.value {
+  font-family: var(--font-inline-text-family);
+  font-size: var(--font-body-text-size);
+  font-weight: var(--font-heading-2-weight);
+  line-height: var(--font-body-text-line-height);
+  color: var(--color-text);
+}

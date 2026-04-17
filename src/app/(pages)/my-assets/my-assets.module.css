@@ -1,0 +1,13 @@
+.tableCard {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.chartSection {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
