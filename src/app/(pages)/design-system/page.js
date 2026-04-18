@@ -242,8 +242,20 @@ export default function DesignSystemPage() {
 
         {/* Table */}
         <div className={styles.componentDemo}>
-          <div className={styles.componentLabel}>Table</div>
+          <div className={styles.componentLabel}>Table (Default)</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
+            All tables use the same component with consistent styling across the application. Cell padding is 14px vertical, 8px horizontal.
+          </p>
           <Table columns={demoTableColumns} data={demoTableData} />
+        </div>
+
+        {/* Table with Date Column */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Table (with Date Format)</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
+            Tables with dates use the Indonesian date format consistently.
+          </p>
+          <Table columns={dateFormatColumns} data={dateFormatData} />
         </div>
 
         {/* DataRow */}
