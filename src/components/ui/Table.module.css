@@ -8,15 +8,15 @@
 }
 
 .table th {
-  font-family: var(--font-body-text-family);
-  font-size: var(--font-body-text-size);
-  font-weight: var(--font-heading-2-weight);
-  line-height: var(--font-body-text-line-height);
+  font-family: var(--font-mono), 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.2;
   color: var(--color-text-muted);
   text-align: left;
   padding: 14px 12px;
   border-bottom: 1px solid var(--color-border);
-  text-transform: capitalize;
+  text-transform: uppercase;
 }
 
 .table td {

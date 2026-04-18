@@ -4,7 +4,7 @@
 }
 
 .content {
-  margin-left: 240px;
+  margin-left: 272px;
   flex: 1;
   padding: 48px 40px;
   background-color: var(--color-background);
@@ -12,6 +12,7 @@
 }
 
 .inner {
-  max-width: 1136px;
+  max-width: 1024px;
+  min-width: 640px;
   margin: 0 auto;
 }

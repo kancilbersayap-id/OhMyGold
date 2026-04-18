@@ -29,16 +29,6 @@ const navItems = [
     ),
   },
   {
-    label: 'Retail price',
-    href: '/antam-price',
-    icon: (
-      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="12" y1="1" x2="12" y2="23" />
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-      </svg>
-    ),
-  },
-  {
     label: 'News',
     href: '/news',
     icon: (
@@ -47,15 +37,6 @@ const navItems = [
         <path d="M18 14h-8" />
         <path d="M15 18h-5" />
         <path d="M10 6h8v4h-8V6z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Forecasting',
-    href: '/forecasting',
-    icon: (
-      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
       </svg>
     ),
   },
@@ -74,32 +55,70 @@ const navItems = [
   },
 ];
 
+const antamPriceItem = {
+  label: 'Antam price',
+  href: '/antam-price',
+  icon: (
+    <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="1" x2="12" y2="23" />
+      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    </svg>
+  ),
+};
+
+const pricingTrendsItems = [
+  {
+    label: 'Antam buyback',
+    href: '/antam-buyback',
+    icon: (
+      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="12" y1="1" x2="12" y2="23" />
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Forecasting',
+    href: '/forecasting',
+    icon: (
+      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+      </svg>
+    ),
+  },
+];
+
 export default function Sidebar() {
   const pathname = usePathname();
 
+  const renderNavItem = (item) => {
+    const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+      >
+        <div className={styles.navIconFrame}>{item.icon}</div>
+        {item.label}
+      </Link>
+    );
+  };
+
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.logo}>
+      <div className={styles.sidebarLogo}>
         <div className={styles.logoDot} />
-        <div className={styles.logoLabel}>
-          <span className={styles.logoText}>OhMyGold</span>
-          <span className={styles.logoBadge}>beta</span>
-        </div>
+        <span className={styles.logoText}>OhMyGold</span>
+        <span className={styles.logoBadge}>beta</span>
       </div>
       <nav className={styles.nav}>
-        {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
-            >
-              <div className={styles.navIconFrame}>{item.icon}</div>
-              {item.label}
-            </Link>
-          );
-        })}
+        {navItems.map(renderNavItem)}
+        {renderNavItem(antamPriceItem)}
+        <div className={styles.navGroup}>
+          <div className={styles.navGroupTitle}>Pricing Trends</div>
+          {pricingTrendsItems.map(renderNavItem)}
+        </div>
       </nav>
       <div className={styles.navBottom}>
         <div className={styles.navItemBottom}>

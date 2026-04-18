@@ -1,69 +1,79 @@
 .sidebar {
-  width: 240px;
+  width: 272px;
   min-height: 100vh;
   background-color: var(--color-background);
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-2xs) 0;
+  padding: var(--spacing-2xs) 16px;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 10;
 }
 
-.logo {
+.sidebarLogo {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 var(--spacing-2xs);
-  margin-bottom: 20px;
-}
-
-.logoLabel {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 1px;
-  flex: 1;
+  padding: 8px 0 8px 8px;
+  margin-bottom: 48px;
 }
 
 .logoBadge {
-  margin-left: auto;
   font-family: var(--font-heading-5-family);
   font-size: 10px;
   font-weight: 500;
   line-height: 1;
   color: var(--color-text-muted);
   background-color: var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 2px 4px;
+  border-radius: 4px;
+  padding: 6px 10px;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .logoDot {
-  width: 20px;
-  height: 20px;
-  background-color: var(--color-background-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
+  width: 24px;
+  height: 24px;
+  background-color: white;
+  border-radius: 2px;
   flex-shrink: 0;
-  margin-left: 4px;
 }
 
 .logoText {
-  font-family: var(--font-heading-2-family);
-  font-size: var(--font-heading-2-size);
-  font-weight: var(--font-heading-2-weight);
-  line-height: var(--font-heading-2-line-height);
+  font-family: var(--font-mono), 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
   color: var(--color-text);
+  flex: 1;
 }
 
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
+}
+
+.navGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.navGroupTitle {
+  font-family: var(--font-mono), 'Courier New', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px;
+  margin-top: 16px;
+  margin-bottom: 4px;
 }
 
 .navItem {
@@ -71,7 +81,8 @@
   align-items: center;
   gap: 1px;
   padding: 0;
-  margin: 0 8px;
+  margin: 0;
+  max-width: 240px;
   font-family: var(--font-heading-5-family);
   font-size: var(--font-heading-5-size);
   font-weight: var(--font-heading-5-weight);
@@ -121,7 +132,7 @@
   align-items: center;
   gap: 1px;
   padding: 0;
-  margin: 0 8px;
+  margin: 0;
   font-family: var(--font-heading-5-family);
   font-size: var(--font-heading-5-size);
   font-weight: var(--font-heading-5-weight);

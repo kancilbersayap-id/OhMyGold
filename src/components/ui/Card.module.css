@@ -26,11 +26,10 @@
 }
 
 .cardValue {
-  font-family: var(--font-heading-3-family);
+  font-family: var(--font-mono), 'Courier New', monospace;
   font-size: 32px;
-  font-weight: var(--font-heading-3-weight);
-  line-height: var(--font-heading-3-line-height);
-  letter-spacing: var(--font-heading-3-letter-spacing);
+  font-weight: 400;
+  line-height: 1.2;
   color: var(--color-text);
 }
 
