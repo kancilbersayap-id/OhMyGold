@@ -40,23 +40,10 @@ const navItems = [
       </svg>
     ),
   },
-  {
-    label: 'Design System',
-    href: '/design-system',
-    icon: (
-      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="13.5" cy="6.5" r="2.5" />
-        <path d="M17.5 10.5a2.5 2.5 0 0 1 0 5" />
-        <circle cx="8.5" cy="13.5" r="2.5" />
-        <circle cx="13.5" cy="17.5" r="2.5" />
-        <path d="M6.5 10.5a2.5 2.5 0 0 0 0 5" />
-      </svg>
-    ),
-  },
 ];
 
-const antamPriceItem = {
-  label: 'Antam price',
+const retailPriceItem = {
+  label: 'Retail price',
   href: '/antam-price',
   icon: (
     <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -66,7 +53,31 @@ const antamPriceItem = {
   ),
 };
 
+const designSystemItem = {
+  label: 'Design System',
+  href: '/design-system',
+  icon: (
+    <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="13.5" cy="6.5" r="2.5" />
+      <path d="M17.5 10.5a2.5 2.5 0 0 1 0 5" />
+      <circle cx="8.5" cy="13.5" r="2.5" />
+      <circle cx="13.5" cy="17.5" r="2.5" />
+      <path d="M6.5 10.5a2.5 2.5 0 0 0 0 5" />
+    </svg>
+  ),
+};
+
 const pricingTrendsItems = [
+  retailPriceItem,
+  {
+    label: 'Forecasting',
+    href: '/forecasting',
+    icon: (
+      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+      </svg>
+    ),
+  },
   {
     label: 'Antam buyback',
     href: '/antam-buyback',
@@ -77,18 +88,9 @@ const pricingTrendsItems = [
       </svg>
     ),
   },
-  {
-    label: 'Forecasting',
-    href: '/forecasting',
-    icon: (
-      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </svg>
-    ),
-  },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen, onMobileClose }) {
   const pathname = usePathname();
 
   const renderNavItem = (item) => {
@@ -98,15 +100,16 @@ export default function Sidebar() {
         key={item.href}
         href={item.href}
         className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+        onClick={onMobileClose}
       >
         <div className={styles.navIconFrame}>{item.icon}</div>
-        {item.label}
+        <span className={styles.navLabel}>{item.label}</span>
       </Link>
     );
   };
 
   return (
-    <aside className={styles.sidebar}>
+    <aside className={`${styles.sidebar} ${mobileOpen ? styles.sidebarOpen : ''}`}>
       <div className={styles.sidebarLogo}>
         <div className={styles.logoDot} />
         <span className={styles.logoText}>OhMyGold</span>
@@ -114,20 +117,20 @@ export default function Sidebar() {
       </div>
       <nav className={styles.nav}>
         {navItems.map(renderNavItem)}
-        {renderNavItem(antamPriceItem)}
         <div className={styles.navGroup}>
           <div className={styles.navGroupTitle}>Pricing Trends</div>
           {pricingTrendsItems.map(renderNavItem)}
         </div>
       </nav>
       <div className={styles.navBottom}>
+        {renderNavItem(designSystemItem)}
         <div className={styles.navItemBottom}>
           <div className={styles.navIconFrame}>
             <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
             </svg>
           </div>
-          <span style={{ flex: 1 }}>Dark</span>
+          <span className={styles.navLabel}>Dark</span>
           <div className={styles.toggleWrapper}>
             <div className={styles.tooltip}>Switching theme is disabled for beta</div>
             <div className={styles.toggle}>
