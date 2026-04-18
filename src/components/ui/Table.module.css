@@ -14,7 +14,7 @@
   line-height: 1.2;
   color: var(--color-text-muted);
   text-align: left;
-  padding: 14px 12px;
+  padding: 14px 8px;
   border-bottom: 1px solid var(--color-border);
   text-transform: uppercase;
 }
@@ -25,7 +25,7 @@
   font-weight: var(--font-inline-text-weight);
   line-height: var(--font-body-text-line-height);
   color: var(--color-text);
-  padding: 14px 12px;
+  padding: 14px 8px;
   border-bottom: 1px solid var(--color-border);
 }
 

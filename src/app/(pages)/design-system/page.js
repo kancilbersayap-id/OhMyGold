@@ -4,6 +4,7 @@ import Card from '@/components/ui/Card';
 import CardGrid from '@/components/ui/CardGrid';
 import DataRow from '@/components/ui/DataRow';
 import Table from '@/components/ui/Table';
+import { formatDateIndonesian } from '@/utils/dateFormatter';
 import styles from './design-system.module.css';
 
 const colors = [
@@ -118,6 +119,18 @@ const demoTableData = [
   { name: 'Antam 1g', type: 'Gold Bar', status: 'Sold' },
 ];
 
+const dateFormatColumns = [
+  { key: 'input', label: 'Input (YYYY-MM-DD)' },
+  { key: 'output', label: 'Output (Indonesian)' },
+];
+
+const dateFormatData = [
+  { input: '2026-04-18', output: formatDateIndonesian('2026-04-18') },
+  { input: '2026-03-05', output: formatDateIndonesian('2026-03-05') },
+  { input: '2026-12-25', output: formatDateIndonesian('2026-12-25') },
+  { input: '2026-01-01', output: formatDateIndonesian('2026-01-01') },
+];
+
 export default function DesignSystemPage() {
   return (
     <>
@@ -201,6 +214,17 @@ export default function DesignSystemPage() {
               <span className={styles.iconName}>{icon.name}</span>
             </div>
           ))}
+        </div>
+      </Section>
+
+      {/* Utilities */}
+      <Section title="Utilities">
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Date Formatter (Indonesian)</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '14px' }}>
+            Format dates using Indonesian locale with day names and abbreviated months. Usage: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>formatDateIndonesian(dateString)</code>
+          </p>
+          <Table columns={dateFormatColumns} data={dateFormatData} />
         </div>
       </Section>
 
