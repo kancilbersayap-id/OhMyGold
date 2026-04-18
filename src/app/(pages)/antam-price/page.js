@@ -7,6 +7,7 @@ import Table from '@/components/ui/Table';
 import Modal from '@/components/ui/Modal';
 import Toast from '@/components/ui/Toast';
 import { TextField, Select, DatePicker } from '@/components/ui/FormField';
+import { formatDateIndonesian } from '@/utils/dateFormatter';
 import styles from './antam-price.module.css';
 
 const brands = ['Antam', 'Galeri 24'];
@@ -47,14 +48,6 @@ const initialData = [
   mk('Galeri 24', '100g', 122500000, 119800000),
 ];
 
-const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-const formatLongDate = (dateStr) => {
-  const d = dateStr ? new Date(dateStr) : new Date();
-  if (isNaN(d.getTime())) return '';
-  return `${WEEKDAYS[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-};
 
 const TrashIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -261,7 +254,7 @@ export default function RetailPricePage() {
     </div>
   );
 
-  const mutedDateText = `Data from ${formatLongDate(date)}`;
+  const mutedDateText = `Data from ${formatDateIndonesian(date)}`;
 
   const PencilIcon = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

@@ -11,6 +11,7 @@ import Card from '@/components/ui/Card';
 import BarChart from '@/components/ui/BarChart';
 import LineChart from '@/components/ui/LineChart';
 import { TextField, Select, Stepper, DatePicker } from '@/components/ui/FormField';
+import { formatDateIndonesian } from '@/utils/dateFormatter';
 import styles from './my-assets.module.css';
 
 const typeUnits = ['2g', '5g', '10g', '50g', '100g'];
@@ -18,8 +19,7 @@ const typeOptions = ['Antam certi', 'Antam retro', 'Galeri 24'];
 
 const EMPTY_FORM = { date: '', type: '', typeUnit: '', paidAmount: '', unitPrice: '', units: 1 };
 
-const formatDate = (dateStr) =>
-  new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+const formatDate = formatDateIndonesian;
 
 const formatRp = (num) => `Rp ${parseInt(num).toLocaleString('id-ID')}`;
 
