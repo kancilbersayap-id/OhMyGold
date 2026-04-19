@@ -1,0 +1,134 @@
+.calendarContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background-color: var(--color-background);
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.monthYear {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text);
+  font-family: var(--font-heading-3-family);
+}
+
+.navigationButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.navButton {
+  padding: 8px 12px;
+  background-color: transparent;
+  color: var(--color-text);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.navButton:hover:not(:disabled) {
+  background-color: var(--color-background-2);
+}
+
+.navButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.navButton svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  padding: 0;
+}
+
+.dayHeader {
+  padding: 16px 12px 12px 12px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+}
+
+.dayHeader:nth-child(7n) {
+  border-right: none;
+}
+
+.dayCell {
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+  min-height: 110px;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.dayCell:nth-child(7n + 7) {
+  border-right: none;
+}
+
+.dayCell:hover {
+  background-color: var(--color-background-2);
+}
+
+.dayCellContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.dayNumber {
+  font-family: 'Geist', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  line-height: 1;
+}
+
+.priceContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: auto;
+  width: 100%;
+}
+
+.price {
+  font-family: 'Geist', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text);
+  word-break: break-word;
+  margin-top: auto;
+  width: 100%;
+}
