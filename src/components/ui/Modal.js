@@ -14,6 +14,7 @@ export default function Modal({
   onConfirm,
   confirmLabel = 'Confirm',
   confirmVariant = 'primary',
+  confirmDisabled = false,
 }) {
   const [visible, setVisible] = useState(isOpen);
   const [closing, setClosing] = useState(false);
@@ -54,6 +55,7 @@ export default function Modal({
             <button
               className={`${styles.confirmBtn} ${confirmVariant === 'danger' ? styles.confirmDanger : styles.confirmPrimary}`}
               onClick={onConfirm}
+              disabled={confirmDisabled}
             >
               {confirmLabel}
             </button>

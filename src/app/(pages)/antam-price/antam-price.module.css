@@ -1,7 +1,12 @@
 .headerActions {
   display: flex;
+  gap: 8px;
+  min-width: 200px;
   align-items: center;
-  gap: 12px;
+}
+
+.dateWrapper {
+  flex: 0 0 auto;
 }
 
 .dateWrapper > div {
@@ -9,8 +14,8 @@
 }
 
 .dateWrapper input {
-  padding: 10px 12px;
-  line-height: 1;
+  padding: 8px 12px;
+  line-height: 1.4;
 }
 
 .tableSection {
@@ -59,7 +64,7 @@
 }
 
 .tableDateMuted {
-  font-family: var(--font-body-text-family);
+  font-family: var(--font-mono), 'Courier New', monospace;
   font-size: 14px;
   line-height: 1.2;
   color: var(--color-text-muted);
@@ -137,4 +142,37 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--color-text-muted);
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+  .headerActions {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+    min-width: unset;
+  }
+
+  .dateWrapper {
+    width: 100%;
+  }
+
+  .dateWrapper > div {
+    width: 100%;
+  }
+
+  .dateWrapper input {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .headerActions button {
+    width: 100%;
+  }
+
+  .tableTitleRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }

@@ -11,7 +11,16 @@
       "Bash(gh auth *)",
       "Bash(git init *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git branch *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(ssh -T git@github.com)",
+      "Bash(find /Users/farizpie/Documents/claude-code/ohmygold/src -type f \\\\\\( -name \"*.css\" -o -name \"*.js\" \\\\\\) -exec grep -l \"color-background\\\\|color-border\\\\|font-heading\" {} \\\\;)",
+      "Bash(vercel deploy *)",
+      "Bash(vercel --prod)",
+      "Bash(git commit -m 'Add missing component files \\(Badge, Calendar\\) and antam-buyback styles *)",
+      "Bash(git ls-tree *)"
     ]
   }
 }

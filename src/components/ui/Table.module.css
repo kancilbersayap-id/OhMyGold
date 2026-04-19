@@ -42,6 +42,15 @@
   border-bottom: none;
 }
 
+.table tbody tr {
+  height: 45px;
+}
+
 .table tbody tr:hover {
   background-color: var(--color-background-2);
+}
+
+.table th,
+.table td {
+  white-space: nowrap;
 }

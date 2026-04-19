@@ -8,7 +8,7 @@
 .text {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 24px;
 }
 
 .action {
@@ -30,4 +30,31 @@
   font-weight: var(--font-heading-5-weight);
   line-height: var(--font-heading-5-line-height);
   color: var(--color-text-muted);
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+  .header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .title {
+    font-size: 32px;
+    line-height: 36px;
+    letter-spacing: -0.6px;
+  }
+
+  .description {
+    font-size: 15px;
+    line-height: 24px;
+  }
+
+  .action {
+    width: 100%;
+  }
+
+  .action > button {
+    width: 100%;
+  }
 }

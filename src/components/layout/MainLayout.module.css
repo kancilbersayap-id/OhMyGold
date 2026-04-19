@@ -9,12 +9,14 @@
   padding: 48px 40px;
   background-color: var(--color-background);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .inner {
   max-width: 1024px;
   min-width: 640px;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 /* Mobile header — hidden on tablet and desktop */
@@ -87,11 +89,16 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 56px;
+    height: 64px;
+    padding: 6px 24px;
     background-color: var(--color-background);
     border-bottom: 1px solid var(--color-border);
-    padding: 0 16px;
     z-index: 20;
+  }
+
+  .mobileLogoText {
+    font-size: 16px;
+    line-height: 24px;
   }
 
   .backdrop {
@@ -105,7 +112,8 @@
 
   .content {
     margin-left: 0;
-    padding: 80px 16px 32px;
+    margin-top: 64px;
+    padding: 112px 24px 112px 24px;
   }
 
   .inner {

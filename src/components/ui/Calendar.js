@@ -36,8 +36,13 @@ export default function Calendar({ data = [], minDate = new Date(2025, 0, 1), ma
 
   const formatRp = (num) => `Rp ${parseInt(num).toLocaleString('id-ID')}`;
 
-  const minPrice = data.length > 0 ? Math.min(...data.map(d => d.buybackPrice)) : null;
-  const maxPrice = data.length > 0 ? Math.max(...data.map(d => d.buybackPrice)) : null;
+  const currentMonthData = data.filter(d => {
+    const [year, month] = d.date.split('-').map(Number);
+    return year === currentDate.getFullYear() && month === currentDate.getMonth() + 1;
+  });
+
+  const minPrice = currentMonthData.length > 0 ? Math.min(...currentMonthData.map(d => d.buybackPrice)) : null;
+  const maxPrice = currentMonthData.length > 0 ? Math.max(...currentMonthData.map(d => d.buybackPrice)) : null;
 
   const getDaysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 

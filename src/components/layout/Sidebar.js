@@ -58,11 +58,10 @@ const designSystemItem = {
   href: '/design-system',
   icon: (
     <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="13.5" cy="6.5" r="2.5" />
-      <path d="M17.5 10.5a2.5 2.5 0 0 1 0 5" />
-      <circle cx="8.5" cy="13.5" r="2.5" />
-      <circle cx="13.5" cy="17.5" r="2.5" />
-      <path d="M6.5 10.5a2.5 2.5 0 0 0 0 5" />
+      <rect x="3" y="3" width="7" height="7" />
+      <rect x="14" y="3" width="7" height="7" />
+      <rect x="3" y="14" width="7" height="7" />
+      <rect x="14" y="14" width="7" height="7" />
     </svg>
   ),
 };
@@ -111,9 +110,19 @@ export default function Sidebar({ mobileOpen, onMobileClose }) {
   return (
     <aside className={`${styles.sidebar} ${mobileOpen ? styles.sidebarOpen : ''}`}>
       <div className={styles.sidebarLogo}>
-        <div className={styles.logoDot} />
-        <span className={styles.logoText}>OhMyGold</span>
-        <span className={styles.logoBadge}>beta</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+          <div className={styles.logoDot} />
+          <span className={styles.logoText}>OhMyGold</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span className={styles.logoBadge}>beta</span>
+          <button className={styles.closeButton} onClick={onMobileClose} aria-label="Close sidebar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
       </div>
       <nav className={styles.nav}>
         {navItems.map(renderNavItem)}

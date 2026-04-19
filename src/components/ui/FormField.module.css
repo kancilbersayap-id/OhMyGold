@@ -61,6 +61,19 @@
   cursor: pointer;
 }
 
+/* Mobile - date picker */
+@media (max-width: 767px) {
+  .input[type="date"] {
+    width: 100%;
+  }
+
+  .input[type="date"]::-webkit-calendar-picker-indicator {
+    width: 16px;
+    height: 16px;
+    filter: invert(65%) sepia(0%) saturate(0%) brightness(90%);
+  }
+}
+
 /* Custom Select */
 .selectWrapper {
   position: relative;

@@ -60,9 +60,10 @@ const TrashIcon = () => (
 );
 
 export default function RetailPricePage() {
+  const today = new Date().toISOString().split('T')[0];
   const [data, setData] = useState(initialData);
   const [nextId, setNextId] = useState(_id);
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(today);
 
   // Add modal
   const [addOpen, setAddOpen] = useState(false);
@@ -273,7 +274,7 @@ export default function RetailPricePage() {
             <div className={styles.dateWrapper}>
               <TextField type="date" value={date} onChange={setDate} />
             </div>
-            <Button onClick={() => openAdd()}>Add new data</Button>
+            <Button onClick={() => openAdd()}>Add retail price</Button>
           </div>
         }
       />

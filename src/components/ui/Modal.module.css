@@ -134,6 +134,11 @@
 
 .confirmBtn:hover { opacity: 0.85; }
 
+.confirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .confirmPrimary {
   background-color: #ededed;
   color: #000000;

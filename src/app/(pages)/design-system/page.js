@@ -1,9 +1,17 @@
+'use client';
+
+import { useState } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
 import Section from '@/components/ui/Section';
 import Card from '@/components/ui/Card';
 import CardGrid from '@/components/ui/CardGrid';
 import DataRow from '@/components/ui/DataRow';
 import Table from '@/components/ui/Table';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import Toast from '@/components/ui/Toast';
+import Modal from '@/components/ui/Modal';
+import { TextField, Select, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
 import styles from './design-system.module.css';
 
@@ -40,7 +48,8 @@ const radiusData = [
   { token: '--radius-md', value: '6px', usage: 'Default components' },
   { token: '--radius-lg', value: '9px', usage: 'Cards, panels' },
   { token: '--radius-xl', value: '20px', usage: 'Large containers' },
-  { token: '--radius-full', value: '32px', usage: 'Pills, badges' },
+  { token: '--radius-full', value: '32px', usage: 'Pills' },
+  { token: 'custom', value: '4px', usage: 'Badges' },
 ];
 
 const icons = [
@@ -132,6 +141,8 @@ const dateFormatData = [
 ];
 
 export default function DesignSystemPage() {
+  const [formDemo, setFormDemo] = useState({ name: '', brand: '', date: '' });
+
   return (
     <>
       <PageHeader
@@ -230,6 +241,35 @@ export default function DesignSystemPage() {
 
       {/* Components */}
       <Section title="Components">
+        {/* Badge */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Badge</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Inline badge component with size S and three type variants: neutral, positive, and negative. Features 4px border radius. Used for status indicators and labels.
+          </p>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <Badge type="neutral">Neutral</Badge>
+            <Badge type="positive">Active</Badge>
+            <Badge type="negative">Inactive</Badge>
+            <Badge type="neutral">BETA</Badge>
+            <Badge type="positive">Available</Badge>
+            <Badge type="negative">Sold Out</Badge>
+          </div>
+        </div>
+
+        {/* Button */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Button</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Primary, secondary, and danger button variants.
+          </p>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <Button variant="primary">Primary Button</Button>
+            <Button variant="secondary">Secondary Button</Button>
+            <Button variant="danger">Danger Button</Button>
+          </div>
+        </div>
+
         {/* Card */}
         <div className={styles.componentDemo}>
           <div className={styles.componentLabel}>Card</div>
@@ -264,6 +304,53 @@ export default function DesignSystemPage() {
           <DataRow label="Label" value="Value" />
           <DataRow label="Buy Price" value="Rp 1,125,000" />
           <DataRow label="Status" value="Active" />
+        </div>
+
+        {/* Toast */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Toast</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
+            Auto-dismissing notification component. Automatically closes after 3 seconds (configurable).
+          </p>
+          <Toast message="Data successfully saved!" onDismiss={() => {}} />
+        </div>
+
+        {/* Modal */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Modal</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
+            Dialog component with title, content, and action buttons. Supports variants: primary (default), secondary, and danger for confirm button.
+          </p>
+          <p style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>
+            Usage: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>&lt;Modal isOpen title="Title" onConfirm={'{'}callback{'}'} /&gt;</code>
+          </p>
+        </div>
+
+        {/* Form Fields */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Form Fields</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Input components: TextField, Select, and DatePicker with labels and placeholder support.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <TextField
+              label="Text Input"
+              value={formDemo.name}
+              onChange={(v) => setFormDemo({ ...formDemo, name: v })}
+              placeholder="Enter text"
+            />
+            <Select
+              label="Dropdown Select"
+              value={formDemo.brand}
+              onChange={(v) => setFormDemo({ ...formDemo, brand: v })}
+              options={['Antam', 'Galeri 24', 'Pegadaian']}
+            />
+            <DatePicker
+              label="Date Picker"
+              value={formDemo.date}
+              onChange={(v) => setFormDemo({ ...formDemo, date: v })}
+            />
+          </div>
         </div>
 
         {/* PageHeader */}

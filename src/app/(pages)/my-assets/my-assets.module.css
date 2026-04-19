@@ -11,3 +11,10 @@
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
+
+/* Mobile styles */
+@media (max-width: 767px) {
+  .chartSection {
+    grid-template-columns: 1fr;
+  }
+}
