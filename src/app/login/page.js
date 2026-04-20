@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Button from '@/components/ui/Button';
 import { TextField } from '@/components/ui/FormField';
 import { supabase } from '@/utils/supabase';
 import styles from './login.module.css';
+import buttonStyles from '@/components/ui/Button.module.css';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -58,11 +58,13 @@ export default function LoginPage() {
 
           {error && <div className={styles.error}>{error}</div>}
 
-          <div className={styles.buttonWrapper}>
-            <Button variant="primary" onClick={handleLogin} disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign in'}
-            </Button>
-          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`${buttonStyles.button} ${buttonStyles.primary} ${styles.submitButton}`}
+          >
+            {loading ? 'Signing in...' : 'Sign in'}
+          </button>
         </form>
 
         <p className={styles.signupPrompt}>

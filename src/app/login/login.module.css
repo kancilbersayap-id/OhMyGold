@@ -34,8 +34,8 @@
   gap: 16px;
 }
 
-.buttonWrapper {
-  display: flex;
+.submitButton {
+  width: 100%;
 }
 
 .error {

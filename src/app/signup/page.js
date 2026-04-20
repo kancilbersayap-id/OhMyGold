@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Button from '@/components/ui/Button';
 import { TextField } from '@/components/ui/FormField';
 import { supabase } from '@/utils/supabase';
 import styles from './signup.module.css';
+import buttonStyles from '@/components/ui/Button.module.css';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -82,11 +82,13 @@ export default function SignupPage() {
           {error && <div className={styles.error}>{error}</div>}
           {message && <div className={styles.message}>{message}</div>}
 
-          <div className={styles.buttonWrapper}>
-            <Button variant="primary" onClick={handleSignup} disabled={loading}>
-              {loading ? 'Creating account...' : 'Sign up'}
-            </Button>
-          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`${buttonStyles.button} ${buttonStyles.primary} ${styles.submitButton}`}
+          >
+            {loading ? 'Creating account...' : 'Sign up'}
+          </button>
         </form>
 
         <p className={styles.loginPrompt}>
