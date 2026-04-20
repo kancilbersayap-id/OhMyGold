@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Button from '@/components/ui/Button';
+import { TextField } from '@/components/ui/FormField';
 import { supabase } from '@/utils/supabase';
 import styles from './signup.module.css';
 
@@ -53,55 +55,38 @@ export default function SignupPage() {
         <p className={styles.subtitle}>Create your account</p>
 
         <form onSubmit={handleSignup} className={styles.form}>
-          <div className={styles.formGroup}>
-            <label htmlFor="email" className={styles.label}>Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className={styles.input}
-              required
-            />
-          </div>
+          <TextField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={setEmail}
+            placeholder="Enter your email"
+          />
 
-          <div className={styles.formGroup}>
-            <label htmlFor="password" className={styles.label}>Password</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 6 characters"
-              className={styles.input}
-              required
-            />
-          </div>
+          <TextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            placeholder="At least 6 characters"
+          />
 
-          <div className={styles.formGroup}>
-            <label htmlFor="confirmPassword" className={styles.label}>Confirm Password</label>
-            <input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm your password"
-              className={styles.input}
-              required
-            />
-          </div>
+          <TextField
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            placeholder="Confirm your password"
+          />
 
           {error && <div className={styles.error}>{error}</div>}
           {message && <div className={styles.message}>{message}</div>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={styles.button}
-          >
-            {loading ? 'Creating account...' : 'Sign up'}
-          </button>
+          <div className={styles.buttonWrapper}>
+            <Button variant="primary" onClick={handleSignup} disabled={loading}>
+              {loading ? 'Creating account...' : 'Sign up'}
+            </Button>
+          </div>
         </form>
 
         <p className={styles.loginPrompt}>

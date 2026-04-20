@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Button from '@/components/ui/Button';
+import { TextField } from '@/components/ui/FormField';
 import { supabase } from '@/utils/supabase';
 import styles from './login.module.css';
 
@@ -38,41 +40,29 @@ export default function LoginPage() {
         <p className={styles.subtitle}>Sign in to your account</p>
 
         <form onSubmit={handleLogin} className={styles.form}>
-          <div className={styles.formGroup}>
-            <label htmlFor="email" className={styles.label}>Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className={styles.input}
-              required
-            />
-          </div>
+          <TextField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={setEmail}
+            placeholder="Enter your email"
+          />
 
-          <div className={styles.formGroup}>
-            <label htmlFor="password" className={styles.label}>Password</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              className={styles.input}
-              required
-            />
-          </div>
+          <TextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            placeholder="Enter your password"
+          />
 
           {error && <div className={styles.error}>{error}</div>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={styles.button}
-          >
-            {loading ? 'Signing in...' : 'Sign in'}
-          </button>
+          <div className={styles.buttonWrapper}>
+            <Button variant="primary" onClick={handleLogin} disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign in'}
+            </Button>
+          </div>
         </form>
 
         <p className={styles.signupPrompt}>

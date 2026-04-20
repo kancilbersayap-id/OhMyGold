@@ -21,7 +21,8 @@
       "Bash(vercel --prod)",
       "Bash(git commit -m 'Add missing component files \\(Badge, Calendar\\) and antam-buyback styles *)",
       "Bash(git ls-tree *)",
-      "Bash(git commit -m 'Fix authentication redirect timing issue *)"
+      "Bash(git commit -m 'Fix authentication redirect timing issue *)",
+      "Bash(git commit -m 'Update login/signup to use design system components *)"
     ]
   }
 }
