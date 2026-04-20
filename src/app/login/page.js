@@ -19,17 +19,31 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      setError(error.message);
+      console.log('Sign in response:', { data, error });
+
+      if (error) {
+        console.error('Sign in error:', error);
+        setError(error.message);
+        setLoading(false);
+      } else if (data) {
+        console.log('Sign in success, data:', data);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        router.push('/overview');
+      } else {
+        console.warn('No error but no data returned');
+        setError('Unknown error occurred');
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('Sign in exception:', err);
+      setError(err.message || 'An error occurred');
       setLoading(false);
-    } else if (data?.session) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      router.push('/overview');
     }
   };
 
