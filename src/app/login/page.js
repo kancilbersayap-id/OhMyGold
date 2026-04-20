@@ -17,7 +17,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -25,7 +25,8 @@ export default function LoginPage() {
     if (error) {
       setError(error.message);
       setLoading(false);
-    } else {
+    } else if (data?.session) {
+      await new Promise(resolve => setTimeout(resolve, 500));
       router.push('/overview');
     }
   };

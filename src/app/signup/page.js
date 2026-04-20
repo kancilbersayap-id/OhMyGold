@@ -39,8 +39,9 @@ export default function SignupPage() {
     if (error) {
       setError(error.message);
     } else {
-      setMessage('Check your email to confirm your account!');
-      setTimeout(() => router.push('/login'), 2000);
+      setMessage('Account created! Redirecting to login...');
+      await new Promise(resolve => setTimeout(resolve, 500));
+      router.push('/login');
     }
     setLoading(false);
   };
