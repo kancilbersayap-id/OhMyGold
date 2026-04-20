@@ -1,11 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 import styles from './MainLayout.module.css';
 
 export default function MainLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isAuthPage = pathname === '/login' || pathname === '/signup';
+
+  if (isAuthPage) {
+    return <>{children}</>;
+  }
 
   return (
     <div className={styles.layout}>

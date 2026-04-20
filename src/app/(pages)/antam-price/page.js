@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
 import Button from '@/components/ui/Button';
 import Table from '@/components/ui/Table';
@@ -8,6 +9,7 @@ import Modal from '@/components/ui/Modal';
 import Toast from '@/components/ui/Toast';
 import { TextField, Select, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
+import { supabase } from '@/utils/supabase';
 import styles from './antam-price.module.css';
 
 const brands = ['Antam', 'Galeri 24'];
@@ -24,31 +26,6 @@ const formatRp = (num) => `Rp ${parseInt(num).toLocaleString('id-ID')}`;
 const EMPTY_ITEM = { weight: '', hargaJual: '', hargaBuyback: '' };
 const EMPTY_ADD_FORM = { date: '', brand: '', items: [{ ...EMPTY_ITEM }] };
 
-let _id = 1;
-const mk = (brand, weight, hargaJual, hargaBuyback) => ({
-  id: _id++, brand, weight, hargaJual, hargaBuyback,
-});
-
-const initialData = [
-  mk('Antam',     '0.5g', 680000,    630000),
-  mk('Antam',     '1g',   1345000,   1280000),
-  mk('Antam',     '2g',   2590000,   2490000),
-  mk('Antam',     '5g',   6325000,   6150000),
-  mk('Antam',     '10g',  12570000,  12250000),
-  mk('Antam',     '25g',  31275000,  30500000),
-  mk('Antam',     '50g',  62425000,  60850000),
-  mk('Antam',     '100g', 124700000, 121500000),
-  mk('Galeri 24', '0.5g', 660000,    615000),
-  mk('Galeri 24', '1g',   1320000,   1260000),
-  mk('Galeri 24', '2g',   2550000,   2460000),
-  mk('Galeri 24', '5g',   6200000,   6040000),
-  mk('Galeri 24', '10g',  12300000,  12050000),
-  mk('Galeri 24', '25g',  30750000,  30100000),
-  mk('Galeri 24', '50g',  61200000,  59900000),
-  mk('Galeri 24', '100g', 122500000, 119800000),
-];
-
-
 const TrashIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="3 6 5 6 21 6" />
@@ -60,23 +37,48 @@ const TrashIcon = () => (
 );
 
 export default function RetailPricePage() {
+  const router = useRouter();
   const today = new Date().toISOString().split('T')[0];
-  const [data, setData] = useState(initialData);
-  const [nextId, setNextId] = useState(_id);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [date, setDate] = useState(today);
+  const [userId, setUserId] = useState(null);
 
-  // Add modal
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+      setUserId(session.user.id);
+      fetchData(session.user.id);
+    };
+    checkAuth();
+  }, [router]);
+
+  const fetchData = async (uid) => {
+    try {
+      const { data: prices, error } = await supabase
+        .from('retail_prices')
+        .select('*')
+        .eq('user_id', uid)
+        .order('date', { ascending: false });
+
+      if (error) throw error;
+      setData(prices || []);
+    } catch (err) {
+      setToast('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const [addOpen, setAddOpen] = useState(false);
   const [addForm, setAddForm] = useState(EMPTY_ADD_FORM);
-
-  // Edit brand modal
   const [editBrandTarget, setEditBrandTarget] = useState(null);
   const [editBrandRows, setEditBrandRows] = useState([]);
-
-  // Delete confirm
   const [deleteTarget, setDeleteTarget] = useState(null);
-
-  // Toast
   const [toast, setToast] = useState(null);
 
   const openAdd = (brand) => {
@@ -92,7 +94,7 @@ export default function RetailPricePage() {
   const openEditBrand = (brand) => {
     const rows = data
       .filter(r => r.brand === brand)
-      .map(r => ({ id: r.id, weight: r.weight, hargaJual: String(r.hargaJual), hargaBuyback: String(r.hargaBuyback) }));
+      .map(r => ({ id: r.id, weight: r.weight, hargaJual: String(r.harga_jual), hargaBuyback: String(r.harga_buyback) }));
     setEditBrandRows(rows);
     setEditBrandTarget(brand);
   };
@@ -101,15 +103,25 @@ export default function RetailPricePage() {
     setEditBrandRows(prev => prev.map(r => r.id === id ? { ...r, ...patch } : r));
   };
 
-  const saveEditBrand = () => {
-    setData(prev => prev.map(r => {
-      const edited = editBrandRows.find(er => er.id === r.id);
-      if (!edited) return r;
-      return { ...r, hargaJual: parseInt(edited.hargaJual), hargaBuyback: parseInt(edited.hargaBuyback) };
-    }));
-    setEditBrandTarget(null);
-    setEditBrandRows([]);
-    setToast('Data successfully updated!');
+  const saveEditBrand = async () => {
+    try {
+      for (const edited of editBrandRows) {
+        await supabase
+          .from('retail_prices')
+          .update({
+            harga_jual: parseInt(edited.hargaJual),
+            harga_buyback: parseInt(edited.hargaBuyback),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', edited.id);
+      }
+      setEditBrandTarget(null);
+      setEditBrandRows([]);
+      setToast('Data successfully updated!');
+      fetchData(userId);
+    } catch (err) {
+      setToast('Failed to update');
+    }
   };
 
   const updateAddItem = (idx, patch) => {
@@ -130,30 +142,48 @@ export default function RetailPricePage() {
     }));
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!addForm.brand) return;
     const validItems = addForm.items.filter(it => it.weight && it.hargaJual && it.hargaBuyback);
     if (validItems.length === 0) return;
 
-    let id = nextId;
-    const newRows = validItems.map(it => ({
-      id: id++,
-      date: addForm.date,
-      brand: addForm.brand,
-      weight: it.weight,
-      hargaJual: parseInt(it.hargaJual),
-      hargaBuyback: parseInt(it.hargaBuyback),
-    }));
-    setData(prev => [...prev, ...newRows]);
-    setNextId(id);
-    setToast(validItems.length > 1 ? `${validItems.length} data successfully added!` : 'Data successfully added!');
-    closeAdd();
+    try {
+      const newRows = validItems.map(it => ({
+        user_id: userId,
+        date: addForm.date,
+        brand: addForm.brand,
+        weight: it.weight,
+        harga_jual: parseInt(it.hargaJual),
+        harga_buyback: parseInt(it.hargaBuyback),
+      }));
+
+      const { error } = await supabase
+        .from('retail_prices')
+        .insert(newRows);
+
+      if (error) throw error;
+      setToast(validItems.length > 1 ? `${validItems.length} data successfully added!` : 'Data successfully added!');
+      fetchData(userId);
+      closeAdd();
+    } catch (err) {
+      setToast('Failed to add data');
+    }
   };
 
-  const confirmDelete = () => {
-    setData(prev => prev.filter(r => r.id !== deleteTarget));
-    setDeleteTarget(null);
-    setToast('Data successfully deleted!');
+  const confirmDelete = async () => {
+    try {
+      const { error } = await supabase
+        .from('retail_prices')
+        .delete()
+        .eq('id', deleteTarget);
+
+      if (error) throw error;
+      setDeleteTarget(null);
+      setToast('Data successfully deleted!');
+      fetchData(userId);
+    } catch (err) {
+      setToast('Failed to delete');
+    }
   };
 
   const buildTableData = (brand) =>
@@ -161,8 +191,8 @@ export default function RetailPricePage() {
       .filter(r => r.brand === brand)
       .map(row => ({
         weight: row.weight,
-        hargaJual: formatRp(row.hargaJual),
-        hargaBuyback: formatRp(row.hargaBuyback),
+        hargaJual: formatRp(row.harga_jual),
+        hargaBuyback: formatRp(row.harga_buyback),
       }));
 
   const usedBrandsForDate = addForm.date
@@ -254,6 +284,14 @@ export default function RetailPricePage() {
       ))}
     </div>
   );
+
+  if (loading) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        Loading...
+      </div>
+    );
+  }
 
   const mutedDateText = `Data from ${formatDateIndonesian(date)}`;
 

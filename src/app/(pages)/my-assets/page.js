@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
 import Button from '@/components/ui/Button';
 import Table from '@/components/ui/Table';
@@ -12,6 +13,7 @@ import BarChart from '@/components/ui/BarChart';
 import LineChart from '@/components/ui/LineChart';
 import { TextField, Select, Stepper, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
+import { supabase } from '@/utils/supabase';
 import styles from './my-assets.module.css';
 
 const typeUnits = ['2g', '5g', '10g', '50g', '100g'];
@@ -23,27 +25,27 @@ const formatDate = formatDateIndonesian;
 
 const formatRp = (num) => `Rp ${parseInt(num).toLocaleString('id-ID')}`;
 
-const toRow = (form, id) => {
-  const grams = parseInt(form.typeUnit.replace('g', ''));
-  const gramPriceNum = Math.round(parseInt(form.paidAmount) / grams);
+const toRow = (data) => {
+  const grams = parseInt(data.type_unit.replace('g', ''));
+  const gramPriceNum = Math.round(parseInt(data.paid_amount) / grams);
   return {
-    id,
-    date: formatDate(form.date),
-    type: `${form.type} ${form.typeUnit}`,
-    amount: formatRp(form.paidAmount),
-    unitPrice: formatRp(form.unitPrice),
+    id: data.id,
+    date: formatDate(data.date),
+    type: `${data.type} ${data.type_unit}`,
+    amount: formatRp(data.paid_amount),
+    unitPrice: formatRp(data.unit_price),
     gramPrice: formatRp(gramPriceNum),
-    units: String(form.units),
-    _raw: { ...form },
+    units: String(data.units),
+    _raw: {
+      date: data.date,
+      type: data.type,
+      typeUnit: data.type_unit,
+      paidAmount: String(data.paid_amount),
+      unitPrice: String(data.unit_price),
+      units: data.units,
+    },
   };
 };
-
-const initialData = [
-  toRow({ date: '2026-04-14', type: 'Antam certi', typeUnit: '2g',  paidAmount: '2250000',  unitPrice: '2250000',  units: 1 }, 4),
-  toRow({ date: '2026-03-05', type: 'Antam retro', typeUnit: '5g',  paidAmount: '5625000',  unitPrice: '5625000',  units: 1 }, 3),
-  toRow({ date: '2026-02-28', type: 'Galeri 24',   typeUnit: '50g', paidAmount: '56250000', unitPrice: '56250000', units: 1 }, 2),
-  toRow({ date: '2026-01-12', type: 'Antam certi', typeUnit: '10g', paidAmount: '11250000', unitPrice: '11250000', units: 1 }, 1),
-];
 
 const chartData = [
   { label: '2g',   value: 2  },
@@ -67,18 +69,45 @@ const lineChartData = [
 const lineChartYLabels = [550, 600, 650, 700];
 
 export default function MyAssetsPage() {
-  const [data, setData] = useState(initialData);
-  const [nextId, setNextId] = useState(5);
+  const router = useRouter();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
 
-  // Add / Edit modal
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+      setUserId(session.user.id);
+      fetchData(session.user.id);
+    };
+    checkAuth();
+  }, [router]);
+
+  const fetchData = async (uid) => {
+    try {
+      const { data: holdings, error } = await supabase
+        .from('user_gold_holdings')
+        .select('*')
+        .eq('user_id', uid)
+        .order('date', { ascending: false });
+
+      if (error) throw error;
+      setData((holdings || []).map(toRow));
+    } catch (err) {
+      setToast('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
-
-  // Delete confirm modal
   const [deleteTarget, setDeleteTarget] = useState(null);
-
-  // Toast
   const [toast, setToast] = useState(null);
 
   const gramPrice = form.paidAmount && form.typeUnit
@@ -103,30 +132,72 @@ export default function MyAssetsPage() {
     setEditingId(null);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.date || !form.type || !form.typeUnit || !form.paidAmount || !form.unitPrice) return;
 
-    if (editingId !== null) {
-      setData(prev => {
-        const updated = prev.map(r => r.id === editingId ? toRow(form, editingId) : r);
-        return sortByDate(updated);
-      });
-    } else {
-      const newRow = toRow(form, nextId);
-      setNextId(n => n + 1);
-      setData(prev => sortByDate([...prev, newRow]));
+    try {
+      if (editingId !== null) {
+        const { error } = await supabase
+          .from('user_gold_holdings')
+          .update({
+            date: form.date,
+            type: form.type,
+            type_unit: form.typeUnit,
+            paid_amount: parseInt(form.paidAmount),
+            unit_price: parseInt(form.unitPrice),
+            units: parseInt(form.units),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', editingId);
+
+        if (error) throw error;
+        setToast('Data successfully updated!');
+      } else {
+        const { error } = await supabase
+          .from('user_gold_holdings')
+          .insert({
+            user_id: userId,
+            date: form.date,
+            type: form.type,
+            type_unit: form.typeUnit,
+            paid_amount: parseInt(form.paidAmount),
+            unit_price: parseInt(form.unitPrice),
+            units: parseInt(form.units),
+          });
+
+        if (error) throw error;
+        setToast('Data successfully added!');
+      }
+      fetchData(userId);
+      closeModal();
+    } catch (err) {
+      setToast('Failed to save');
     }
-    closeModal();
   };
 
-  const sortByDate = (rows) =>
-    [...rows].sort((a, b) => new Date(b._raw.date) - new Date(a._raw.date));
+  const confirmDelete = useCallback(async () => {
+    try {
+      const { error } = await supabase
+        .from('user_gold_holdings')
+        .delete()
+        .eq('id', deleteTarget);
 
-  const confirmDelete = useCallback(() => {
-    setData(prev => prev.filter(r => r.id !== deleteTarget));
-    setDeleteTarget(null);
-    setToast('Data successfully deleted!');
-  }, [deleteTarget]);
+      if (error) throw error;
+      setDeleteTarget(null);
+      setToast('Data successfully deleted!');
+      fetchData(userId);
+    } catch (err) {
+      setToast('Failed to delete');
+    }
+  }, [deleteTarget, userId]);
+
+  if (loading) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        Loading...
+      </div>
+    );
+  }
 
   const totalPaid  = data.reduce((s, d) => s + parseInt(d.amount.replace(/\D/g, '')), 0);
   const totalUnits = data.reduce((s, d) => s + parseInt(d.units), 0);

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import PageHeader from '@/components/ui/PageHeader';
 import Button from '@/components/ui/Button';
 import Table from '@/components/ui/Table';
@@ -10,62 +11,53 @@ import Toast from '@/components/ui/Toast';
 import Calendar from '@/components/ui/Calendar';
 import { TextField, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
+import { supabase } from '@/utils/supabase';
 import styles from './antam-buyback.module.css';
 
 const EMPTY_FORM = { date: '', buybackPrice: '' };
 
 const formatRp = (num) => `Rp ${parseInt(num).toLocaleString('id-ID')}`;
 
-let _id = 1;
-const mk = (date, buybackPrice) => ({
-  id: _id++,
-  date,
-  buybackPrice,
-});
-
-const initialData = [
-  mk('2026-04-14', 610000),
-  mk('2026-03-01', 588000),
-  mk('2026-03-02', 590000),
-  mk('2026-03-03', 592000),
-  mk('2026-03-04', 594000),
-  mk('2026-03-05', 605000),
-  mk('2026-03-06', 600000),
-  mk('2026-03-07', 598000),
-  mk('2026-03-08', 596000),
-  mk('2026-03-09', 602000),
-  mk('2026-03-10', 604000),
-  mk('2026-03-11', 607000),
-  mk('2026-03-12', 610000),
-  mk('2026-03-13', 612000),
-  mk('2026-03-14', 614000),
-  mk('2026-03-15', 616000),
-  mk('2026-03-16', 615000),
-  mk('2026-03-17', 613000),
-  mk('2026-03-18', 611000),
-  mk('2026-03-19', 609000),
-  mk('2026-03-20', 608000),
-  mk('2026-03-21', 610000),
-  mk('2026-03-22', 612000),
-  mk('2026-03-23', 614000),
-  mk('2026-03-24', 616000),
-  mk('2026-03-25', 618000),
-  mk('2026-03-26', 620000),
-  mk('2026-03-27', 622000),
-  mk('2026-03-28', 595000),
-  mk('2026-03-29', 624000),
-  mk('2026-03-30', 626000),
-  mk('2026-03-31', 628000),
-];
-
 export default function AntamBuybackPage() {
-  const [data, setData] = useState(initialData);
-  const [nextId, setNextId] = useState(_id);
+  const router = useRouter();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
   const [addForm, setAddForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState(null);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+        return;
+      }
+      setUserId(session.user.id);
+      fetchData(session.user.id);
+    };
+    checkAuth();
+  }, [router]);
+
+  const fetchData = async (uid) => {
+    try {
+      const { data: prices, error } = await supabase
+        .from('antam_buyback_prices')
+        .select('*')
+        .eq('user_id', uid)
+        .order('date', { ascending: false });
+
+      if (error) throw error;
+      setData(prices || []);
+    } catch (err) {
+      setToast('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const openAdd = () => {
     setEditingId(null);
@@ -77,7 +69,7 @@ export default function AntamBuybackPage() {
     setEditingId(row.id);
     setAddForm({
       date: row.date,
-      buybackPrice: String(row.buybackPrice),
+      buybackPrice: String(row.buyback_price),
     });
     setAddOpen(true);
   };
@@ -88,7 +80,7 @@ export default function AntamBuybackPage() {
     setEditingId(null);
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!canSubmit) {
       if (isDuplicateDate(addForm.date)) {
         setToast('A buyback price for this date already exists!');
@@ -97,33 +89,54 @@ export default function AntamBuybackPage() {
     }
 
     if (editingId !== null) {
-      setData(prev =>
-        prev.map(r =>
-          r.id === editingId
-            ? { ...r, date: addForm.date, buybackPrice: parseInt(addForm.buybackPrice) }
-            : r
-        )
-      );
-      setToast('Buyback price successfully updated!');
-    } else {
-      const newRow = {
-        id: nextId,
-        date: addForm.date,
-        buybackPrice: parseInt(addForm.buybackPrice),
-      };
+      const { error } = await supabase
+        .from('antam_buyback_prices')
+        .update({
+          date: addForm.date,
+          buyback_price: parseInt(addForm.buybackPrice),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', editingId);
 
-      setData(prev => [...prev, newRow]);
-      setNextId(nextId + 1);
-      setToast('Buyback price successfully added!');
+      if (error) {
+        setToast('Failed to update');
+      } else {
+        setToast('Buyback price successfully updated!');
+        fetchData(userId);
+      }
+    } else {
+      const { error } = await supabase
+        .from('antam_buyback_prices')
+        .insert({
+          user_id: userId,
+          date: addForm.date,
+          buyback_price: parseInt(addForm.buybackPrice),
+        });
+
+      if (error) {
+        setToast('Failed to add');
+      } else {
+        setToast('Buyback price successfully added!');
+        fetchData(userId);
+      }
     }
     closeAdd();
   };
 
-  const confirmDelete = useCallback(() => {
-    setData(prev => prev.filter(r => r.id !== deleteTarget));
+  const confirmDelete = useCallback(async () => {
+    const { error } = await supabase
+      .from('antam_buyback_prices')
+      .delete()
+      .eq('id', deleteTarget);
+
+    if (error) {
+      setToast('Failed to delete');
+    } else {
+      setToast('Buyback price successfully deleted!');
+      fetchData(userId);
+    }
     setDeleteTarget(null);
-    setToast('Buyback price successfully deleted!');
-  }, [deleteTarget]);
+  }, [deleteTarget, userId]);
 
   const isDuplicateDate = (dateStr) => {
     return data.some(r => r.date === dateStr && r.id !== editingId);
@@ -137,11 +150,9 @@ export default function AntamBuybackPage() {
     { key: 'actions', label: '' },
   ];
 
-  const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-  const tableData = sortedData.map(row => ({
+  const tableData = data.map(row => ({
     date: formatDateIndonesian(row.date),
-    buybackPrice: formatRp(row.buybackPrice),
+    buybackPrice: formatRp(row.buyback_price),
     actions: (
       <ActionButton
         onEdit={() => openEdit(row)}
@@ -168,6 +179,20 @@ export default function AntamBuybackPage() {
     </div>
   );
 
+  if (loading) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        Loading...
+      </div>
+    );
+  }
+
+  const calendarData = data.map(row => ({
+    id: row.id,
+    date: row.date,
+    buybackPrice: row.buyback_price,
+  }));
+
   return (
     <>
       <PageHeader
@@ -185,7 +210,7 @@ export default function AntamBuybackPage() {
       </div>
 
       <div className={styles.calendarSection}>
-        <Calendar data={data} minDate={new Date(2025, 0, 1)} maxDate={new Date()} />
+        <Calendar data={calendarData} minDate={new Date(2025, 0, 1)} maxDate={new Date()} />
       </div>
 
       {/* Add / Edit modal */}
