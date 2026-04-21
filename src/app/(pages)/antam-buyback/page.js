@@ -48,14 +48,21 @@ export default function AntamBuybackPage() {
 
   const fetchData = async (uid) => {
     try {
-      const { data: prices, error } = await supabase
-        .from('antam_buyback_prices')
-        .select('*')
-        .eq('user_id', uid)
-        .order('date', { ascending: false });
-
-      if (error) throw error;
-      setData(prices || []);
+      const PAGE = 1000;
+      const all = [];
+      for (let from = 0; ; from += PAGE) {
+        const { data: page, error } = await supabase
+          .from('antam_buyback_prices')
+          .select('*')
+          .eq('user_id', uid)
+          .order('date', { ascending: false })
+          .range(from, from + PAGE - 1);
+        if (error) throw error;
+        if (!page || page.length === 0) break;
+        all.push(...page);
+        if (page.length < PAGE) break;
+      }
+      setData(all);
     } catch (err) {
       setToast('Failed to load data');
     } finally {
