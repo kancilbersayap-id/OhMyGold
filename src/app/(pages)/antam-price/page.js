@@ -90,8 +90,9 @@ export default function RetailPricePage() {
   const openEditBrand = (brand) => {
     const vendorFilter = brand.toLowerCase() === 'antam' ? 'antam' : 'galeri24';
     const rows = data
-      .filter(r => r.vendor === vendorFilter)
-      .map(r => ({ id: r.id, weight: `${r.weight}g`, hargaJual: String(r.harga_jual), hargaBuyback: String(r.harga_buyback) }));
+      .filter(r => r.vendor === vendorFilter && r.date === date)
+      .sort((a, b) => parseFloat(a.weight) - parseFloat(b.weight))
+      .map(r => ({ id: r.id, weight: `${parseFloat(r.weight)}g`, hargaJual: String(r.harga_jual), hargaBuyback: String(r.harga_buyback) }));
     setEditBrandRows(rows);
     setEditBrandTarget(brand);
   };
@@ -185,9 +186,10 @@ export default function RetailPricePage() {
   const buildTableData = (brand) => {
     const vendorFilter = brand.toLowerCase() === 'antam' ? 'antam' : 'galeri24';
     return data
-      .filter(r => r.vendor === vendorFilter)
+      .filter(r => r.vendor === vendorFilter && r.date === date)
+      .sort((a, b) => parseFloat(a.weight) - parseFloat(b.weight))
       .map(row => ({
-        weight: `${row.weight}g`,
+        weight: `${parseFloat(row.weight)}g`,
         hargaJual: formatRp(row.harga_jual),
         hargaBuyback: formatRp(row.harga_buyback),
       }));
