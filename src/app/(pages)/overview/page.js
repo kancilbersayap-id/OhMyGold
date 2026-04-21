@@ -59,13 +59,14 @@ export default function OverviewPage() {
 
       // Use 0 for totalAssets if undefined
       const assets = totalAssets ?? 0;
-      const bp = buybackData.price || 2878000; // Use actual database value as fallback
+      const bp = buybackData.price;
       const changePercent = buybackData.changePercent || 0;
 
       // Set price data - use buyback price for display with daily comparison
       setPriceData({ price: bp, changePercent, error: buybackData.error });
 
       // Calculate revenues: Antam price today * 600 - My Assets total
+      if (!bp) return;
       const estimate = (bp * 600) - assets;
       const months = calculateMonthsSinceNov2024();
       const monthly = Math.round(estimate / months);

@@ -39,7 +39,7 @@ const getAdminClient = () => {
 
 export async function getAntamPriceData() {
   try {
-    const supabase = await getSupabaseClient();
+    const supabase = getAdminClient();
 
     // Fetch latest 2 Antam 1g prices (weight can be 1 or '1')
     const { data: prices, error } = await supabase
@@ -116,7 +116,7 @@ export async function getRetailPrices() {
 
 export async function getAntamBuybackPrice() {
   try {
-    const supabase = await getSupabaseClient();
+    const supabase = getAdminClient();
 
     // Fetch latest 2 Antam 1g buyback prices to compare with yesterday
     const { data: prices, error } = await supabase
