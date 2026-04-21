@@ -28,18 +28,6 @@ const navItems = [
       </svg>
     ),
   },
-  {
-    label: 'News',
-    href: '/news',
-    icon: (
-      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
-        <path d="M18 14h-8" />
-        <path d="M15 18h-5" />
-        <path d="M10 6h8v4h-8V6z" />
-      </svg>
-    ),
-  },
 ];
 
 const retailPriceItem = {
@@ -65,6 +53,30 @@ const designSystemItem = {
     </svg>
   ),
 };
+
+const simulationItems = [
+  {
+    label: 'Sell Simulation',
+    href: '/sell-simulation',
+    icon: (
+      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="2 12 8 6 14 12 22 4" />
+        <polyline points="22 4 22 12 14 12" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Buy Simulation',
+    href: '/buy-simulation',
+    icon: (
+      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="9" cy="21" r="1" />
+        <circle cx="20" cy="21" r="1" />
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+      </svg>
+    ),
+  },
+];
 
 const pricingTrendsItems = [
   retailPriceItem,
@@ -126,6 +138,10 @@ export default function Sidebar({ mobileOpen, onMobileClose }) {
       </div>
       <nav className={styles.nav}>
         {navItems.map(renderNavItem)}
+        <div className={styles.navGroup}>
+          <div className={styles.navGroupTitle}>Simulation</div>
+          {simulationItems.map(renderNavItem)}
+        </div>
         <div className={styles.navGroup}>
           <div className={styles.navGroupTitle}>Pricing Trends</div>
           {pricingTrendsItems.map(renderNavItem)}

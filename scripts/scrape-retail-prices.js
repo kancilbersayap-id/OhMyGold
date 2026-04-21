@@ -142,32 +142,36 @@ async function scrapeRetailPrices() {
 
     // Prepare records
     const today = new Date().toISOString().split("T")[0];
-    const recordsMap = new Map(); // Deduplicate by date,vendor,weight
+    const recordsMap = new Map(); // Deduplicate by date,vendor,weight - keep first occurrence only
 
-    // Add Galeri 24 prices
+    // Add Galeri 24 prices (keep first occurrence)
     priceData.galeri24.forEach((price) => {
       const weight = parseWeight(price.weight);
       const key = `${today}|galeri24|${weight}`;
-      recordsMap.set(key, {
-        date: today,
-        vendor: "galeri24",
-        weight: weight,
-        harga_jual: parsePriceString(price.harga_jual),
-        harga_buyback: parsePriceString(price.harga_buyback),
-      });
+      if (!recordsMap.has(key)) {
+        recordsMap.set(key, {
+          date: today,
+          vendor: "galeri24",
+          weight: weight,
+          harga_jual: parsePriceString(price.harga_jual),
+          harga_buyback: parsePriceString(price.harga_buyback),
+        });
+      }
     });
 
-    // Add Antam prices
+    // Add Antam prices (keep first occurrence)
     priceData.antam.forEach((price) => {
       const weight = parseWeight(price.weight);
       const key = `${today}|antam|${weight}`;
-      recordsMap.set(key, {
-        date: today,
-        vendor: "antam",
-        weight: weight,
-        harga_jual: parsePriceString(price.harga_jual),
-        harga_buyback: parsePriceString(price.harga_buyback),
-      });
+      if (!recordsMap.has(key)) {
+        recordsMap.set(key, {
+          date: today,
+          vendor: "antam",
+          weight: weight,
+          harga_jual: parsePriceString(price.harga_jual),
+          harga_buyback: parsePriceString(price.harga_buyback),
+        });
+      }
     });
 
     const records = Array.from(recordsMap.values());
@@ -189,6 +193,12 @@ async function scrapeRetailPrices() {
       );
     });
 
+    // Debug: Show all Antam records
+    console.log("\nAll Antam records:");
+    priceData.antam.forEach((r) => {
+      console.log(`  ${r.weight}g: Jual ${r.harga_jual}, Buyback ${r.harga_buyback}`);
+    });
+
     // Save to Supabase
     console.log(`\n📝 Saving ${records.length} records to Supabase...`);
     const { error } = await supabase
@@ -199,6 +209,7 @@ async function scrapeRetailPrices() {
       console.error("❌ Error saving to Supabase:", error.message);
       return;
     }
+
 
     console.log(`\n🎉 Success! Saved ${records.length} retail price records`);
   } catch (error) {

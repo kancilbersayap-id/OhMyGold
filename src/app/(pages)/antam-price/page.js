@@ -10,6 +10,7 @@ import Toast from '@/components/ui/Toast';
 import { TextField, Select, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
 import { supabase } from '@/utils/supabase';
+import { getRetailPrices } from '@/utils/priceActions';
 import styles from './antam-price.module.css';
 
 const brands = ['Antam', 'Galeri 24'];
@@ -59,14 +60,9 @@ export default function RetailPricePage() {
 
   const fetchData = async (uid) => {
     try {
-      const { data: prices, error } = await supabase
-        .from('retail_prices')
-        .select('*')
-        .eq('user_id', uid)
-        .order('date', { ascending: false });
-
-      if (error) throw error;
-      setData(prices || []);
+      // Fetch prices from server action (single source of truth)
+      const prices = await getRetailPrices();
+      setData(prices);
     } catch (err) {
       setToast('Failed to load data');
     } finally {
@@ -92,9 +88,10 @@ export default function RetailPricePage() {
   };
 
   const openEditBrand = (brand) => {
+    const vendorFilter = brand.toLowerCase() === 'antam' ? 'antam' : 'galeri24';
     const rows = data
-      .filter(r => r.brand === brand)
-      .map(r => ({ id: r.id, weight: r.weight, hargaJual: String(r.harga_jual), hargaBuyback: String(r.harga_buyback) }));
+      .filter(r => r.vendor === vendorFilter)
+      .map(r => ({ id: r.id, weight: `${r.weight}g`, hargaJual: String(r.harga_jual), hargaBuyback: String(r.harga_buyback) }));
     setEditBrandRows(rows);
     setEditBrandTarget(brand);
   };
@@ -107,7 +104,7 @@ export default function RetailPricePage() {
     try {
       for (const edited of editBrandRows) {
         await supabase
-          .from('retail_prices')
+          .from('galeri24_antam_prices')
           .update({
             harga_jual: parseInt(edited.hargaJual),
             harga_buyback: parseInt(edited.hargaBuyback),
@@ -149,16 +146,15 @@ export default function RetailPricePage() {
 
     try {
       const newRows = validItems.map(it => ({
-        user_id: userId,
         date: addForm.date,
-        brand: addForm.brand,
-        weight: it.weight,
+        vendor: addForm.brand.toLowerCase() === 'antam' ? 'antam' : 'galeri24',
+        weight: parseFloat(it.weight),
         harga_jual: parseInt(it.hargaJual),
         harga_buyback: parseInt(it.hargaBuyback),
       }));
 
       const { error } = await supabase
-        .from('retail_prices')
+        .from('galeri24_antam_prices')
         .insert(newRows);
 
       if (error) throw error;
@@ -173,7 +169,7 @@ export default function RetailPricePage() {
   const confirmDelete = async () => {
     try {
       const { error } = await supabase
-        .from('retail_prices')
+        .from('galeri24_antam_prices')
         .delete()
         .eq('id', deleteTarget);
 
@@ -186,17 +182,21 @@ export default function RetailPricePage() {
     }
   };
 
-  const buildTableData = (brand) =>
-    data
-      .filter(r => r.brand === brand)
+  const buildTableData = (brand) => {
+    const vendorFilter = brand.toLowerCase() === 'antam' ? 'antam' : 'galeri24';
+    return data
+      .filter(r => r.vendor === vendorFilter)
       .map(row => ({
-        weight: row.weight,
+        weight: `${row.weight}g`,
         hargaJual: formatRp(row.harga_jual),
         hargaBuyback: formatRp(row.harga_buyback),
       }));
+  };
 
   const usedBrandsForDate = addForm.date
-    ? [...new Set(data.filter(r => r.date === addForm.date).map(r => r.brand))]
+    ? [...new Set(data
+        .filter(r => r.date === addForm.date)
+        .map(r => r.vendor === 'antam' ? 'Antam' : 'Galeri 24'))]
     : [];
   const availableBrands = brands.filter(b => !usedBrandsForDate.includes(b));
 
@@ -320,21 +320,6 @@ export default function RetailPricePage() {
       <div className={styles.tableSection}>
         <div className={styles.tableTitleRow}>
           <div className={styles.tableTitleGroup}>
-            <h2 className={styles.tableTitle}>Antam</h2>
-            <button className={styles.titleEditBtn} onClick={() => openEditBrand('Antam')} aria-label="Edit Antam">
-              <PencilIcon />
-            </button>
-          </div>
-          <span className={styles.tableDateMuted}>{mutedDateText}</span>
-        </div>
-        <div className={styles.tableCard}>
-          <Table columns={columns} data={buildTableData('Antam')} />
-        </div>
-      </div>
-
-      <div className={styles.tableSection}>
-        <div className={styles.tableTitleRow}>
-          <div className={styles.tableTitleGroup}>
             <h2 className={styles.tableTitle}>Galeri 24</h2>
             <button className={styles.titleEditBtn} onClick={() => openEditBrand('Galeri 24')} aria-label="Edit Galeri 24">
               <PencilIcon />
@@ -344,6 +329,21 @@ export default function RetailPricePage() {
         </div>
         <div className={styles.tableCard}>
           <Table columns={columns} data={buildTableData('Galeri 24')} />
+        </div>
+      </div>
+
+      <div className={styles.tableSection}>
+        <div className={styles.tableTitleRow}>
+          <div className={styles.tableTitleGroup}>
+            <h2 className={styles.tableTitle}>Antam</h2>
+            <button className={styles.titleEditBtn} onClick={() => openEditBrand('Antam')} aria-label="Edit Antam">
+              <PencilIcon />
+            </button>
+          </div>
+          <span className={styles.tableDateMuted}>{mutedDateText}</span>
+        </div>
+        <div className={styles.tableCard}>
+          <Table columns={columns} data={buildTableData('Antam')} />
         </div>
       </div>
 

@@ -1,0 +1,185 @@
+#!/usr/bin/env node
+
+/**
+ * Scrape buyback prices from logammulia.com and save to Supabase
+ * Usage: node scripts/scrape-buyback-history.js
+ * Run locally (not on Vercel)
+ */
+
+import { createClient } from "@supabase/supabase-js";
+import { chromium } from "playwright";
+import readline from "readline";
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+// Use admin key from env, fallback to anon key
+const SUPABASE_KEY = process.env.SUPABASE_ADMIN_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error("❌ Missing Supabase env vars");
+  process.exit(1);
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Interactive prompt
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+function prompt(question) {
+  return new Promise((resolve) => {
+    rl.question(question, resolve);
+  });
+}
+
+async function scrapeLogamMulia() {
+  console.log("🚀 Starting scrape of logammulia.com...\n");
+
+  // Get user ID
+  const userId = await prompt("📝 Enter your Supabase user ID: ");
+  if (!userId.trim()) {
+    console.error("❌ User ID is required");
+    rl.close();
+    process.exit(1);
+  }
+
+  rl.close();
+
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  try {
+    // Navigate to the page
+    console.log("\n📄 Loading logammulia.com/id/sell/gold...");
+    await page.goto("https://www.logammulia.com/id/sell/gold", {
+      waitUntil: "load",
+      timeout: 30000,
+    });
+
+    // Wait for chart elements
+    console.log("⏳ Waiting for chart to load...");
+    await page.waitForSelector("canvas, svg", { timeout: 15000 });
+    await page.waitForTimeout(5000); // Wait for chart to fully render
+    await page.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {});
+
+    // Extract chart data
+    console.log("📊 Extracting price data from chart...");
+    const priceData = await page.evaluate(() => {
+      // Strategy 1: Highcharts options.series (current format)
+      if (window.Highcharts?.charts?.[0]) {
+        const chart = window.Highcharts.charts[0];
+        if (chart.options?.series?.[0]?.data) {
+          const data = chart.options.series[0].data;
+          return data.map((point) => {
+            // Data is [timestamp, price] format
+            if (Array.isArray(point) && point.length >= 2) {
+              return {
+                date: new Date(point[0]).toISOString().split("T")[0],
+                price: Math.round(point[1]),
+              };
+            }
+            return null;
+          }).filter(p => p !== null);
+        }
+
+        // Fallback to chart.series if options doesn't work
+        if (chart.series?.[0]?.data) {
+          return chart.series[0].data
+            .filter(p => p !== null)
+            .map((point) => ({
+              date: point.x ? new Date(point.x).toISOString().split("T")[0] : null,
+              price: point.y,
+            }))
+            .filter(p => p.date && p.price);
+        }
+      }
+
+      // Strategy 2: Check for global data variables
+      for (const key in window) {
+        if (
+          typeof window[key] === "object" &&
+          window[key]?.data?.some?.((item) => item.date && item.price)
+        ) {
+          return window[key].data.map((item) => ({
+            date: item.date,
+            price: item.price,
+          }));
+        }
+      }
+
+      return null;
+    });
+
+    if (!priceData || (Array.isArray(priceData) && priceData.length === 0)) {
+      console.log("⚠️  Could not auto-extract chart data");
+      console.log("📸 Saving screenshot for manual inspection...");
+      await page.screenshot({ path: "logammulia-screenshot.png" });
+      console.log("✅ Screenshot saved to: logammulia-screenshot.png");
+      console.log(
+        "\n💡 Next steps:\n" +
+          "1. Open logammulia-screenshot.png to see the chart\n" +
+          "2. Check if data can be extracted manually\n" +
+          "3. Or try the script again after the site updates"
+      );
+      return;
+    }
+
+    // Filter valid records
+    const validRecords = priceData.filter(
+      (item) =>
+        item.date &&
+        item.price &&
+        typeof item.price === "number" &&
+        item.price > 0
+    );
+
+    if (validRecords.length === 0) {
+      console.error("❌ No valid price data extracted");
+      return;
+    }
+
+    // Add user_id and prepare for Supabase
+    const records = validRecords.map((item) => ({
+      user_id: userId.trim(),
+      date: item.date,
+      buyback_price: item.price,
+    }));
+
+    // Remove duplicates (by date)
+    const uniqueRecords = Array.from(
+      new Map(records.map((item) => [item.date, item])).values()
+    );
+
+    console.log(
+      `\n✅ Extracted ${uniqueRecords.length} price records from chart`
+    );
+    console.log("Sample data:");
+    uniqueRecords.slice(0, 3).forEach((r) => {
+      console.log(`  ${r.date}: Rp ${r.buyback_price.toLocaleString("id-ID")}`);
+    });
+
+    // Save to Supabase
+    console.log(`\n📝 Saving ${uniqueRecords.length} records to Supabase...`);
+    const { error } = await supabase
+      .from("antam_buyback_prices")
+      .upsert(uniqueRecords, { onConflict: "user_id,date" });
+
+    if (error) {
+      console.error("❌ Error saving to Supabase:", error.message);
+      return;
+    }
+
+
+    console.log(
+      `\n🎉 Success! Saved ${uniqueRecords.length} buyback price records`
+    );
+    console.log("📊 Check your app to see the imported data");
+  } catch (error) {
+    console.error("❌ Scraping error:", error.message);
+  } finally {
+    await browser.close();
+  }
+}
+
+scrapeLogamMulia();

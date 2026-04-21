@@ -10,7 +10,6 @@ import ActionButton from '@/components/ui/ActionButton';
 import Toast from '@/components/ui/Toast';
 import Card from '@/components/ui/Card';
 import BarChart from '@/components/ui/BarChart';
-import LineChart from '@/components/ui/LineChart';
 import { TextField, Select, Stepper, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
 import { supabase } from '@/utils/supabase';
@@ -47,26 +46,23 @@ const toRow = (data) => {
   };
 };
 
-const chartData = [
-  { label: '2g',   value: 2  },
-  { label: '5g',   value: 5  },
-  { label: '10g',  value: 8  },
-  { label: '50g',  value: 10 },
-  { label: '100g', value: 16 },
+const databaseChartData = [
+  { label: 'Apr 20, 7:09pm', value: 8 },
+  { label: 'Apr 20, 7:29pm', value: 5 },
+  { label: 'Apr 20, 7:50pm', value: 19 },
 ];
 
-const chartYLabels = [4, 8, 12, 16];
-
-const lineChartData = [
-  { label: 'Jan', value: 560 },
-  { label: 'Feb', value: 585 },
-  { label: 'Mar', value: 610 },
-  { label: 'Apr', value: 595 },
-  { label: 'May', value: 645 },
-  { label: 'Jun', value: 700 },
+const authChartData = [
+  { label: 'Apr 20, 7:09pm', value: 80 },
+  { label: 'Apr 20, 7:29pm', value: 5 },
+  { label: 'Apr 20, 7:50pm', value: 26 },
 ];
 
-const lineChartYLabels = [550, 600, 650, 700];
+const storageChartData = [
+  { label: 'Apr 20, 7:09pm', value: 0 },
+  { label: 'Apr 20, 7:29pm', value: 0 },
+  { label: 'Apr 20, 7:50pm', value: 0 },
+];
 
 export default function MyAssetsPage() {
   const router = useRouter();
@@ -257,18 +253,33 @@ export default function MyAssetsPage() {
         action={<Button onClick={openAdd}>Add gold holdings</Button>}
       />
 
-      <div className={styles.tableCard}>
-        <Table columns={columns} data={tableData} />
+      {/* Metric cards */}
+      <div className={styles.metricsSection}>
+        <div className={styles.metricCard}>
+          <div className={styles.metricLabel}>DATABASE REQUESTS</div>
+          <div className={styles.metricValue}>19</div>
+          <div className={styles.metricChart}>
+            <BarChart data={databaseChartData} yLabels={[5, 10, 15, 20]} />
+          </div>
+        </div>
+        <div className={styles.metricCard}>
+          <div className={styles.metricLabel}>AUTH REQUESTS</div>
+          <div className={styles.metricValue}>111</div>
+          <div className={styles.metricChart}>
+            <BarChart data={authChartData} yLabels={[20, 40, 60, 80]} />
+          </div>
+        </div>
+        <div className={styles.metricCard}>
+          <div className={styles.metricLabel}>STORAGE REQUESTS</div>
+          <div className={styles.metricValue}>0</div>
+          <div className={styles.metricChart}>
+            <BarChart data={storageChartData} yLabels={[5, 10, 15, 20]} />
+          </div>
+        </div>
       </div>
 
-      {/* Chart cards */}
-      <div className={styles.chartSection}>
-        <Card title="Unit holdings" noPadding>
-          <BarChart data={chartData} yLabels={chartYLabels} />
-        </Card>
-        <Card title="Moving price" noPadding>
-          <LineChart data={lineChartData} yLabels={lineChartYLabels} />
-        </Card>
+      <div className={styles.tableCard}>
+        <Table columns={columns} data={tableData} />
       </div>
 
       {/* Add / Edit modal */}

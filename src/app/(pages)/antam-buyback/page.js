@@ -20,8 +20,12 @@ const formatRp = (num) => `Rp ${parseInt(num).toLocaleString('id-ID')}`;
 
 export default function AntamBuybackPage() {
   const router = useRouter();
+  const today = new Date();
+  const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [addOpen, setAddOpen] = useState(false);
   const [addForm, setAddForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState(null);
@@ -144,13 +148,31 @@ export default function AntamBuybackPage() {
 
   const canSubmit = addForm.date && addForm.buybackPrice && !isDuplicateDate(addForm.date);
 
+  // Get available months from data
+  const getAvailableMonths = () => {
+    const months = new Set();
+    data.forEach(row => {
+      const date = new Date(row.date);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      months.add(monthKey);
+    });
+    return Array.from(months).sort().reverse();
+  };
+
+  // Filter data by selected month
+  const filteredData = data.filter(row => {
+    const date = new Date(row.date);
+    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    return monthKey === selectedMonth;
+  });
+
   const columns = [
     { key: 'date', label: 'Date' },
     { key: 'buybackPrice', label: 'Buyback Price' },
     { key: 'actions', label: '' },
   ];
 
-  const tableData = data.map(row => ({
+  const tableData = filteredData.map(row => ({
     date: formatDateIndonesian(row.date),
     buybackPrice: formatRp(row.buyback_price),
     actions: (
@@ -193,17 +215,118 @@ export default function AntamBuybackPage() {
     buybackPrice: row.buyback_price,
   }));
 
+  const availableMonths = getAvailableMonths();
+  const formatMonthDisplay = (monthKey) => {
+    const [year, month] = monthKey.split('-');
+    const date = new Date(year, parseInt(month) - 1);
+    return new Intl.DateTimeFormat('id-ID', { year: 'numeric', month: 'long' }).format(date);
+  };
+
+  // Month navigation
+  const currentMonthIndex = availableMonths.indexOf(selectedMonth);
+  const prevMonth = currentMonthIndex < availableMonths.length - 1 ? availableMonths[currentMonthIndex + 1] : null;
+  const nextMonth = currentMonthIndex > 0 ? availableMonths[currentMonthIndex - 1] : null;
+
+  const ChevronIcon = ({ direction }) => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      {direction === 'left' ? (
+        <polyline points="15 18 9 12 15 6" />
+      ) : (
+        <polyline points="9 18 15 12 9 6" />
+      )}
+    </svg>
+  );
+
   return (
     <>
       <PageHeader
         title="Antam buyback"
         description="Antam gold buyback prices"
         action={
-          <Button onClick={openAdd}>Add buyback price</Button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              style={{
+                fontFamily: 'inherit',
+                fontSize: '14px',
+                padding: '8px 12px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--color-border)',
+                backgroundColor: 'var(--color-background)',
+                color: 'var(--color-text)',
+                cursor: 'pointer',
+              }}
+            >
+              {availableMonths.map(month => (
+                <option key={month} value={month}>
+                  {formatMonthDisplay(month)}
+                </option>
+              ))}
+            </select>
+            <Button onClick={openAdd}>Add buyback price</Button>
+          </div>
         }
       />
 
       <div className={styles.tableSection}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <h2 style={{
+            fontFamily: 'var(--font-heading-3-family)',
+            fontSize: '24px',
+            fontWeight: '600',
+            color: 'var(--color-text)',
+            margin: 0,
+          }}>
+            {formatMonthDisplay(selectedMonth)}
+          </h2>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              onClick={() => prevMonth && setSelectedMonth(prevMonth)}
+              disabled={!prevMonth}
+              aria-label="Previous month"
+              style={{
+                padding: '8px 12px',
+                backgroundColor: 'transparent',
+                color: 'var(--color-text)',
+                border: 'none',
+                borderRadius: 'var(--radius-md)',
+                cursor: prevMonth ? 'pointer' : 'not-allowed',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease',
+                opacity: prevMonth ? 1 : 0.4,
+              }}
+              onMouseEnter={(e) => prevMonth && (e.currentTarget.style.backgroundColor = 'var(--color-background-2)')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+            >
+              <ChevronIcon direction="left" />
+            </button>
+            <button
+              onClick={() => nextMonth && setSelectedMonth(nextMonth)}
+              disabled={!nextMonth}
+              aria-label="Next month"
+              style={{
+                padding: '8px 12px',
+                backgroundColor: 'transparent',
+                color: 'var(--color-text)',
+                border: 'none',
+                borderRadius: 'var(--radius-md)',
+                cursor: nextMonth ? 'pointer' : 'not-allowed',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease',
+                opacity: nextMonth ? 1 : 0.4,
+              }}
+              onMouseEnter={(e) => nextMonth && (e.currentTarget.style.backgroundColor = 'var(--color-background-2)')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+            >
+              <ChevronIcon direction="right" />
+            </button>
+          </div>
+        </div>
         <div className={styles.tableCard}>
           <Table columns={columns} data={tableData} />
         </div>

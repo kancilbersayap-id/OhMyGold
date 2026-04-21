@@ -23,7 +23,27 @@
       "Bash(git ls-tree *)",
       "Bash(git commit -m 'Fix authentication redirect timing issue *)",
       "Bash(git commit -m 'Update login/signup to use design system components *)",
-      "Bash(git commit -m 'Fix form submission for login/signup pages *)"
+      "Bash(git commit -m 'Fix form submission for login/signup pages *)",
+      "WebFetch(domain:www.logammulia.com)",
+      "WebSearch",
+      "Bash(npm list *)",
+      "Bash(node scripts/scrape-buyback-history.js)",
+      "Bash(export NEXT_PUBLIC_SUPABASE_URL=https://xbwrwgdmmdvakdexrlnd.supabase.co)",
+      "Bash(export NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_B_iUQCRu7_YBTXVrqlTOVw_hKGV9llX)",
+      "Bash(npx playwright *)",
+      "Bash(node scripts/debug-logammulia.js)",
+      "Bash(export SUPABASE_ADMIN_KEY=***REDACTED***)",
+      "Bash(git commit *)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "WebFetch(domain:sahabat.pegadaian.co.id)",
+      "Bash(node scripts/scrape-retail-prices.js)",
+      "Bash(node scripts/debug-galeri24.js)",
+      "Bash(grep -E \"\\\\.\\(js|ts\\)$\")",
+      "Bash(export SUPABASE_SERVICE_ROLE_KEY=***REDACTED***)",
+      "Bash(node -e ' *)",
+      "Bash(grep -E \"\\\\.\\(js|jsx|ts|tsx\\)$\")",
+      "Bash(find src *)",
+      "Bash(git checkout *)"
     ]
   }
 }
