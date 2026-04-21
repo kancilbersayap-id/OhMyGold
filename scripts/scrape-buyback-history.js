@@ -112,16 +112,9 @@ async function scrapeLogamMulia() {
     });
 
     if (!priceData || (Array.isArray(priceData) && priceData.length === 0)) {
-      console.log("⚠️  Could not auto-extract chart data");
-      console.log("📸 Saving screenshot for manual inspection...");
-      await page.screenshot({ path: "logammulia-screenshot.png" });
-      console.log("✅ Screenshot saved to: logammulia-screenshot.png");
-      console.log(
-        "\n💡 Next steps:\n" +
-          "1. Open logammulia-screenshot.png to see the chart\n" +
-          "2. Check if data can be extracted manually\n" +
-          "3. Or try the script again after the site updates"
-      );
+      console.error("❌ Could not auto-extract chart data");
+      await page.screenshot({ path: "logammulia-screenshot.png" }).catch(() => {});
+      process.exitCode = 1;
       return;
     }
 
@@ -136,6 +129,7 @@ async function scrapeLogamMulia() {
 
     if (validRecords.length === 0) {
       console.error("❌ No valid price data extracted");
+      process.exitCode = 1;
       return;
     }
 
@@ -167,6 +161,7 @@ async function scrapeLogamMulia() {
 
     if (error) {
       console.error("❌ Error saving to Supabase:", error.message);
+      process.exitCode = 1;
       return;
     }
 
@@ -177,6 +172,7 @@ async function scrapeLogamMulia() {
     console.log("📊 Check your app to see the imported data");
   } catch (error) {
     console.error("❌ Scraping error:", error.message);
+    process.exitCode = 1;
   } finally {
     await browser.close();
   }

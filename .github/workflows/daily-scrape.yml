@@ -2,8 +2,9 @@ name: Daily Logammulia Scrape
 
 on:
   schedule:
-    # 9:00 AM Jakarta time (UTC+7) = 2:00 AM UTC
-    - cron: '0 2 * * *'
+    # 14:00 Jakarta time (UTC+7) = 07:00 UTC. Logam Mulia publishes the day's
+    # buyback price mid-morning Jakarta, so scrape in the afternoon to be safe.
+    - cron: '0 7 * * *'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
