@@ -47,7 +47,15 @@ async function scrapeLogamMulia() {
   rl.close();
 
   const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage();
+  // Logammulia appears to block default Playwright headless UA from CI IPs,
+  // so masquerade as a real Chrome on Linux/macOS.
+  const context = await browser.newContext({
+    userAgent:
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    viewport: { width: 1280, height: 900 },
+    locale: "id-ID",
+  });
+  const page = await context.newPage();
 
   try {
     // Navigate to the page
@@ -125,7 +133,19 @@ async function scrapeLogamMulia() {
 
     if (!priceData || (Array.isArray(priceData) && priceData.length === 0)) {
       console.error("❌ Could not auto-extract chart data");
-      await page.screenshot({ path: "logammulia-screenshot.png" }).catch(() => {});
+      await page.screenshot({ path: "logammulia-screenshot.png", fullPage: true }).catch(() => {});
+      const html = await page.content().catch(() => "");
+      const fs = await import("fs");
+      fs.writeFileSync("logammulia-page.html", html);
+      const diag = await page.evaluate(() => ({
+        title: document.title,
+        url: location.href,
+        bodyLength: document.body?.innerText?.length || 0,
+        bodyPreview: (document.body?.innerText || "").slice(0, 500),
+        hasHighcharts: typeof window.Highcharts !== "undefined",
+        chartCount: window.Highcharts?.charts?.filter?.((c) => c).length || 0,
+      })).catch((e) => ({ error: e.message }));
+      console.error("Diagnostics:", JSON.stringify(diag, null, 2));
       process.exitCode = 1;
       return;
     }

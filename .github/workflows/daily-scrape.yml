@@ -36,6 +36,17 @@ jobs:
         run: |
           echo "$SUPABASE_USER_ID" | node scripts/scrape-buyback-history.js
 
+      - name: Upload debug artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logammulia-debug-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            logammulia-screenshot.png
+            logammulia-page.html
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Commit results (if changed)
         if: always()
         run: |
