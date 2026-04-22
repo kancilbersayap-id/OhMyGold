@@ -2,8 +2,9 @@ name: Daily Galeri24 Retail Price Scrape
 
 on:
   schedule:
-    # 10:20 AM Jakarta time (UTC+7) = 3:20 AM UTC
-    - cron: '20 3 * * *'
+    # GitHub cron is unreliable (silent skips, large delays), so retry hourly
+    # from 10:20 to 17:20 Jakarta (03:20 to 10:20 UTC). Upsert makes reruns no-op.
+    - cron: '20 3,4,5,6,7,8,9,10 * * *'
   workflow_dispatch: # Allow manual trigger
 
 jobs:

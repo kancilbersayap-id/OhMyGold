@@ -59,9 +59,21 @@ async function scrapeLogamMulia() {
 
     // Wait for chart elements
     console.log("⏳ Waiting for chart to load...");
-    await page.waitForSelector("canvas, svg", { timeout: 15000 });
-    await page.waitForTimeout(5000); // Wait for chart to fully render
-    await page.waitForLoadState("networkidle", { timeout: 10000 }).catch(() => {});
+    await page.waitForSelector("canvas, svg", { timeout: 30000 });
+    await page.waitForLoadState("networkidle", { timeout: 15000 }).catch(() => {});
+
+    // Poll until Highcharts has actual series data, not just a rendered shell.
+    // The chart selector can resolve before the series payload arrives.
+    await page
+      .waitForFunction(
+        () => {
+          const c = window.Highcharts?.charts?.find?.((x) => x);
+          const data = c?.options?.series?.[0]?.data || c?.series?.[0]?.data;
+          return Array.isArray(data) && data.filter((p) => p !== null).length > 100;
+        },
+        { timeout: 30000 }
+      )
+      .catch(() => {});
 
     // Extract chart data
     console.log("📊 Extracting price data from chart...");
