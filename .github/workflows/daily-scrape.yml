@@ -1,12 +1,7 @@
 name: Daily Logammulia Scrape
 
 on:
-  schedule:
-    # Logam Mulia publishes mid-morning Jakarta. GitHub cron is unreliable
-    # (silent skips, large delays), so retry hourly from 14:00 to 21:00 Jakarta
-    # (07:00 to 14:00 UTC). Upsert on (user_id,date) makes reruns no-op.
-    - cron: '0 7,8,9,10,11,12,13,14 * * *'
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch: # Disabled scheduled runs; trigger manually if needed
 
 jobs:
   scrape:

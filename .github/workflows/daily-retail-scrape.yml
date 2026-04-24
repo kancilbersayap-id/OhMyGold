@@ -27,7 +27,15 @@ jobs:
       - name: Install Playwright
         run: npx playwright install --with-deps
 
+      - name: Check if today's prices already scraped
+        id: check-prices
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ADMIN_KEY: ${{ secrets.SUPABASE_ADMIN_KEY }}
+        run: node scripts/check-retail-prices-today.js || echo "needs_scrape=true" >> $GITHUB_OUTPUT
+
       - name: Run retail price scraper
+        if: steps.check-prices.outputs.needs_scrape == 'true'
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ADMIN_KEY: ${{ secrets.SUPABASE_ADMIN_KEY }}

@@ -9,7 +9,7 @@ import Modal from '@/components/ui/Modal';
 import ActionButton from '@/components/ui/ActionButton';
 import Toast from '@/components/ui/Toast';
 import Card from '@/components/ui/Card';
-import BarChart from '@/components/ui/BarChart';
+import MetricCard from '@/components/ui/MetricCard';
 import { TextField, Select, Stepper, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
 import { supabase } from '@/utils/supabase';
@@ -19,6 +19,29 @@ const typeUnits = ['2g', '5g', '10g', '50g', '100g'];
 const typeOptions = ['Antam certi', 'Antam retro', 'Galeri 24'];
 
 const EMPTY_FORM = { date: '', type: '', typeUnit: '', paidAmount: '', unitPrice: '', units: 1 };
+
+const databaseChartData = [
+  { label: 'Apr 20, 7:09pm', value: 8 },
+  { label: 'Apr 20, 7:29pm', value: 5 },
+  { label: 'Apr 20, 7:50pm', value: 19 },
+];
+
+const authChartData = [
+  { label: '1',   value: 1 },
+  { label: '2',   value: 2 },
+  { label: '3',   value: 3 },
+  { label: '5',   value: 5 },
+  { label: '10',  value: 10 },
+  { label: '50',  value: 50 },
+  { label: '100', value: 100 },
+  { label: '200', value: 200 },
+];
+
+const storageChartData = [
+  { label: 'Apr 20, 7:09pm', value: 0 },
+  { label: 'Apr 20, 7:29pm', value: 0 },
+  { label: 'Apr 20, 7:50pm', value: 0 },
+];
 
 const formatDate = formatDateIndonesian;
 
@@ -45,24 +68,6 @@ const toRow = (data) => {
     },
   };
 };
-
-const databaseChartData = [
-  { label: 'Apr 20, 7:09pm', value: 8 },
-  { label: 'Apr 20, 7:29pm', value: 5 },
-  { label: 'Apr 20, 7:50pm', value: 19 },
-];
-
-const authChartData = [
-  { label: 'Apr 20, 7:09pm', value: 80 },
-  { label: 'Apr 20, 7:29pm', value: 5 },
-  { label: 'Apr 20, 7:50pm', value: 26 },
-];
-
-const storageChartData = [
-  { label: 'Apr 20, 7:09pm', value: 0 },
-  { label: 'Apr 20, 7:29pm', value: 0 },
-  { label: 'Apr 20, 7:50pm', value: 0 },
-];
 
 export default function MyAssetsPage() {
   const router = useRouter();
@@ -255,27 +260,9 @@ export default function MyAssetsPage() {
 
       {/* Metric cards */}
       <div className={styles.metricsSection}>
-        <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>DATABASE REQUESTS</div>
-          <div className={styles.metricValue}>19</div>
-          <div className={styles.metricChart}>
-            <BarChart data={databaseChartData} yLabels={[5, 10, 15, 20]} />
-          </div>
-        </div>
-        <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>AUTH REQUESTS</div>
-          <div className={styles.metricValue}>111</div>
-          <div className={styles.metricChart}>
-            <BarChart data={authChartData} yLabels={[20, 40, 60, 80]} />
-          </div>
-        </div>
-        <div className={styles.metricCard}>
-          <div className={styles.metricLabel}>STORAGE REQUESTS</div>
-          <div className={styles.metricValue}>0</div>
-          <div className={styles.metricChart}>
-            <BarChart data={storageChartData} yLabels={[5, 10, 15, 20]} />
-          </div>
-        </div>
+        <MetricCard label="Database Requests" value="19" data={databaseChartData} />
+        <MetricCard label="Gold Holding" value="300" data={authChartData} barRadius={2} />
+        <MetricCard label="Storage Requests" value="0" data={storageChartData} />
       </div>
 
       <div className={styles.tableCard}>

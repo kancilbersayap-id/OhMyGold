@@ -155,6 +155,92 @@ export async function getAntamBuybackPrice() {
   }
 }
 
+export async function getAntamPriceDailyHistory(days = 8) {
+  try {
+    const supabase = getAdminClient();
+
+    const dates = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      dates.push(d.toISOString().slice(0, 10));
+    }
+
+    const { data, error } = await supabase
+      .from('galeri24_antam_prices')
+      .select('date, harga_jual')
+      .eq('vendor', 'antam')
+      .in('weight', [1, '1'])
+      .gte('date', dates[0])
+      .lte('date', dates[dates.length - 1])
+      .order('date', { ascending: true });
+
+    if (error) throw error;
+
+    const byDate = {};
+    for (const row of data || []) byDate[row.date] = row.harga_jual;
+
+    return dates.map((d) => ({ date: d, price: byDate[d] ?? null }));
+  } catch (error) {
+    console.error('Error fetching daily price history:', error);
+    return [];
+  }
+}
+
+export async function getMonthlyBuybackHistory() {
+  try {
+    const supabase = getAdminClient();
+
+    // Fetch from 8 months ago to today
+    const from = new Date();
+    from.setMonth(from.getMonth() - 7);
+    from.setDate(1);
+    const fromDate = from.toISOString().slice(0, 10);
+
+    const { data, error } = await supabase
+      .from('antam_buyback_prices')
+      .select('date, buyback_price')
+      .gte('date', fromDate)
+      .order('date', { ascending: true });
+
+    if (error) throw error;
+
+    // Keep last record per month (ascending order so last write wins)
+    const monthMap = {};
+    for (const row of data || []) {
+      monthMap[row.date.slice(0, 7)] = row;
+    }
+
+    return Object.entries(monthMap).map(([yearMonth, row]) => ({
+      yearMonth,
+      date: row.date,
+      buyback_price: row.buyback_price,
+    }));
+  } catch (error) {
+    console.error('Error fetching monthly buyback history:', error);
+    return [];
+  }
+}
+
+export async function getAntamPriceHistory(limit = 8) {
+  try {
+    const supabase = getAdminClient();
+
+    const { data: prices, error } = await supabase
+      .from('antam_buyback_prices')
+      .select('date, buyback_price')
+      .order('date', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    return (prices || []).reverse();
+  } catch (error) {
+    console.error('Error fetching Antam price history:', error);
+    return [];
+  }
+}
+
 export async function getUserTotalAssets(userId) {
   try {
     const supabase = await getSupabaseClient();

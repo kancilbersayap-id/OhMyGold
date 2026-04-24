@@ -12,8 +12,18 @@ import Button from '@/components/ui/Button';
 import Toast from '@/components/ui/Toast';
 import Modal from '@/components/ui/Modal';
 import { TextField, Select, DatePicker } from '@/components/ui/FormField';
+import MetricCard from '@/components/ui/MetricCard';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
 import styles from './design-system.module.css';
+
+const metricChartData = [
+  { label: '1',   value: 1 },
+  { label: '2',   value: 2 },
+  { label: '5',   value: 5 },
+  { label: '10',  value: 10 },
+  { label: '50',  value: 50 },
+  { label: '100', value: 100 },
+];
 
 const colors = [
   { name: '--color-background', value: '#000000', label: 'Background' },
@@ -241,6 +251,19 @@ export default function DesignSystemPage() {
 
       {/* Components */}
       <Section title="Components">
+        {/* MetricCard */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>MetricCard</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Metric card with label, value, and optional bar chart. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>label</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>value</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>data</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barColor</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barRadius</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barWidth</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>chartHeight</code>.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+            <MetricCard label="No chart" value="42" />
+            <MetricCard label="With chart" value="1,234" data={metricChartData} />
+            <MetricCard label="Custom bars" value="300" data={metricChartData} barRadius={2} barColor="var(--color-chart-blue)" />
+          </div>
+        </div>
+
         {/* Badge */}
         <div className={styles.componentDemo}>
           <div className={styles.componentLabel}>Badge</div>
