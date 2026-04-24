@@ -1,6 +1,11 @@
 import './globals.css';
-import { Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 import MainLayout from '@/components/layout/MainLayout';
+
+const geist = Geist({
+  subsets: ['latin'],
+  variable: '--font-geist-sans',
+});
 
 const geistMono = Geist_Mono({
   subsets: ['latin'],
@@ -14,8 +19,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={geistMono.variable}>
+    <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
+      <body>
         <MainLayout>{children}</MainLayout>
       </body>
     </html>
