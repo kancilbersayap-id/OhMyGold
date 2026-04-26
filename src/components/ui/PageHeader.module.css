@@ -22,7 +22,7 @@
   line-height: var(--font-heading-3-line-height);
   letter-spacing: var(--font-heading-3-letter-spacing);
   color: var(--color-text);
-  opacity: 0.8;
+  opacity: 1;
 }
 
 .description {
