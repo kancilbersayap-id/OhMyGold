@@ -7,7 +7,6 @@ import Table from '@/components/ui/Table';
 import Modal from '@/components/ui/Modal';
 import ActionButton from '@/components/ui/ActionButton';
 import Toast from '@/components/ui/Toast';
-import Card from '@/components/ui/Card';
 import MetricCard from '@/components/ui/MetricCard';
 import { TextField, Select, Stepper, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
@@ -19,28 +18,46 @@ const typeOptions = ['Antam certi', 'Antam retro', 'Galeri 24'];
 
 const EMPTY_FORM = { date: '', type: '', typeUnit: '', paidAmount: '', unitPrice: '', units: 1 };
 
-const databaseChartData = [
-  { label: 'Apr 20, 7:09pm', value: 8 },
-  { label: 'Apr 20, 7:29pm', value: 5 },
-  { label: 'Apr 20, 7:50pm', value: 19 },
-];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const toShortDate = (dateStr) => {
+  const d = new Date(dateStr + 'T00:00:00');
+  return `${d.getDate()} ${MONTHS[d.getMonth()]}`;
+};
 
-const authChartData = [
-  { label: '1',   value: 1 },
-  { label: '2',   value: 2 },
-  { label: '3',   value: 3 },
-  { label: '5',   value: 5 },
-  { label: '10',  value: 10 },
-  { label: '50',  value: 50 },
-  { label: '100', value: 100 },
-  { label: '200', value: 200 },
-];
+const buildMetrics = (holdings) => {
+  const sorted = [...holdings].sort((a, b) => a.date.localeCompare(b.date));
 
-const storageChartData = [
-  { label: 'Apr 20, 7:09pm', value: 0 },
-  { label: 'Apr 20, 7:29pm', value: 0 },
-  { label: 'Apr 20, 7:50pm', value: 0 },
-];
+  const totalInvested = holdings.reduce((s, h) => s + (h.paid_amount || 0), 0);
+  const totalGrams    = holdings.reduce((s, h) => s + parseInt(h.type_unit) * (h.units || 1), 0);
+  const totalUnits    = holdings.reduce((s, h) => s + (h.units || 0), 0);
+
+  const investedChartData = sorted.map(h => ({
+    label: toShortDate(h.date),
+    tooltip: `${toShortDate(h.date)}  Rp ${h.paid_amount.toLocaleString('id-ID')}`,
+    value: h.paid_amount,
+  }));
+
+  const gramsBySize = {};
+  holdings.forEach(h => {
+    const g = parseInt(h.type_unit);
+    gramsBySize[h.type_unit] = (gramsBySize[h.type_unit] || 0) + g * (h.units || 1);
+  });
+  const gramsChartData = Object.entries(gramsBySize)
+    .sort((a, b) => parseFloat(a[0]) - parseFloat(b[0]))
+    .map(([size, grams]) => ({
+      label: size,
+      tooltip: `${size}  ${grams}g total`,
+      value: grams,
+    }));
+
+  const unitsChartData = sorted.map(h => ({
+    label: toShortDate(h.date),
+    tooltip: `${toShortDate(h.date)}  ${h.units} unit${h.units !== 1 ? 's' : ''}`,
+    value: h.units,
+  }));
+
+  return { totalInvested, totalGrams, totalUnits, investedChartData, gramsChartData, unitsChartData };
+};
 
 const formatRp = (num) => `Rp ${parseInt(num).toLocaleString('id-ID')}`;
 
@@ -67,6 +84,7 @@ const toRow = (data) => {
 };
 
 export default function MyAssetsClient({ initialData, userId }) {
+  const [rawData, setRawData] = useState(initialData);
   const [data, setData] = useState(initialData.map(toRow));
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -83,6 +101,7 @@ export default function MyAssetsClient({ initialData, userId }) {
         .order('date', { ascending: false });
 
       if (error) throw error;
+      setRawData(holdings || []);
       setData((holdings || []).map(toRow));
     } catch {
       setToast('Failed to load data');
@@ -170,8 +189,9 @@ export default function MyAssetsClient({ initialData, userId }) {
     }
   }, [deleteTarget, userId]);
 
-  const totalPaid  = data.reduce((s, d) => s + parseInt(d.amount.replace(/\D/g, '')), 0);
-  const totalUnits = data.reduce((s, d) => s + parseInt(d.units), 0);
+  const { totalInvested, totalGrams, totalUnits, investedChartData, gramsChartData, unitsChartData } = buildMetrics(rawData);
+
+  const totalPaid = rawData.reduce((s, h) => s + (h.paid_amount || 0), 0);
 
   const columns = [
     { key: 'date',      label: 'Date Purchase' },
@@ -195,7 +215,7 @@ export default function MyAssetsClient({ initialData, userId }) {
     })),
     {
       date: 'Total', type: '', amount: formatRp(totalPaid),
-      unitPrice: '', gramPrice: '', units: String(totalUnits),
+      unitPrice: '', gramPrice: '', units: String(rawData.reduce((s, h) => s + (h.units || 0), 0)),
       actions: '', isTotal: true,
     },
   ];
@@ -229,9 +249,21 @@ export default function MyAssetsClient({ initialData, userId }) {
       />
 
       <div className={styles.metricsSection}>
-        <MetricCard label="Database Requests" value="19" data={databaseChartData} />
-        <MetricCard label="Gold Holding" value="300" data={authChartData} barRadius={2} />
-        <MetricCard label="Storage Requests" value="0" data={storageChartData} />
+        <MetricCard
+          label="Total Invested"
+          value={totalInvested.toLocaleString('id-ID')}
+          data={investedChartData}
+        />
+        <MetricCard
+          label="Total Grams"
+          value={`${totalGrams}g`}
+          data={gramsChartData}
+        />
+        <MetricCard
+          label="Total Units"
+          value={String(totalUnits)}
+          data={unitsChartData}
+        />
       </div>
 
       <div className={styles.tableCard}>
