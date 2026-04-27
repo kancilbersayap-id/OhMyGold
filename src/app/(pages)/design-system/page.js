@@ -13,6 +13,7 @@ import Toast from '@/components/ui/Toast';
 import Modal from '@/components/ui/Modal';
 import { TextField, Select, DatePicker } from '@/components/ui/FormField';
 import MetricCard from '@/components/ui/MetricCard';
+import Toggle from '@/components/ui/Toggle';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
 import styles from './design-system.module.css';
 
@@ -34,10 +35,13 @@ const colors = [
   { name: '--color-secondary', value: '#0070f3', label: 'Secondary' },
   { name: '--color-accent', value: '#0096ff', label: 'Accent' },
   { name: '--color-border', value: '#1f1f1f', label: 'Border' },
+  { name: '--color-success', value: '#22c55e', label: 'Success' },
+  { name: '--color-danger', value: '#ef4444', label: 'Danger' },
+  { name: '--color-chart-blue', value: '#52AEFF', label: 'Chart Blue' },
 ];
 
 const spacingTokens = [
-  { name: '--spacing-3xs', value: '.03889em' },
+  { name: '--spacing-3xs', value: '4px' },
   { name: '--spacing-2xs', value: '14px' },
   { name: '--spacing-xs', value: '30px' },
   { name: '--spacing-sm', value: '52px' },
@@ -53,13 +57,14 @@ const sampleColumns = [
 ];
 
 const radiusData = [
-  { token: '--radius-none', value: '0', usage: 'No rounding' },
-  { token: '--radius-sm', value: '2px', usage: 'Subtle rounding' },
-  { token: '--radius-md', value: '6px', usage: 'Default components' },
-  { token: '--radius-lg', value: '9px', usage: 'Cards, panels' },
-  { token: '--radius-xl', value: '20px', usage: 'Large containers' },
-  { token: '--radius-full', value: '32px', usage: 'Pills' },
-  { token: 'custom', value: '4px', usage: 'Badges' },
+  { token: '--radius-none', value: '0', usage: 'No rounding (rounded-none)' },
+  { token: '--radius-sm', value: '0.125rem (2px)', usage: 'Badges, tight borders (rounded-sm)' },
+  { token: '--radius-md', value: '0.375rem (6px)', usage: 'Default — buttons, cards, inputs (rounded-md)' },
+  { token: '--radius-lg', value: '0.5rem (8px)', usage: 'Popovers, prominent cards (rounded-lg)' },
+  { token: '--radius-xl', value: '0.75rem (12px)', usage: 'Modals, hero cards (rounded-xl)' },
+  { token: '--radius-2xl', value: '1rem (16px)', usage: 'Large containers (rounded-2xl)' },
+  { token: '--radius-3xl', value: '1.5rem (24px)', usage: 'Extra large containers (rounded-3xl)' },
+  { token: '--radius-full', value: '9999px', usage: 'Pills, avatars, fully rounded (rounded-full)' },
 ];
 
 const icons = [
@@ -152,6 +157,8 @@ const dateFormatData = [
 
 export default function DesignSystemPage() {
   const [formDemo, setFormDemo] = useState({ name: '', brand: '', date: '' });
+  const [toggleOn, setToggleOn] = useState(true);
+  const [toggleOff, setToggleOff] = useState(false);
 
   return (
     <>
@@ -161,7 +168,7 @@ export default function DesignSystemPage() {
       />
 
       {/* Colors */}
-      <Section title="Colors">
+      <Section id="colors" title="Colors">
         <div className={styles.swatchGrid}>
           {colors.map((color) => (
             <div key={color.name} className={styles.swatch}>
@@ -180,7 +187,7 @@ export default function DesignSystemPage() {
       </Section>
 
       {/* Typography */}
-      <Section title="Typography">
+      <Section id="typography" title="Typography">
         <div className={styles.typographySample}>
           <div className={styles.typographyLabel}>heading-1 — 48px / 600</div>
           <div className={styles.heading1}>The quick brown fox</div>
@@ -212,7 +219,7 @@ export default function DesignSystemPage() {
       </Section>
 
       {/* Spacing */}
-      <Section title="Spacing">
+      <Section id="spacing" title="Spacing">
         <div className={styles.spacingGrid}>
           {spacingTokens.map((token) => (
             <div key={token.name} className={styles.spacingRow}>
@@ -227,7 +234,7 @@ export default function DesignSystemPage() {
       </Section>
 
       {/* Icons */}
-      <Section title="Icons">
+      <Section id="icons" title="Icons">
         <div className={styles.iconGrid}>
           {icons.map((icon) => (
             <div key={icon.name} className={styles.iconCard}>
@@ -239,7 +246,7 @@ export default function DesignSystemPage() {
       </Section>
 
       {/* Utilities */}
-      <Section title="Utilities">
+      <Section id="utilities" title="Utilities">
         <div className={styles.componentDemo}>
           <div className={styles.componentLabel}>Date Formatter (Indonesian)</div>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '14px' }}>
@@ -250,25 +257,25 @@ export default function DesignSystemPage() {
       </Section>
 
       {/* Components */}
-      <Section title="Components">
+      <Section id="components" title="Components">
         {/* MetricCard */}
-        <div className={styles.componentDemo}>
+        <div id="comp-metric-card" className={styles.componentDemo}>
           <div className={styles.componentLabel}>MetricCard</div>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
-            Metric card with label, value, and optional bar chart. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>label</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>value</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>data</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barColor</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barRadius</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barWidth</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>chartHeight</code>.
+            Metric card with label, value, and optional bar chart. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>label</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>value</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>info</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>data</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barColor</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barRadius</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barWidth</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>chartHeight</code>. Bar color defaults to <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>--color-text</code>.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
             <MetricCard label="No chart" value="42" />
             <MetricCard label="With chart" value="1,234" data={metricChartData} />
-            <MetricCard label="Custom bars" value="300" data={metricChartData} barRadius={2} barColor="var(--color-chart-blue)" />
+            <MetricCard label="With info" value="2.938.000" data={metricChartData} info="Data sourced from Galeri24 daily scraper" />
           </div>
         </div>
 
         {/* Badge */}
-        <div className={styles.componentDemo}>
+        <div id="comp-badge" className={styles.componentDemo}>
           <div className={styles.componentLabel}>Badge</div>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
-            Inline badge component with size S and three type variants: neutral, positive, and negative. Features 4px border radius. Used for status indicators and labels.
+            Inline badge component with size S and three type variants: neutral, positive, and negative. Uses <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>--radius-sm</code> (2px) and semantic color tokens (<code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>--color-success</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>--color-danger</code>).
           </p>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <Badge type="neutral">Neutral</Badge>
@@ -281,7 +288,7 @@ export default function DesignSystemPage() {
         </div>
 
         {/* Button */}
-        <div className={styles.componentDemo}>
+        <div id="comp-button" className={styles.componentDemo}>
           <div className={styles.componentLabel}>Button</div>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
             Primary, secondary, and danger button variants.
@@ -294,7 +301,7 @@ export default function DesignSystemPage() {
         </div>
 
         {/* Card */}
-        <div className={styles.componentDemo}>
+        <div id="comp-card" className={styles.componentDemo}>
           <div className={styles.componentLabel}>Card</div>
           <CardGrid>
             <Card title="Metric Label" value="1,234" description="Supporting text" />
@@ -304,7 +311,7 @@ export default function DesignSystemPage() {
         </div>
 
         {/* Table */}
-        <div className={styles.componentDemo}>
+        <div id="comp-table" className={styles.componentDemo}>
           <div className={styles.componentLabel}>Table (Default)</div>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
             All tables use the same component with consistent styling across the application. Cell padding is 14px vertical, 8px horizontal.
@@ -322,7 +329,7 @@ export default function DesignSystemPage() {
         </div>
 
         {/* DataRow */}
-        <div className={styles.componentDemo}>
+        <div id="comp-data-row" className={styles.componentDemo}>
           <div className={styles.componentLabel}>DataRow</div>
           <DataRow label="Label" value="Value" />
           <DataRow label="Buy Price" value="Rp 1,125,000" />
@@ -330,7 +337,7 @@ export default function DesignSystemPage() {
         </div>
 
         {/* Toast */}
-        <div className={styles.componentDemo}>
+        <div id="comp-toast" className={styles.componentDemo}>
           <div className={styles.componentLabel}>Toast</div>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
             Auto-dismissing notification component. Automatically closes after 3 seconds (configurable).
@@ -339,7 +346,7 @@ export default function DesignSystemPage() {
         </div>
 
         {/* Modal */}
-        <div className={styles.componentDemo}>
+        <div id="comp-modal" className={styles.componentDemo}>
           <div className={styles.componentLabel}>Modal</div>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
             Dialog component with title, content, and action buttons. Supports variants: primary (default), secondary, and danger for confirm button.
@@ -350,7 +357,7 @@ export default function DesignSystemPage() {
         </div>
 
         {/* Form Fields */}
-        <div className={styles.componentDemo}>
+        <div id="comp-form-fields" className={styles.componentDemo}>
           <div className={styles.componentLabel}>Form Fields</div>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
             Input components: TextField, Select, and DatePicker with labels and placeholder support.
@@ -377,13 +384,78 @@ export default function DesignSystemPage() {
         </div>
 
         {/* PageHeader */}
-        <div className={styles.componentDemo}>
+        <div id="comp-page-header" className={styles.componentDemo}>
           <div className={styles.componentLabel}>PageHeader</div>
           <PageHeader title="Sample Page Title" description="This is a sample description for the page header component." />
         </div>
 
+        {/* Toggle */}
+        <div id="comp-toggle" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Toggle</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Switch component for binary state. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>checked</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>onChange</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>disabled</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>tooltip</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>ariaLabel</code>. Click to toggle; tooltip appears on hover when disabled.
+          </p>
+          <div style={{ display: 'flex', gap: '32px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+              <Toggle checked={toggleOff} onChange={setToggleOff} ariaLabel="Demo off" />
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Off (interactive)</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+              <Toggle checked={toggleOn} onChange={setToggleOn} ariaLabel="Demo on" />
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>On (interactive)</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+              <Toggle checked={false} disabled tooltip="Hover for tooltip" ariaLabel="Demo disabled" />
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Disabled (with tooltip)</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div id="comp-sidebar" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Sidebar</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Layout component (<code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>src/components/layout/Sidebar.js</code>). Fixed-position vertical nav, visible on the left of every page. Responsive: full (≥1024px), icon-only (768–1023px), drawer (&lt;768px).
+          </p>
+          <div className={styles.sidebarMock} aria-hidden="true">
+            <div className={styles.sidebarMockHeader}>
+              <div className={styles.sidebarMockLogo}>
+                <div className={styles.sidebarMockLogoDot} />
+                <span className={styles.sidebarMockLogoText}>OhMyGold</span>
+              </div>
+              <span className={styles.sidebarMockBadge}>beta</span>
+            </div>
+            <div className={styles.sidebarMockNav}>
+              <div className={`${styles.sidebarMockItem} ${styles.sidebarMockItemActive}`}>
+                <span className={styles.sidebarMockDot} /> Overview
+              </div>
+              <div className={styles.sidebarMockItem}>
+                <span className={styles.sidebarMockDot} /> My Assets
+              </div>
+              <div className={styles.sidebarMockGroupTitle}>Simulation</div>
+              <div className={styles.sidebarMockItem}>
+                <span className={styles.sidebarMockDot} /> Sell Simulation
+              </div>
+              <div className={styles.sidebarMockItem}>
+                <span className={styles.sidebarMockDot} /> Buy Simulation
+              </div>
+              <div className={styles.sidebarMockGroupTitle}>Pricing Trends</div>
+              <div className={styles.sidebarMockItem}>
+                <span className={styles.sidebarMockDot} /> Retail price
+              </div>
+            </div>
+            <div className={styles.sidebarMockFooter}>
+              <span className={styles.sidebarMockFooterLabel}>Dark</span>
+              <Toggle checked={false} disabled tooltip="Disabled in beta" ariaLabel="Demo dark toggle" />
+            </div>
+          </div>
+          <p style={{ color: 'var(--color-text-muted)', marginTop: '12px', fontSize: '12px' }}>
+            Composition: logo header, nav items (with active state), grouped sub-nav, footer with Toggle.
+          </p>
+        </div>
+
         {/* Border Radius */}
-        <div className={styles.componentDemo}>
+        <div id="comp-border-radius" className={styles.componentDemo}>
           <div className={styles.componentLabel}>Border Radius</div>
           <Table columns={sampleColumns} data={radiusData} />
         </div>
