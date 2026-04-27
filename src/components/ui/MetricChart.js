@@ -5,7 +5,7 @@ import styles from './MetricChart.module.css';
 
 export default function MetricChart({
   data = [],
-  barColor = 'var(--color-chart-blue)',
+  barColor = 'var(--color-text)',
   barRadius = 4,
   barWidth = 24,
   chartHeight = 80,
