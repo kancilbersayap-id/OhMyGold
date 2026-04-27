@@ -1,9 +1,8 @@
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import PageHeader from '@/components/ui/PageHeader';
-import { Badge } from '@/components/ui/Card';
 import MetricCard from '@/components/ui/MetricCard';
-import LineChart from '@/components/ui/LineChart';
+import BuybackChart from './BuybackChart';
 import {
   getAntamPriceData,
   getAntamBuybackPrice,
@@ -14,7 +13,6 @@ import {
 } from '@/utils/priceActions';
 import styles from './overview.module.css';
 
-const formatPrice = (num) => `Rp ${num.toLocaleString('id-ID')}`;
 const formatNumber = (num) => parseInt(num).toLocaleString('id-ID');
 
 const toShortLabel = (dateStr) => {
@@ -48,25 +46,6 @@ const yearMonthToTooltip = (yearMonth, value) => {
   return `${MONTH_NAMES[parseInt(m) - 1]} ${y}  ${parseInt(value).toLocaleString('id-ID')}`;
 };
 
-const getPriceChangeIndicator = (changePercent) => {
-  if (changePercent > 0) return <Badge trend="positive">+{changePercent}%</Badge>;
-  if (changePercent < 0) return <Badge trend="negative">{changePercent}%</Badge>;
-  return <Badge>0%</Badge>;
-};
-
-// Compute clean Y-axis labels from a set of values
-const computeYLabels = (values, steps = 4) => {
-  if (values.length === 0) return [];
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const pad = ((max - min) || 100000) * 0.2;
-  const lo = Math.floor((min - pad) / 50000) * 50000;
-  const hi = Math.ceil((max + pad) / 50000) * 50000;
-  const step = Math.ceil((hi - lo) / steps / 50000) * 50000;
-  const labels = [];
-  for (let v = lo; v <= hi + step / 2; v += step) labels.push(v);
-  return labels;
-};
 
 export default async function OverviewPage() {
   const cookieStore = await cookies();
@@ -82,7 +61,7 @@ export default async function OverviewPage() {
   );
   const { data: { user } } = await supabase.auth.getUser();
 
-  const [price, buybackData, totalAssets, history, monthlyHistory, dailyHistory] =
+  const [price, buybackData, totalAssets, history, monthlyHistory, dailyHistory, allBuybackHistory] =
     await Promise.all([
       getAntamPriceData(),
       getAntamBuybackPrice(),
@@ -90,11 +69,11 @@ export default async function OverviewPage() {
       getAntamPriceHistory(30),
       getMonthlyBuybackHistory(),
       getAntamPriceDailyHistory(8),
+      getAntamPriceHistory(730),
     ]);
 
   const assets = totalAssets ?? 0;
   const bp = buybackData.price;
-  const changePercent = buybackData.changePercent || 0;
 
   let estimateRevenue = null;
   let monthlyRevenue = null;
@@ -140,17 +119,6 @@ export default async function OverviewPage() {
     }
   }
 
-  // Full 30-day line chart data — show label every 5 days
-  const buybackLineData = history.map((r, i) => ({
-    label: (i === 0 || (i + 1) % 5 === 0 || i === history.length - 1)
-      ? toShortLabel(r.date)
-      : null,
-    tooltip: `${toFullLabel(r.date)}  Rp ${r.buyback_price.toLocaleString('id-ID')}`,
-    value: r.buyback_price,
-  }));
-
-  const buybackYLabels = computeYLabels(history.map(r => r.buyback_price));
-  const buybackYLabelTexts = buybackYLabels.map(v => (v / 1000000).toFixed(2) + 'M');
 
   return (
     <>
@@ -178,28 +146,11 @@ export default async function OverviewPage() {
         />
       </div>
 
-      {/* Full-width buyback price line chart */}
-      {buybackLineData.length > 0 && (
-        <div className={styles.chartCard}>
-          <div className={styles.chartCardHeader}>
-            <div>
-              <div className={styles.chartCardLabel}>Antam Buyback Price</div>
-              <div className={styles.chartCardValue}>
-                {bp ? formatPrice(bp) : '-'}
-              </div>
-            </div>
-            <div className={styles.chartCardMeta}>
-              <div>{getPriceChangeIndicator(changePercent)} vs yesterday</div>
-              <div className={styles.chartCardRange}>Last {history.length} days</div>
-            </div>
-          </div>
-          <LineChart
-            data={buybackLineData}
-            yLabels={buybackYLabels}
-            yLabelTexts={buybackYLabelTexts}
-            color="var(--color-text)"
-          />
-        </div>
+      {allBuybackHistory.length > 0 && (
+        <BuybackChart
+          allData={allBuybackHistory}
+          currentPrice={bp}
+        />
       )}
     </>
   );

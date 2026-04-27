@@ -3,44 +3,53 @@
 import { useState } from 'react';
 import styles from './LineChart.module.css';
 
-const MARGIN = { top: 16, right: 16, bottom: 36, left: 56 };
-const SVG_W = 800;
-const SVG_H = 220;
-const CHART_W = SVG_W - MARGIN.left - MARGIN.right;
-const CHART_H = SVG_H - MARGIN.top - MARGIN.bottom;
+const BASE_MARGIN = { top: 16, right: 16, bottom: 36 };
 const FONT_SIZE = 12;
+const SVG_W = 800;
+const SVG_H = 200;
 
 export default function LineChart({
   data,
   yLabels,
   yLabelTexts,
   color = 'var(--color-text)',
+  showYAxis = true,
+  showDots = true,
 }) {
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
   if (!data || data.length === 0) return null;
 
-  const minY = Math.min(...yLabels);
-  const maxY = Math.max(...yLabels);
-  const range = maxY - minY;
+  const marginLeft = showYAxis ? 56 : 8;
+  const MARGIN = { ...BASE_MARGIN, left: marginLeft };
+  const CHART_W = SVG_W - MARGIN.left - MARGIN.right;
+  const CHART_H = SVG_H - MARGIN.top - MARGIN.bottom;
+
+  const values = data.map(d => d.value).filter(v => v !== null && v !== undefined);
+  const minY = showYAxis && yLabels?.length ? Math.min(...yLabels) : Math.min(...values);
+  const maxY = showYAxis && yLabels?.length ? Math.max(...yLabels) : Math.max(...values);
+  const range = maxY - minY || 1;
 
   const toX = (i) => (i / (data.length - 1)) * CHART_W;
   const toY = (v) => CHART_H - ((v - minY) / range) * CHART_H;
 
-  const linePath = data
-    .map((d, i) => `${i === 0 ? 'M' : 'L'} ${toX(i).toFixed(1)} ${toY(d.value).toFixed(1)}`)
+  const validData = data.filter(d => d.value !== null && d.value !== undefined);
+  const linePath = validData
+    .map((d, i) => `${i === 0 ? 'M' : 'L'} ${toX(data.indexOf(d)).toFixed(1)} ${toY(d.value).toFixed(1)}`)
     .join(' ');
 
   const areaPath = [
     `M ${toX(0).toFixed(1)} ${CHART_H}`,
-    ...data.map((d, i) => `L ${toX(i).toFixed(1)} ${toY(d.value).toFixed(1)}`),
+    ...data.map((d, i) => d.value != null
+      ? `L ${toX(i).toFixed(1)} ${toY(d.value).toFixed(1)}`
+      : null
+    ).filter(Boolean),
     `L ${toX(data.length - 1).toFixed(1)} ${CHART_H}`,
     'Z',
   ].join(' ');
 
   const gradientId = 'lineAreaGradient';
   const slotWidth = CHART_W / data.length;
-
   const hoveredData = hoveredIndex !== null ? data[hoveredIndex] : null;
   const tooltipXPct = hoveredIndex !== null
     ? (toX(hoveredIndex) + MARGIN.left) / SVG_W * 100
@@ -55,15 +64,15 @@ export default function LineChart({
       >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity="0.12" />
+            <stop offset="0%" stopColor={color} stopOpacity="0.10" />
             <stop offset="100%" stopColor={color} stopOpacity="0" />
           </linearGradient>
         </defs>
 
         <g transform={`translate(${MARGIN.left}, ${MARGIN.top})`}>
 
-          {/* Grid lines + Y labels */}
-          {yLabels.map((y) => {
+          {/* Y axis: grid lines + labels */}
+          {showYAxis && yLabels?.map((y, yi) => {
             const yPos = toY(y);
             return (
               <g key={y}>
@@ -75,7 +84,7 @@ export default function LineChart({
                   fill="var(--color-text-muted)"
                   fontFamily="'Geist Mono', 'Courier New', monospace"
                 >
-                  {yLabelTexts ? yLabelTexts[yLabels.indexOf(y)] : String(y)}
+                  {yLabelTexts ? yLabelTexts[yi] : String(y)}
                 </text>
               </g>
             );
@@ -89,7 +98,7 @@ export default function LineChart({
             d={linePath}
             fill="none"
             stroke={color}
-            strokeWidth={2}
+            strokeWidth={1.5}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -105,18 +114,30 @@ export default function LineChart({
             />
           )}
 
-          {/* Data points */}
-          {data.map((d, i) => (
+          {/* Data point dots */}
+          {showDots && data.map((d, i) => d.value != null && (
             <circle
               key={`pt-${i}`}
               cx={toX(i)}
               cy={toY(d.value)}
-              r={hoveredIndex === i ? 5 : 3.5}
+              r={hoveredIndex === i ? 4 : 3}
               fill={hoveredIndex === i ? color : 'var(--color-background)'}
               stroke={color}
-              strokeWidth={2}
+              strokeWidth={1.5}
             />
           ))}
+
+          {/* Hover dot when showDots is false */}
+          {!showDots && hoveredIndex !== null && data[hoveredIndex]?.value != null && (
+            <circle
+              cx={toX(hoveredIndex)}
+              cy={toY(data[hoveredIndex].value)}
+              r={4}
+              fill={color}
+              stroke={color}
+              strokeWidth={1.5}
+            />
+          )}
 
           {/* Invisible hit areas */}
           {data.map((d, i) => (
@@ -133,7 +154,7 @@ export default function LineChart({
             />
           ))}
 
-          {/* X labels — only shown when d.label is set */}
+          {/* X labels */}
           {data.map((d, i) => d.label && (
             <text
               key={`lbl-${i}`}
@@ -154,7 +175,6 @@ export default function LineChart({
         </g>
       </svg>
 
-      {/* Tooltip */}
       {hoveredData && (
         <div className={styles.tooltip} style={{ left: `${tooltipXPct}%` }}>
           <div className={styles.tooltipLabel}>{hoveredData.tooltip?.split('  ')[0] ?? hoveredData.label}</div>
