@@ -1,9 +1,9 @@
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import PageHeader from '@/components/ui/PageHeader';
-import Card, { Badge } from '@/components/ui/Card';
-import CardGrid from '@/components/ui/CardGrid';
+import { Badge } from '@/components/ui/Card';
 import MetricCard from '@/components/ui/MetricCard';
+import LineChart from '@/components/ui/LineChart';
 import {
   getAntamPriceData,
   getAntamBuybackPrice,
@@ -54,8 +54,21 @@ const getPriceChangeIndicator = (changePercent) => {
   return <Badge>0%</Badge>;
 };
 
+// Compute clean Y-axis labels from a set of values
+const computeYLabels = (values, steps = 4) => {
+  if (values.length === 0) return [];
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const pad = ((max - min) || 100000) * 0.2;
+  const lo = Math.floor((min - pad) / 50000) * 50000;
+  const hi = Math.ceil((max + pad) / 50000) * 50000;
+  const step = Math.ceil((hi - lo) / steps / 50000) * 50000;
+  const labels = [];
+  for (let v = lo; v <= hi + step / 2; v += step) labels.push(v);
+  return labels;
+};
+
 export default async function OverviewPage() {
-  // Get user server-side — middleware already guarantees auth
   const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -69,35 +82,32 @@ export default async function OverviewPage() {
   );
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Fetch all data in parallel — no client-side round trips
   const [price, buybackData, totalAssets, history, monthlyHistory, dailyHistory] =
     await Promise.all([
       getAntamPriceData(),
       getAntamBuybackPrice(),
       getUserTotalAssets(user?.id),
-      getAntamPriceHistory(8),
+      getAntamPriceHistory(30),
       getMonthlyBuybackHistory(),
       getAntamPriceDailyHistory(8),
     ]);
 
-  // Compute derived values
   const assets = totalAssets ?? 0;
   const bp = buybackData.price;
   const changePercent = buybackData.changePercent || 0;
 
   let estimateRevenue = null;
   let monthlyRevenue = null;
-  let lastMonthRevenue = null;
 
   if (bp) {
     const months = monthsSinceNov2024(new Date().toISOString().slice(0, 10));
     const estimate = (bp * 600) - assets;
     estimateRevenue = estimate;
     monthlyRevenue = Math.round(estimate / months);
-    lastMonthRevenue = Math.round(estimate / Math.max(1, months - 1));
   }
 
-  // Build chart data
+  // MetricCard chart data (last 8 of the 30)
+  const recentHistory = history.slice(-8);
   let antamPriceChartData = [];
   let estimateRevenueChartData = [];
   let monthlyRevenueChartData = [];
@@ -111,7 +121,7 @@ export default async function OverviewPage() {
       value: r.price,
     }));
 
-    estimateRevenueChartData = history.map((r) => ({
+    estimateRevenueChartData = recentHistory.map((r) => ({
       label: toShortLabel(r.date),
       tooltip: toFullLabel(r.date),
       value: Math.max(0, (r.buyback_price * 600) - assets),
@@ -130,47 +140,24 @@ export default async function OverviewPage() {
     }
   }
 
+  // Full 30-day line chart data — show label every 5 days
+  const buybackLineData = history.map((r, i) => ({
+    label: (i === 0 || (i + 1) % 5 === 0 || i === history.length - 1)
+      ? toShortLabel(r.date)
+      : null,
+    tooltip: `${toFullLabel(r.date)}  Rp ${r.buyback_price.toLocaleString('id-ID')}`,
+    value: r.buyback_price,
+  }));
+
+  const buybackYLabels = computeYLabels(history.map(r => r.buyback_price));
+  const buybackYLabelTexts = buybackYLabels.map(v => (v / 1000000).toFixed(2) + 'M');
+
   return (
     <>
       <PageHeader
         title="Overview"
         description="Summary of gold portfolio and market"
       />
-      <CardGrid>
-        <Card
-          title="Estimate revenue"
-          value={estimateRevenue !== null ? formatPrice(estimateRevenue) : '-'}
-          description={
-            estimateRevenue !== null ? (
-              <>Revenue going up by <Badge trend="positive">+11%</Badge></>
-            ) : (
-              <span style={{ color: 'var(--color-text-muted)' }}>No data available</span>
-            )
-          }
-        />
-        <Card
-          title="Antam price today"
-          value={price?.price ? formatPrice(price.price) : '-'}
-          description={
-            price?.error ? (
-              <span style={{ color: 'var(--color-text-muted)' }}>No data available</span>
-            ) : (
-              <>Compared with yesterday {getPriceChangeIndicator(changePercent)}</>
-            )
-          }
-        />
-        <Card
-          title="Monthly revenue"
-          value={monthlyRevenue !== null ? formatPrice(monthlyRevenue) : '-'}
-          description={
-            lastMonthRevenue !== null ? (
-              <>Last month revenue <Badge>{formatPrice(lastMonthRevenue)}</Badge></>
-            ) : (
-              <span style={{ color: 'var(--color-text-muted)' }}>No data available</span>
-            )
-          }
-        />
-      </CardGrid>
 
       <div className={styles.metricsSection}>
         <MetricCard
@@ -190,6 +177,30 @@ export default async function OverviewPage() {
           data={monthlyRevenueChartData}
         />
       </div>
+
+      {/* Full-width buyback price line chart */}
+      {buybackLineData.length > 0 && (
+        <div className={styles.chartCard}>
+          <div className={styles.chartCardHeader}>
+            <div>
+              <div className={styles.chartCardLabel}>Antam Buyback Price</div>
+              <div className={styles.chartCardValue}>
+                {bp ? formatPrice(bp) : '-'}
+              </div>
+            </div>
+            <div className={styles.chartCardMeta}>
+              <div>{getPriceChangeIndicator(changePercent)} vs yesterday</div>
+              <div className={styles.chartCardRange}>Last {history.length} days</div>
+            </div>
+          </div>
+          <LineChart
+            data={buybackLineData}
+            yLabels={buybackYLabels}
+            yLabelTexts={buybackYLabelTexts}
+            color="var(--color-text)"
+          />
+        </div>
+      )}
     </>
   );
 }

@@ -1,12 +1,39 @@
 .wrapper {
   width: 100%;
-  padding: 8px 8px 8px;
-  overflow: hidden;
+  padding: 8px 8px 4px;
+  overflow: visible;
+  position: relative;
 }
 
 .svg {
   width: 100%;
   height: auto;
   display: block;
-  max-width: 100%;
+}
+
+.tooltip {
+  position: absolute;
+  top: 4px;
+  transform: translateX(-50%);
+  background-color: var(--color-text);
+  color: var(--color-background);
+  font-family: 'Geist Mono', 'Courier New', monospace;
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+  line-height: 1.5;
+}
+
+.tooltipLabel {
+  color: inherit;
+  opacity: 0.6;
+  font-size: 10px;
+}
+
+.tooltipValue {
+  color: inherit;
+  font-weight: 600;
 }
