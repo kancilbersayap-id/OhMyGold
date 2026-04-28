@@ -2,6 +2,7 @@
 
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { unstable_cache } from 'next/cache';
 
 const getSupabaseClient = async () => {
   const cookieStore = await cookies();
@@ -218,6 +219,34 @@ export async function getMonthlyBuybackHistory() {
     }));
   } catch (error) {
     console.error('Error fetching monthly buyback history:', error);
+    return [];
+  }
+}
+
+// Cached fetch by date range — used for the custom date picker on the Antam buyback chart.
+// Cached for 1 hour and tagged so it can be invalidated when new prices are scraped.
+const _fetchAntamPriceRange = unstable_cache(
+  async (startDate, endDate) => {
+    const supabase = getAdminClient();
+    const { data, error } = await supabase
+      .from('antam_buyback_prices')
+      .select('date, buyback_price')
+      .gte('date', startDate)
+      .lte('date', endDate)
+      .order('date', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  },
+  ['antam-price-history-by-range'],
+  { revalidate: 3600, tags: ['antam-buyback-prices'] }
+);
+
+export async function getAntamPriceHistoryByRange(startDate, endDate) {
+  if (!startDate || !endDate) return [];
+  try {
+    return await _fetchAntamPriceRange(startDate, endDate);
+  } catch (error) {
+    console.error('Error fetching Antam price history range:', error);
     return [];
   }
 }
