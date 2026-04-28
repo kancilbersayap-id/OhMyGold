@@ -37,10 +37,6 @@
 }
 
 .typographySample {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: calc(var(--spacing-2xs) * 0.71);
   margin-bottom: calc(var(--spacing-2xs) * 0.57);
 }
 
@@ -173,20 +169,125 @@
 }
 
 .componentDemo {
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: calc(var(--spacing-2xs) * 0.71);
   margin-bottom: calc(var(--spacing-2xs) * 0.57);
 }
 
 .componentLabel {
   font-family: var(--font-heading-2-family);
-  font-size: var(--font-body-text-size);
+  font-size: 18px;
   font-weight: var(--font-heading-2-weight);
   line-height: var(--font-body-text-line-height);
   letter-spacing: var(--font-heading-2-letter-spacing);
+  color: var(--color-text);
+  margin-top: 80px;
+  margin-bottom: 24px;
+}
+
+/* ---------- Sidebar mock (for Sidebar component showcase) ---------- */
+.sidebarMock {
+  width: 240px;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebarMockHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px 12px;
+}
+
+.sidebarMockLogo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebarMockLogoDot {
+  width: 18px;
+  height: 18px;
+  background-color: var(--color-text);
+  border-radius: var(--radius-sm);
+}
+
+.sidebarMockLogoText {
+  font-family: var(--font-mono-family);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.sidebarMockBadge {
+  font-family: var(--font-heading-5-family);
+  font-size: 9px;
+  font-weight: 500;
   color: var(--color-text-muted);
-  margin-bottom: calc(var(--spacing-2xs) * 0.57);
+  background-color: var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 4px 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sidebarMockNav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebarMockGroupTitle {
+  font-family: var(--font-mono-family);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 8px 2px;
+  margin-top: 8px;
+}
+
+.sidebarMockItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  font-family: var(--font-heading-5-family);
+  font-size: 12px;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md);
+}
+
+.sidebarMockItemActive {
+  background-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.sidebarMockDot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-sm);
+  background-color: currentColor;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.sidebarMockFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 8px 4px;
+  margin-top: 8px;
+  border-top: 1px solid var(--color-border);
+}
+
+.sidebarMockFooterLabel {
+  font-family: var(--font-heading-5-family);
+  font-size: 12px;
+  color: var(--color-text-muted);
 }
 

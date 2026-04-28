@@ -5,8 +5,8 @@ import PageHeader from '@/components/ui/PageHeader';
 import Section from '@/components/ui/Section';
 import Card from '@/components/ui/Card';
 import CardGrid from '@/components/ui/CardGrid';
-import DataRow from '@/components/ui/DataRow';
 import Table from '@/components/ui/Table';
+import PriceChart from '@/components/ui/PriceChart';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Toast from '@/components/ui/Toast';
@@ -14,8 +14,25 @@ import Modal from '@/components/ui/Modal';
 import { TextField, Select, DatePicker } from '@/components/ui/FormField';
 import MetricCard from '@/components/ui/MetricCard';
 import Toggle from '@/components/ui/Toggle';
+import Tooltip from '@/components/ui/Tooltip';
+import RangeChip from '@/components/ui/RangeChip';
+import FilterChip from '@/components/ui/FilterChip';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
 import styles from './design-system.module.css';
+
+const priceChartSampleData = (() => {
+  const result = [];
+  const start = new Date('2024-04-28');
+  for (let i = 0; i < 730; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    result.push({
+      date: d.toISOString().split('T')[0],
+      value: Math.round(2300000 + Math.sin(i / 20) * 180000 + i * 480),
+    });
+  }
+  return result;
+})();
 
 const metricChartData = [
   { label: '1',   value: 1 },
@@ -155,10 +172,20 @@ const dateFormatData = [
   { input: '2026-01-01', output: formatDateIndonesian('2026-01-01') },
 ];
 
+const FILTER_SVG = (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1 2.5h12M3 7h8M5 11.5h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+
 export default function DesignSystemPage() {
   const [formDemo, setFormDemo] = useState({ name: '', brand: '', date: '' });
   const [toggleOn, setToggleOn] = useState(true);
   const [toggleOff, setToggleOff] = useState(false);
+  const [activeRange, setActiveRange] = useState('1M');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [toastKey, setToastKey] = useState(0);
+  const [showToast, setShowToast] = useState(false);
 
   return (
     <>
@@ -183,6 +210,12 @@ export default function DesignSystemPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Border Radius */}
+        <div id="border-radius" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Border Radius</div>
+          <Table columns={sampleColumns} data={radiusData} />
         </div>
       </Section>
 
@@ -258,18 +291,6 @@ export default function DesignSystemPage() {
 
       {/* Components */}
       <Section id="components" title="Components">
-        {/* MetricCard */}
-        <div id="comp-metric-card" className={styles.componentDemo}>
-          <div className={styles.componentLabel}>MetricCard</div>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
-            Metric card with label, value, and optional bar chart. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>label</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>value</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>info</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>data</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barColor</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barRadius</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barWidth</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>chartHeight</code>. Bar color defaults to <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>--color-text</code>.
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-            <MetricCard label="No chart" value="42" />
-            <MetricCard label="With chart" value="1,234" data={metricChartData} />
-            <MetricCard label="With info" value="2.938.000" data={metricChartData} info="Data sourced from Galeri24 daily scraper" />
-          </div>
-        </div>
 
         {/* Badge */}
         <div id="comp-badge" className={styles.componentDemo}>
@@ -300,6 +321,67 @@ export default function DesignSystemPage() {
           </div>
         </div>
 
+        {/* FilterChip */}
+        <div id="comp-filter-chip" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>FilterChip</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Icon pill button for custom filter actions. Active state adds a small dot indicator. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>children</code> (icon), <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>isActive</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>onClick</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>tooltip</code>.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+              <FilterChip isActive={false} onClick={() => {}} tooltip="Custom date range">
+                {FILTER_SVG}
+              </FilterChip>
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Inactive</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+              <FilterChip isActive tooltip="Selected from 1 Jan 2026 to 28 Apr 2026" onClick={() => {}}>
+                {FILTER_SVG}
+              </FilterChip>
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Active</span>
+            </div>
+          </div>
+        </div>
+
+        {/* RangeChip */}
+        <div id="comp-range-chip" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>RangeChip</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Pill button for selecting a time range. Inactive shows a "Filter by X" tooltip; active shows the date span. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>label</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>isActive</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>onClick</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>tooltip</code>.
+          </p>
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+            {['1M', '3M', '6M', '12M', '24M'].map((r) => (
+              <RangeChip
+                key={r}
+                label={r}
+                isActive={activeRange === r}
+                onClick={() => setActiveRange(r)}
+                tooltip={activeRange === r ? 'Active from 1 Jan 2026 to 28 Apr 2026' : `Filter by ${r === '1M' ? '1 Month' : r === '3M' ? '3 Months' : r === '6M' ? '6 Months' : r === '12M' ? '12 Months' : '24 Months'}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Tooltip */}
+        <div id="comp-tooltip" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Tooltip</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Wraps any element and shows a tooltip on hover. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>content</code> (string), <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>position</code> (<code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>"top"</code> | <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>"bottom"</code>, default <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>"bottom"</code>). Returns children unwrapped when no content.
+          </p>
+          <div style={{ display: 'flex', gap: '24px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Tooltip content="Tooltip below" position="bottom">
+              <button style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', padding: '4px 10px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-full)', background: 'transparent', color: 'var(--color-text-muted)', cursor: 'default' }}>
+                Hover me (bottom)
+              </button>
+            </Tooltip>
+            <Tooltip content="Tooltip above" position="top">
+              <button style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', padding: '4px 10px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-full)', background: 'transparent', color: 'var(--color-text-muted)', cursor: 'default' }}>
+                Hover me (top)
+              </button>
+            </Tooltip>
+          </div>
+        </div>
+
         {/* Card */}
         <div id="comp-card" className={styles.componentDemo}>
           <div className={styles.componentLabel}>Card</div>
@@ -308,52 +390,6 @@ export default function DesignSystemPage() {
             <Card title="Another Card" value="Rp 500,000" description="Per gram" />
             <Card title="Status" value="Active" description="Since Jan 2026" />
           </CardGrid>
-        </div>
-
-        {/* Table */}
-        <div id="comp-table" className={styles.componentDemo}>
-          <div className={styles.componentLabel}>Table (Default)</div>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
-            All tables use the same component with consistent styling across the application. Cell padding is 14px vertical, 8px horizontal.
-          </p>
-          <Table columns={demoTableColumns} data={demoTableData} />
-        </div>
-
-        {/* Table with Date Column */}
-        <div className={styles.componentDemo}>
-          <div className={styles.componentLabel}>Table (with Date Format)</div>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
-            Tables with dates use the Indonesian date format consistently.
-          </p>
-          <Table columns={dateFormatColumns} data={dateFormatData} />
-        </div>
-
-        {/* DataRow */}
-        <div id="comp-data-row" className={styles.componentDemo}>
-          <div className={styles.componentLabel}>DataRow</div>
-          <DataRow label="Label" value="Value" />
-          <DataRow label="Buy Price" value="Rp 1,125,000" />
-          <DataRow label="Status" value="Active" />
-        </div>
-
-        {/* Toast */}
-        <div id="comp-toast" className={styles.componentDemo}>
-          <div className={styles.componentLabel}>Toast</div>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
-            Auto-dismissing notification component. Automatically closes after 3 seconds (configurable).
-          </p>
-          <Toast message="Data successfully saved!" onDismiss={() => {}} />
-        </div>
-
-        {/* Modal */}
-        <div id="comp-modal" className={styles.componentDemo}>
-          <div className={styles.componentLabel}>Modal</div>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
-            Dialog component with title, content, and action buttons. Supports variants: primary (default), secondary, and danger for confirm button.
-          </p>
-          <p style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>
-            Usage: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>&lt;Modal isOpen title="Title" onConfirm={'{'}callback{'}'} /&gt;</code>
-          </p>
         </div>
 
         {/* Form Fields */}
@@ -383,32 +419,54 @@ export default function DesignSystemPage() {
           </div>
         </div>
 
+        {/* MetricCard */}
+        <div id="comp-metric-card" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>MetricCard</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Metric card with label, value, and optional bar chart. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>label</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>value</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>info</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>data</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barColor</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barRadius</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>barWidth</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>chartHeight</code>. Bar color defaults to <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>--color-text</code>.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+            <MetricCard label="No chart" value="42" />
+            <MetricCard label="With chart" value="1,234" data={metricChartData} />
+            <MetricCard label="With info" value="2.938.000" data={metricChartData} info="Data sourced from Galeri24 daily scraper" />
+          </div>
+        </div>
+
+        {/* PriceChart */}
+        <div id="comp-price-chart" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>PriceChart</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Time-series card with range filter (1M–24M) and optional custom date picker. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>label</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>currentValue</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>data</code> (<code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>{'[{ date, value }]'}</code>), <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>onFetchRange</code> (optional async fn for custom range).
+          </p>
+          <PriceChart
+            label="Sample Price"
+            currentValue={priceChartSampleData[priceChartSampleData.length - 1]?.value}
+            data={priceChartSampleData}
+          />
+        </div>
+
+        {/* Modal */}
+        <div id="comp-modal" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Modal</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Dialog with title, description, and action buttons. Variants: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>primary</code> (default) and <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>danger</code> for the confirm button.
+          </p>
+          <Button variant="secondary" onClick={() => setModalOpen(true)}>Open Modal</Button>
+          <Modal
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            title="Confirm Action"
+            description="This action cannot be undone. Are you sure you want to continue?"
+            onCancel={() => setModalOpen(false)}
+            onConfirm={() => setModalOpen(false)}
+            confirmLabel="Confirm"
+          />
+        </div>
+
         {/* PageHeader */}
         <div id="comp-page-header" className={styles.componentDemo}>
           <div className={styles.componentLabel}>PageHeader</div>
           <PageHeader title="Sample Page Title" description="This is a sample description for the page header component." />
-        </div>
-
-        {/* Toggle */}
-        <div id="comp-toggle" className={styles.componentDemo}>
-          <div className={styles.componentLabel}>Toggle</div>
-          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
-            Switch component for binary state. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>checked</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>onChange</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>disabled</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>tooltip</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>ariaLabel</code>. Click to toggle; tooltip appears on hover when disabled.
-          </p>
-          <div style={{ display: 'flex', gap: '32px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
-              <Toggle checked={toggleOff} onChange={setToggleOff} ariaLabel="Demo off" />
-              <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Off (interactive)</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
-              <Toggle checked={toggleOn} onChange={setToggleOn} ariaLabel="Demo on" />
-              <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>On (interactive)</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
-              <Toggle checked={false} disabled tooltip="Hover for tooltip" ariaLabel="Demo disabled" />
-              <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Disabled (with tooltip)</span>
-            </div>
-          </div>
         </div>
 
         {/* Sidebar */}
@@ -454,11 +512,61 @@ export default function DesignSystemPage() {
           </p>
         </div>
 
-        {/* Border Radius */}
-        <div id="comp-border-radius" className={styles.componentDemo}>
-          <div className={styles.componentLabel}>Border Radius</div>
-          <Table columns={sampleColumns} data={radiusData} />
+        {/* Table */}
+        <div id="comp-table" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Table (Default)</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
+            All tables use the same component with consistent styling across the application. Cell padding is 14px vertical, 8px horizontal.
+          </p>
+          <Table columns={demoTableColumns} data={demoTableData} />
         </div>
+
+        {/* Table with Date Column */}
+        <div className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Table (with Date Format)</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '12px', fontSize: '13px' }}>
+            Tables with dates use the Indonesian date format consistently.
+          </p>
+          <Table columns={dateFormatColumns} data={dateFormatData} />
+        </div>
+
+        {/* Toast */}
+        <div id="comp-toast" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Toast</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Auto-dismissing notification. Slides in from the bottom-right and closes after 3 seconds (configurable via <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>duration</code>).
+          </p>
+          <Button variant="secondary" onClick={() => {
+            setShowToast(false);
+            setTimeout(() => { setToastKey(k => k + 1); setShowToast(true); }, 50);
+          }}>Show Toast</Button>
+          {showToast && (
+            <Toast key={toastKey} message="Data successfully saved!" onDismiss={() => setShowToast(false)} />
+          )}
+        </div>
+
+        {/* Toggle */}
+        <div id="comp-toggle" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Toggle</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Switch component for binary state. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>checked</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>onChange</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>disabled</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>tooltip</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>ariaLabel</code>. Click to toggle; tooltip appears on hover when disabled.
+          </p>
+          <div style={{ display: 'flex', gap: '32px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+              <Toggle checked={toggleOff} onChange={setToggleOff} ariaLabel="Demo off" />
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Off (interactive)</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+              <Toggle checked={toggleOn} onChange={setToggleOn} ariaLabel="Demo on" />
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>On (interactive)</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+              <Toggle checked={false} disabled tooltip="Hover for tooltip" ariaLabel="Demo disabled" />
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Disabled (with tooltip)</span>
+            </div>
+          </div>
+        </div>
+
       </Section>
     </>
   );

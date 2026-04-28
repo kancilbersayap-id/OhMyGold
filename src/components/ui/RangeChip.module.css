@@ -1,0 +1,28 @@
+.chip {
+  font-family: var(--font-mono), 'Courier New', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  line-height: 1;
+}
+
+.chip:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.chipActive {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.chipActive:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}

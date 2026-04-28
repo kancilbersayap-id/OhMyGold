@@ -4,10 +4,11 @@
 
 .sectionTitle {
   font-family: var(--font-heading-2-family);
-  font-size: var(--font-body-text-size);
+  font-size: 20px;
   font-weight: var(--font-heading-2-weight);
   line-height: var(--font-body-text-line-height);
   letter-spacing: var(--font-heading-2-letter-spacing);
-  color: var(--color-text-muted);
-  margin-bottom: calc(var(--spacing-2xs) * 0.57);
+  color: var(--color-text);
+  margin-top: 80px;
+  margin-bottom: 24px;
 }
