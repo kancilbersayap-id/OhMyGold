@@ -4,14 +4,59 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 import styles from './MainLayout.module.css';
+import { supabase } from '@/utils/supabase';
 
 export default function MainLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('sidebarCollapsed') === 'true';
+    }
+    return false;
+  });
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('theme') || 'dark') === 'dark';
+    }
+    return true;
+  });
   const pathname = usePathname();
 
-  const isAuthPage = pathname === '/login' || pathname === '/signup';
+  const toggleTheme = () => {
+    setIsDark(prev => {
+      const next = !prev;
+      const theme = next ? 'dark' : 'light';
+      localStorage.setItem('theme', theme);
+      document.documentElement.setAttribute('data-theme', theme);
+      return next;
+    });
+  };
 
-  if (isAuthPage) {
+  useEffect(() => {
+    const stored = localStorage.getItem('theme') || 'dark';
+    const dark = stored === 'dark';
+    setIsDark(dark);
+    document.documentElement.setAttribute('data-theme', stored);
+  }, []);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user?.email) setUserEmail(data.user.email);
+    });
+  }, []);
+
+  const toggleCollapsed = () => {
+    setCollapsed(prev => {
+      localStorage.setItem('sidebarCollapsed', String(!prev));
+      return !prev;
+    });
+  };
+
+  const isAuthPage = pathname === '/login' || pathname === '/signup';
+  const isStandalonePage = pathname === '/design-system';
+
+  if (isAuthPage || isStandalonePage) {
     return <>{children}</>;
   }
 
@@ -40,9 +85,9 @@ export default function MainLayout({ children }) {
         />
       )}
 
-      <Sidebar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
+      <Sidebar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} collapsed={collapsed} onToggleCollapse={toggleCollapsed} isDark={isDark} onToggleTheme={toggleTheme} userEmail={userEmail} />
 
-      <main className={styles.content}>
+      <main className={`${styles.content} ${collapsed ? styles.contentCollapsed : ''}`}>
         <div className={styles.inner}>{children}</div>
       </main>
     </div>

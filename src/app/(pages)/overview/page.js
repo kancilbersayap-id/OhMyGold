@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import PageHeader from '@/components/ui/PageHeader';
 import MetricCard from '@/components/ui/MetricCard';
 import BuybackChart from './BuybackChart';
+import FloatingPriceChart from './FloatingPriceChart';
 import {
   getAntamPriceData,
   getAntamBuybackPrice,
@@ -10,6 +11,7 @@ import {
   getAntamPriceHistory,
   getMonthlyBuybackHistory,
   getAntamPriceDailyHistory,
+  getAntamSellPriceHistory,
 } from '@/utils/priceActions';
 import styles from './overview.module.css';
 
@@ -61,7 +63,7 @@ export default async function OverviewPage() {
   );
   const { data: { user } } = await supabase.auth.getUser();
 
-  const [price, buybackData, totalAssets, history, monthlyHistory, dailyHistory, allBuybackHistory] =
+  const [price, buybackData, totalAssets, history, monthlyHistory, dailyHistory, allBuybackHistory, allSellHistory] =
     await Promise.all([
       getAntamPriceData(),
       getAntamBuybackPrice(),
@@ -70,6 +72,7 @@ export default async function OverviewPage() {
       getMonthlyBuybackHistory(),
       getAntamPriceDailyHistory(8),
       getAntamPriceHistory(730),
+      getAntamSellPriceHistory(730),
     ]);
 
   const assets = totalAssets ?? 0;
@@ -123,8 +126,8 @@ export default async function OverviewPage() {
   return (
     <>
       <PageHeader
-        title="Overview"
-        description="Summary of gold portfolio and market"
+        title="Hello, Welcome back!"
+        description="Check and mantain your current gold holdings and market data"
       />
 
       <div className={styles.metricsSection}>
@@ -150,6 +153,13 @@ export default async function OverviewPage() {
         <BuybackChart
           allData={allBuybackHistory}
           currentPrice={bp}
+        />
+      )}
+
+      {allSellHistory.length > 0 && (
+        <FloatingPriceChart
+          allData={allSellHistory}
+          currentPrice={price?.price ?? null}
         />
       )}
     </>

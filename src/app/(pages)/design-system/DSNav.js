@@ -21,6 +21,7 @@ const sections = [
       { id: 'comp-button', label: 'Button' },
       { id: 'comp-filter-chip', label: 'FilterChip' },
       { id: 'comp-range-chip', label: 'RangeChip' },
+      { id: 'comp-tabs', label: 'Tabs' },
       { id: 'comp-tooltip', label: 'Tooltip' },
       { id: 'comp-card', label: 'Card' },
       { id: 'comp-form-fields', label: 'Form Fields' },

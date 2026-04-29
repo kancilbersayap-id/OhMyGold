@@ -1,0 +1,33 @@
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 560px;
+}
+
+.card {
+  padding: 20px;
+}
+
+.cardTitle {
+  font-family: var(--font-heading-5-family);
+  font-size: 12px;
+  font-weight: var(--font-heading-5-weight);
+  line-height: 1;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 24px;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}

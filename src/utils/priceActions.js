@@ -270,6 +270,52 @@ export async function getAntamPriceHistory(limit = 8) {
   }
 }
 
+export async function getAntamSellPriceHistory(limit = 730) {
+  try {
+    const supabase = getAdminClient();
+    const { data, error } = await supabase
+      .from('galeri24_antam_prices')
+      .select('date, harga_jual')
+      .eq('vendor', 'antam')
+      .in('weight', [1, '1'])
+      .order('date', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return (data || []).reverse();
+  } catch (error) {
+    console.error('Error fetching Antam sell price history:', error);
+    return [];
+  }
+}
+
+const _fetchAntamSellPriceRange = unstable_cache(
+  async (startDate, endDate) => {
+    const supabase = getAdminClient();
+    const { data, error } = await supabase
+      .from('galeri24_antam_prices')
+      .select('date, harga_jual')
+      .eq('vendor', 'antam')
+      .in('weight', [1, '1'])
+      .gte('date', startDate)
+      .lte('date', endDate)
+      .order('date', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  },
+  ['antam-sell-price-history-by-range'],
+  { revalidate: 3600, tags: ['antam-sell-prices'] }
+);
+
+export async function getAntamSellPriceHistoryByRange(startDate, endDate) {
+  if (!startDate || !endDate) return [];
+  try {
+    return await _fetchAntamSellPriceRange(startDate, endDate);
+  } catch (error) {
+    console.error('Error fetching Antam sell price history range:', error);
+    return [];
+  }
+}
+
 export async function getUserTotalAssets(userId) {
   try {
     const supabase = await getSupabaseClient();

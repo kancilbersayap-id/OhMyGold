@@ -3,24 +3,30 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-family: var(--font-heading-5-family);
-  font-size: 14px;
-  font-weight: 500;
+  font-family: var(--font-button-family);
+  font-size: var(--font-button-size);
+  font-weight: var(--font-button-weight);
   line-height: 1;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   text-decoration: none;
-  transition: opacity 0.15s;
+  transition: opacity var(--transition-base);
   white-space: nowrap;
+  text-transform: uppercase;
 }
 
 .button:hover {
-  opacity: 0.85;
+  opacity: var(--opacity-hover);
 }
 
 .button:active {
-  opacity: 0.7;
+  opacity: var(--opacity-active);
+}
+
+.button:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
 }
 
 /* Size M */
@@ -28,10 +34,10 @@
   padding: 10px 14px;
 }
 
-/* Primary */
+/* Primary — neutral, inverts with theme */
 .primary {
-  background-color: #ededed;
-  color: #000000;
+  background-color: var(--color-text);
+  color: var(--color-background);
 }
 
 /* Secondary */
@@ -43,6 +49,6 @@
 
 /* Danger */
 .danger {
-  background-color: #ef4444;
+  background-color: var(--color-danger);
   color: #ffffff;
 }

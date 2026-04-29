@@ -108,7 +108,7 @@
 }
 
 .dayNumber {
-  font-family: 'Geist', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-mono), 'Courier New', monospace;
   font-size: 14px;
   font-weight: 400;
   color: var(--color-text-muted);
@@ -124,7 +124,7 @@
 }
 
 .price {
-  font-family: 'Geist', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-mono), 'Courier New', monospace;
   font-size: 14px;
   font-weight: 400;
   color: var(--color-text);

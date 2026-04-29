@@ -8,9 +8,9 @@ export function Badge({ trend = 'neutral', children }) {
   return <span className={`${styles.badge} ${badgeClass}`}>{children}</span>;
 }
 
-export default function Card({ title, value, description, children, noPadding }) {
+export default function Card({ title, value, description, children, noPadding, className = '' }) {
   return (
-    <div className={`${styles.card} ${noPadding ? styles.cardNoPadding : ''}`}>
+    <div className={`${styles.card} ${noPadding ? styles.cardNoPadding : ''} ${className}`}>
       {title && (
         <div className={`${styles.cardTitle} ${noPadding ? styles.cardTitleIndented : ''}`}>
           {title}

@@ -29,12 +29,6 @@
   font-family: 'Geist Mono', 'Courier New', monospace;
 }
 
-.yLabel {
-  font-size: 11px;
-  fill: var(--color-text-muted);
-  font-family: 'Geist Mono', 'Courier New', monospace;
-}
-
 .tooltip {
   position: absolute;
   top: 4px;

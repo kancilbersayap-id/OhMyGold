@@ -2,6 +2,9 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Toggle from '@/components/ui/Toggle';
+import Badge from '@/components/ui/Badge';
+import Tooltip from '@/components/ui/Tooltip';
 import styles from './Sidebar.module.css';
 
 const navItems = [
@@ -17,17 +20,6 @@ const navItems = [
       </svg>
     ),
   },
-  {
-    label: 'My Assets',
-    href: '/my-assets',
-    icon: (
-      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
-        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
-        <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z" />
-      </svg>
-    ),
-  },
 ];
 
 const retailPriceItem = {
@@ -37,19 +29,6 @@ const retailPriceItem = {
     <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <line x1="12" y1="1" x2="12" y2="23" />
       <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-    </svg>
-  ),
-};
-
-const designSystemItem = {
-  label: 'Design System',
-  href: '/design-system',
-  icon: (
-    <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="7" height="7" />
-      <rect x="14" y="3" width="7" height="7" />
-      <rect x="3" y="14" width="7" height="7" />
-      <rect x="14" y="14" width="7" height="7" />
     </svg>
   ),
 };
@@ -101,33 +80,36 @@ const pricingTrendsItems = [
   },
 ];
 
-export default function Sidebar({ mobileOpen, onMobileClose }) {
+export default function Sidebar({ mobileOpen, onMobileClose, isDark, onToggleTheme, collapsed, onToggleCollapse, userEmail }) {
+  const emailUsername = userEmail ? userEmail.split('@')[0] : '';
+  const emailInitial = emailUsername ? emailUsername[0].toUpperCase() : '?';
   const pathname = usePathname();
 
   const renderNavItem = (item) => {
     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
     return (
-      <Link
-        key={item.href}
-        href={item.href}
-        className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
-        onClick={onMobileClose}
-      >
-        <div className={styles.navIconFrame}>{item.icon}</div>
-        <span className={styles.navLabel}>{item.label}</span>
-      </Link>
+      <Tooltip key={item.href} content={item.label} position="right" className={styles.navTooltip}>
+        <Link
+          href={item.href}
+          className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+          onClick={onMobileClose}
+        >
+          <div className={styles.navIconFrame}>{item.icon}</div>
+          <span className={styles.navLabel}>{item.label}</span>
+        </Link>
+      </Tooltip>
     );
   };
 
   return (
-    <aside className={`${styles.sidebar} ${mobileOpen ? styles.sidebarOpen : ''}`}>
+    <aside className={`${styles.sidebar} ${mobileOpen ? styles.sidebarOpen : ''} ${collapsed ? styles.sidebarCollapsed : ''}`}>
       <div className={styles.sidebarLogo}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
           <div className={styles.logoDot} />
           <span className={styles.logoText}>OhMyGold</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span className={styles.logoBadge}>beta</span>
+          <span className={styles.logoBadge}><Badge type="neutral">BETA</Badge></span>
           <button className={styles.closeButton} onClick={onMobileClose} aria-label="Close sidebar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -148,7 +130,33 @@ export default function Sidebar({ mobileOpen, onMobileClose }) {
         </div>
       </nav>
       <div className={styles.navBottom}>
-        {renderNavItem(designSystemItem)}
+        <Tooltip content={emailUsername} position="right" className={styles.navTooltip}>
+          <Link href="/profile" className={styles.navItem} onClick={onMobileClose}>
+            <div className={styles.navIconFrame}>
+              <div className={styles.userAvatar}>{emailInitial}</div>
+            </div>
+            <span className={styles.navLabel}>{emailUsername}</span>
+            <button
+              className={styles.collapseBtn}
+              onClick={(e) => { e.preventDefault(); onToggleCollapse(); }}
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {collapsed ? (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="6" x2="4" y2="18" />
+                  <path d="M8 12h12" />
+                  <path d="M14 7l5 5-5 5" />
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="6" x2="4" y2="18" />
+                  <path d="M20 12H8" />
+                  <path d="M14 7l-5 5 5 5" />
+                </svg>
+              )}
+            </button>
+          </Link>
+        </Tooltip>
         <div className={styles.navItemBottom}>
           <div className={styles.navIconFrame}>
             <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -156,11 +164,12 @@ export default function Sidebar({ mobileOpen, onMobileClose }) {
             </svg>
           </div>
           <span className={styles.navLabel}>Dark</span>
-          <div className={styles.toggleWrapper}>
-            <div className={styles.tooltip}>Switching theme is disabled for beta</div>
-            <div className={styles.toggle}>
-              <div className={styles.toggleThumb} />
-            </div>
+          <div className={styles.toggleSlot}>
+            <Toggle
+              checked={isDark}
+              onChange={onToggleTheme}
+              ariaLabel="Toggle dark mode"
+            />
           </div>
         </div>
       </div>

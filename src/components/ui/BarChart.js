@@ -62,7 +62,7 @@ export default function BarChart({ data, yLabels, color = 'var(--color-chart-blu
                 textAnchor="middle"
                 style={{ fontSize: '12px', letterSpacing: '-0.02em' }}
                 fill="var(--color-text-muted)"
-                fontFamily="Geist, sans-serif"
+                fontFamily="'Geist Mono', 'Courier New', monospace"
               >
                 {d.label}
               </text>

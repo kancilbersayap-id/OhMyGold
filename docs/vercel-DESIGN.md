@@ -1,57 +1,327 @@
-# Design System: Vercel
+# Design System: OhMyGold
 
-## 1. Visual Theme & Atmosphere
+## 1. Visual Philosophy
 
-The interface exudes technical sophistication through its restrained palette and generous breathing room. Clean lines and subtle gradients create a sense of forward-thinking innovation while maintaining the precision developers expect. The overall mood is confident yet approachable, balancing enterprise credibility with modern accessibility.
+The OhMyGold interface balances **technical clarity** with **approachable accessibility**. We use a restrained palette with generous whitespace to maintain focus on data and portfolio insights. The design conveys trust and precision through:
 
-Minimal elevation strategy with subtle box-shadows on cards and components. The design primarily uses 2 elevation levels - flat surfaces and gently floating cards. Shadows are soft and understated, creating just enough depth to establish hierarchy without visual noise.
+- Clean lines and minimal visual noise
+- Subtle depth via soft shadows (cards, modals)
+- Softly rounded corners (5-20px) on interactive elements
+- Consistent, measured spacing throughout
+- High contrast text for accessibility
 
-Softly rounded corners (5-9px) on interactive elements and cards. Icons are clean and minimal with consistent stroke weights. Geometric gradient overlays in hero sections add visual interest without overwhelming the clean foundation.
+**Mood:** Confident, modern, trustworthy — emphasizing transparency in gold investment tracking.
 
-## 2. Color Palette & Roles
+---
 
-**Primary Foundation:**
-- Pure White (#ffffff) — background
-- Soft Gray (#fafafa) — background
+## 2. Color Tokens & Usage
 
-**Text & Content:**
-- Charcoal Black (#171717) — text
-- Slate Gray (#4d4d4d) — text
+### Foundation Colors
+| Token | CSS Variable | Value | Usage |
+|-------|--------------|-------|-------|
+| **Background** | `--color-background` | #ffffff (light) / #000000 (dark) | Page background, card backgrounds |
+| **Background Subtle** | `--color-background-2` | #fafafa (light) / #0a0a0a (dark) | Secondary backgrounds, section breaks |
+| **Text Primary** | `--color-text` | #171717 (light) / #ededed (dark) | Body text, primary text |
+| **Text Muted** | `--color-text-muted` | #4d4d4d (light) / #a1a1a1 (dark) | Secondary text, labels, captions |
+| **Border** | `--color-border` | #d1d5db (light) / #1f1f1f (dark) | Card borders, dividers, input borders |
 
-**Brand & Interactive:**
-- Electric Blue (#0070f3) — secondary
-- Sky Blue (#0096ff) — accent
+### Brand Colors
+| Token | CSS Variable | Value | Usage |
+|-------|--------------|-------|-------|
+| **Primary (Amber)** | `--color-primary` | #bd5200 | Brand accent, highlights, focus states |
+| **Secondary (Blue)** | `--color-secondary` | #0070f3 | Links, secondary actions, info badges |
+| **Accent (Sky Blue)** | `--color-accent` | #0096ff | Hover states, active states, charts |
+| **Success (Green)** | `--color-success` | #22c55e | Positive changes, gains, increases |
+| **Danger (Red)** | `--color-danger` | #ef4444 | Negative changes, losses, errors |
+| **Chart Blue** | `--color-chart-blue` | #52AEFF | Chart lines, data visualization |
 
-**Accent & Warning:**
-- Amber Orange (#bd5200) — primary
+### Usage Guide
+```css
+/* ✅ CORRECT: Use semantic tokens */
+.card {
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
 
-**Borders & Dividers:**
-- Silver Mist (#d1d5db) — border
+.badge-success {
+  color: #22c55e;  /* or define --color-success */
+}
 
-## 3. Typography Rules
+/* ❌ WRONG: Don't hardcode colors */
+.card {
+  border: 1px solid #d1d5db;  /* Use var(--color-border) instead */
+}
+```
 
-**Geist** (custom), **Geist Mono** (custom), **Roboto Mono** (custom), **DejaVu Sans Mono** (custom), **GeistPixelSquare** (custom), **GeistPixelGrid** (custom), **GeistPixelCircle** (custom), **GeistPixelTriangle** (custom), **GeistPixelLine** (custom), **DSEG7 Classic** (custom), **1.21em/1.2 KaTeX_Main** (custom), **KaTeX_Main** (custom), **KaTeX_SansSerif** (custom), **KaTeX_Typewriter** (custom), **KaTeX_Math** (custom), **KaTeX_AMS** (custom), **KaTeX_Caligraphic** (custom), **KaTeX_Fraktur** (custom), **KaTeX_Script** (custom), **KaTeX_Size1** (custom), **KaTeX_Size2** (custom), **KaTeX_Size3** (custom), **KaTeX_Size4** (custom)
+---
 
-- **heading-1**: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol 48px/48px, weight 600, letter-spacing: -2.28px — Page titles
-- **heading-2**: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji 14px/20px, weight 500, letter-spacing: -0.28px — Section headings
-- **heading-3**: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji 32px/40px, weight 600, letter-spacing: -1.28px — Sub-section headings
-- **heading-5**: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol 14px/20px, weight 400 — Minor headings
-- **body**: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol 16px/normal, weight 400 — Base body text
-- **body-text**: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol 12px/16px, weight 400 — Paragraph text
-- **inline-text**: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol 14px/14px, weight 400 — Inline text elements
-- **link**: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol 16px/normal, weight 400 — Hyperlinks
-- **button**: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol 14px/14px, weight 400 — Button labels
-- **navigation**: Geist, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol 16px/normal, weight 400 — Navigation text
+## 3. Typography System
 
-## 4. Component Stylings
+### Font Family
+- **Primary:** Geist (sans-serif, loaded via next/font/geist)
+- **Fallback:** Arial, system fonts
+- **Monospace:** Geist Mono or 'Courier New' for code/numbers
 
-* **primary-button:** Dark rounded buttons with white text, medium padding, subtle hover states
-* **hero-gradient:** Large colorful gradient backgrounds with geometric overlays for hero sections
-* **feature-card:** Clean white cards with subtle shadows, rounded corners, and minimal borders
-* **nav-item:** Simple text-based navigation with hover states and clean typography
-* **code-block:** Monospace code sections with subtle background tinting and syntax highlighting
-* **metric-display:** Large numerical displays with accompanying labels for performance metrics
+### Heading Scale
+| Scale | CSS Variables | Size | Weight | Line Height | Letter Spacing | Usage |
+|-------|---------------|------|--------|-------------|----------------|-------|
+| **H1** | `--font-heading-1-*` | 48px | 600 | 48px | -2.28px | Page title (once per page) |
+| **H2** | `--font-heading-2-*` | 14px | 500 | 20px | -0.28px | Section heading, card title |
+| **H3** | `--font-heading-3-*` | 32px | 600 | 40px | -1.28px | Page subtitle, large section |
+| **H5** | `--font-heading-5-*` | 14px | 400 | 20px | normal | Minor heading, label |
 
-## 5. Layout Principles
+**Note:** Heading-4 is reserved for future use (24px scale between H3 and H5).
 
-Generous whitespace with a centered max-width container approach. Consistent vertical rhythm using the spacing scale, with major sections separated by large gaps. Content is organized in clear blocks with ample breathing room between elements.
+### Body Text Scale
+| Scale | CSS Variables | Size | Weight | Line Height | Usage |
+|-------|---------------|------|--------|-------------|-------|
+| **Body** | `--font-body-*` | 16px | 400 | normal | Default paragraph text |
+| **Body Text** | `--font-body-text-*` | 14px | 400 | 16px | Description, secondary text |
+| **Inline** | `--font-inline-text-*` | 14px | 400 | 14px | Small inline text, captions |
+| **Button** | `--font-button-*` | 14px | 400 | 14px | Button labels, labels |
+| **Navigation** | `--font-navigation-*` | 16px | 400 | normal | Nav items, links |
+| **Link** | `--font-link-*` | 16px | 400 | normal | Hyperlinks |
+
+### Typography Implementation
+```css
+/* ✅ CORRECT: Use typography variables */
+.pageTitle {
+  font-family: var(--font-heading-1-family);
+  font-size: var(--font-heading-1-size);
+  font-weight: var(--font-heading-1-weight);
+  line-height: var(--font-heading-1-line-height);
+  letter-spacing: var(--font-heading-1-letter-spacing);
+}
+
+/* ✅ SHORTHAND: Apply heading styles via CSS class */
+.heading2 {
+  font: var(--font-heading-2-weight) var(--font-heading-2-size) / var(--font-heading-2-line-height) var(--font-heading-2-family);
+  letter-spacing: var(--font-heading-2-letter-spacing);
+}
+
+/* ❌ WRONG: Don't hardcode values */
+.title {
+  font-size: 48px;  /* Use var(--font-heading-1-size) */
+  font-weight: 600;  /* Use var(--font-heading-1-weight) */
+}
+```
+
+---
+
+## 4. Spacing System
+
+### Spacing Scale
+| Scale | CSS Variable | Value | Typical Usage |
+|-------|--------------|-------|---------------|
+| **2xs** | `--spacing-2xs` | 14px | Tight spacing, form gaps |
+| **xs** | `--spacing-xs` | 30px | Button/input padding, component gaps |
+| **sm** | `--spacing-sm` | 52px | Section margins, card margins |
+| **md** | `--spacing-md` | 80px | Page section spacing |
+| **lg** | `--spacing-lg` | 110px | Major section breaks |
+| **xl** | `--spacing-xl` | 8rem / 128px | Layout grid gaps |
+| **2xl** | `--spacing-2xl` | 160px | Large page sections |
+
+### Spacing Implementation
+```css
+/* ✅ CORRECT: Use spacing tokens */
+.card {
+  padding: var(--spacing-xs);  /* 30px */
+  margin-bottom: var(--spacing-sm);  /* 52px */
+  gap: var(--spacing-2xs);  /* 14px */
+}
+
+/* ❌ WRONG: Don't hardcode spacing */
+.card {
+  padding: 16px;  /* Use var(--spacing-xs) or var(--spacing-2xs) */
+  gap: 8px;  /* Use var(--spacing-2xs) which is 14px */
+}
+```
+
+---
+
+## 5. Border Radius
+
+| Token | CSS Variable | Value | Usage |
+|-------|--------------|-------|-------|
+| **None** | `--radius-none` | 0 | Square edges (buttons, modals) |
+| **Small** | `--radius-sm` | 2px | Tight borders, badges |
+| **Medium** | `--radius-md` | 5px | Cards, inputs, standard elements |
+| **Large** | `--radius-lg` | 9px | Prominent cards, dialogs |
+| **Extra Large** | `--radius-xl` | 20px | Large cards, modal windows |
+| **Full** | `--radius-full` | 32px | Pills, avatars, circular buttons |
+
+### Border Radius Implementation
+```css
+/* ✅ CORRECT: Use radius tokens */
+.card {
+  border-radius: var(--radius-md);  /* 5px */
+}
+
+.button {
+  border-radius: var(--radius-sm);  /* 2px */
+}
+
+/* ❌ WRONG: Don't hardcode values */
+.button {
+  border-radius: 6px;  /* Use var(--radius-md) which is 5px */
+}
+```
+
+---
+
+## 6. Dark Mode Support
+
+The design system supports dark mode via CSS custom properties. Dark mode values are automatically applied when users set `prefers-color-scheme: dark` in their OS settings.
+
+### Light Mode (Default)
+```
+background: #ffffff
+text: #171717
+border: #d1d5db
+```
+
+### Dark Mode
+```
+background: #000000
+text: #ededed
+border: #1f1f1f
+```
+
+**Implementation:** All colors must use CSS variables, not hardcoded hex values, to automatically adapt.
+
+```css
+/* ✅ CORRECT: Uses tokens, adapts to dark mode */
+.card {
+  background: var(--color-background);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+/* ❌ WRONG: Ignores dark mode */
+.card {
+  background: #ffffff;
+  color: #171717;
+  border: 1px solid #d1d5db;
+}
+```
+
+---
+
+## 7. Component Patterns
+
+### Card Layout
+```css
+.card {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xs);  /* 30px */
+}
+
+.cardTitle {
+  font-family: var(--font-heading-5-family);
+  font-size: var(--font-heading-5-size);
+  font-weight: var(--font-heading-5-weight);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-2xs);  /* 14px */
+}
+```
+
+### Button Group
+```css
+.button {
+  font-size: var(--font-button-size);
+  padding: var(--spacing-2xs) var(--spacing-xs);  /* 14px 30px */
+  border-radius: var(--radius-md);
+  transition: opacity 0.15s;
+}
+
+.button:hover {
+  opacity: 0.85;
+}
+
+.button.primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.button.secondary {
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.button.danger {
+  background-color: var(--color-danger);
+  color: white;
+}
+```
+
+### Badge / Pill
+```css
+.badge {
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-body-text-size);
+  font-weight: 500;
+}
+
+.badge.success {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.badge.error {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+```
+
+---
+
+## 8. Accessibility Considerations
+
+- **Color Contrast:** All text meets WCAG AA (4.5:1 for normal text, 3:1 for large text)
+- **Focus States:** Interactive elements have visible focus indicators
+- **Motion:** Transitions are subtle (0.15s) to avoid vestibular triggers
+- **Typography:** Heading hierarchy is semantic (H1 > H2 > H3, not styled shortcuts)
+
+---
+
+## 9. Implementation Checklist
+
+When building a new component:
+
+- [ ] Use `--color-*` variables for all colors (no hardcoded hex)
+- [ ] Use `--font-*` variables for typography
+- [ ] Use `--spacing-*` variables for padding, margin, gap
+- [ ] Use `--radius-*` variables for border-radius
+- [ ] Test in dark mode (DevTools → Rendering → Emulate CSS media feature prefers-color-scheme)
+- [ ] Verify color contrast with browser inspector
+- [ ] Check focus states and keyboard navigation
+- [ ] Use CSS Modules (.module.css) for component styles
+
+---
+
+## 10. Token Source of Truth
+
+All design tokens are defined in `design-system/tokens/design-token.json` and compiled to:
+- `design-system/styles/design-variables.css` — CSS custom properties (`:root`)
+- `design-system/styles/vercel-design.css` — Theme block format
+
+**Always edit `design-token.json` first, then verify CSS is generated correctly.**
+
+---
+
+## 11. Common Pitfalls
+
+| ❌ Don't | ✅ Do | Why |
+|---------|------|-----|
+| Hardcode colors (`#bd5200`) | Use tokens (`var(--color-primary)`) | Enables theme switching, dark mode |
+| Hardcode spacing (`16px`) | Use tokens (`var(--spacing-xs)`) | Maintains rhythm, easier adjustments |
+| Hardcode font sizes | Use typography variables | Ensures consistency, scales better |
+| Ignore dark mode | Test with `prefers-color-scheme: dark` | Many users prefer dark mode |
+| Use custom border radius | Use `--radius-*` tokens | Maintains visual consistency |
+| Skip focus states | Add `:focus`, `:focus-visible` styles | Essential for keyboard navigation |
+
+

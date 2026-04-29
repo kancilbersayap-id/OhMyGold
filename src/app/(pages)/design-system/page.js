@@ -17,6 +17,7 @@ import Toggle from '@/components/ui/Toggle';
 import Tooltip from '@/components/ui/Tooltip';
 import RangeChip from '@/components/ui/RangeChip';
 import FilterChip from '@/components/ui/FilterChip';
+import Tabs from '@/components/ui/Tabs';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
 import styles from './design-system.module.css';
 
@@ -186,6 +187,7 @@ export default function DesignSystemPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [toastKey, setToastKey] = useState(0);
   const [showToast, setShowToast] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
   return (
     <>
@@ -360,6 +362,23 @@ export default function DesignSystemPage() {
               />
             ))}
           </div>
+        </div>
+
+        {/* Tabs */}
+        <div id="comp-tabs" className={styles.componentDemo}>
+          <div className={styles.componentLabel}>Tabs</div>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px', fontSize: '13px' }}>
+            Underlined tabs for switching between sections within a page. Labels render in uppercase. Props: <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>tabs</code> (array of <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>{`{ label, value }`}</code>), <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>value</code>, <code style={{ background: 'var(--color-background-2)', padding: '2px 6px', borderRadius: '4px' }}>onChange</code>.
+          </p>
+          <Tabs
+            tabs={[
+              { label: 'Overview', value: 'overview' },
+              { label: 'My Assets', value: 'assets' },
+              { label: 'Settings', value: 'settings' },
+            ]}
+            value={activeTab}
+            onChange={setActiveTab}
+          />
         </div>
 
         {/* Tooltip */}

@@ -32,6 +32,12 @@
   bottom: auto;
 }
 
+.wrapper[data-position='right']::after {
+  left: calc(100% + 6px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .wrapper:hover::after {
   opacity: 1;
 }

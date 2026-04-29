@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import LineChart from '@/components/ui/LineChart';
+import DotGridChart from '@/components/ui/DotGridChart';
+import HorizontalBarChart from '@/components/ui/HorizontalBarChart';
 import RangeChip from '@/components/ui/RangeChip';
 import FilterChip from '@/components/ui/FilterChip';
 import styles from './PriceChart.module.css';
@@ -63,7 +65,7 @@ function buildChartData(slice, range) {
  *   data         — [{ date: 'YYYY-MM-DD', value: number }] full dataset (up to 730 items)
  *   onFetchRange — async (start, end) => [{ date, value }] — called for custom range
  */
-export default function PriceChart({ label, currentValue, data = [], onFetchRange }) {
+export default function PriceChart({ label, currentValue, data = [], onFetchRange, chartType = 'line' }) {
   const [range, setRange] = useState('1M');
   const [showPicker, setShowPicker] = useState(false);
   const [pickerStart, setPickerStart] = useState('');
@@ -198,6 +200,10 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
             ? `${toFullLabelWithYear(customRange.start)} — ${toFullLabelWithYear(customRange.end)}`
             : 'this range'}
         </div>
+      ) : chartType === 'dot' ? (
+        <DotGridChart data={chartData} color="var(--color-text)" scrollable={isScrollable} />
+      ) : chartType === 'hbar' ? (
+        <HorizontalBarChart data={chartData} color="var(--color-text)" />
       ) : (
         <LineChart data={chartData} color="var(--color-text)" showYAxis={false} showDots={false} scrollable={isScrollable} />
       )}

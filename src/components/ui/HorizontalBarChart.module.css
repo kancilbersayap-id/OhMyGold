@@ -11,27 +11,29 @@
   display: block;
 }
 
-.scrollContainer {
-  overflow-x: auto;
-  overflow-y: visible;
-  position: relative;
-}
-
-.xLabel {
-  font-size: 11px;
-  fill: var(--color-text-muted);
-  font-family: 'Geist Mono', 'Courier New', monospace;
-}
-
-.xLabelActive {
-  font-size: 11px;
-  fill: var(--color-text);
-  font-family: 'Geist Mono', 'Courier New', monospace;
-}
-
 .yLabel {
   font-size: 11px;
   fill: var(--color-text-muted);
+  font-family: 'Geist Mono', 'Courier New', monospace;
+}
+
+.yLabelActive {
+  font-size: 11px;
+  fill: var(--color-text);
+  font-weight: 600;
+  font-family: 'Geist Mono', 'Courier New', monospace;
+}
+
+.valueLabel {
+  font-size: 11px;
+  fill: var(--color-text-muted);
+  font-family: 'Geist Mono', 'Courier New', monospace;
+}
+
+.valueLabelActive {
+  font-size: 11px;
+  fill: var(--color-text);
+  font-weight: 600;
   font-family: 'Geist Mono', 'Courier New', monospace;
 }
 

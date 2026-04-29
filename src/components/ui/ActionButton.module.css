@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm);
-  transition: color 0.15s, background-color 0.15s;
+  transition: color var(--transition-base), background-color var(--transition-base);
 }
 
 .button:hover {
@@ -25,9 +25,9 @@
   position: absolute;
   top: 100%;
   right: 0;
-  background-color: #0a0a0a;
+  background-color: var(--color-popover-bg);
   border: 1px solid var(--color-border);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   min-width: 140px;
   margin-top: 8px;
   z-index: 100;
@@ -42,19 +42,19 @@
 .popoverItem {
   padding: 10px 8px;
   font-family: var(--font-heading-5-family);
-  font-size: 14px;
+  font-size: var(--font-heading-5-size);
   font-weight: 400;
   line-height: 1;
-  color: var(--color-text);
+  color: #ededed;
   cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.12s;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
 }
 
 .popoverItem:hover {
-  background-color: #1a1a1a;
+  background-color: var(--color-popover-hover);
 }
 
 .deleteItem {
-  color: #ef4444;
+  color: var(--color-danger);
 }

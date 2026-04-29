@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
 import Button from '@/components/ui/Button';
 import Table from '@/components/ui/Table';
@@ -83,7 +83,7 @@ const toRow = (data) => {
   };
 };
 
-export default function MyAssetsClient({ initialData, userId }) {
+export default function MyAssetsClient({ initialData, userId, hideHeader = false, addTrigger = 0 }) {
   const [rawData, setRawData] = useState(initialData);
   const [data, setData] = useState(initialData.map(toRow));
   const [modalOpen, setModalOpen] = useState(false);
@@ -118,6 +118,10 @@ export default function MyAssetsClient({ initialData, userId }) {
     setModalOpen(true);
   };
 
+  useEffect(() => {
+    if (addTrigger > 0) openAdd();
+  }, [addTrigger]);
+
   const openEdit = (row) => {
     setEditingId(row.id);
     setForm({ ...row._raw });
@@ -146,7 +150,8 @@ export default function MyAssetsClient({ initialData, userId }) {
             units: parseInt(form.units),
             updated_at: new Date().toISOString(),
           })
-          .eq('id', editingId);
+          .eq('id', editingId)
+          .eq('user_id', userId);
 
         if (error) throw error;
         setToast('Data successfully updated!');
@@ -178,7 +183,8 @@ export default function MyAssetsClient({ initialData, userId }) {
       const { error } = await supabase
         .from('user_gold_holdings')
         .delete()
-        .eq('id', deleteTarget);
+        .eq('id', deleteTarget)
+        .eq('user_id', userId);
 
       if (error) throw error;
       setDeleteTarget(null);
@@ -242,11 +248,13 @@ export default function MyAssetsClient({ initialData, userId }) {
 
   return (
     <>
-      <PageHeader
-        title="My Assets"
-        description="All gold holdings details and structure, include type and units"
-        action={<Button onClick={openAdd}>Add gold holdings</Button>}
-      />
+      {!hideHeader && (
+        <PageHeader
+          title="My Assets"
+          description="All gold holdings details and structure, include type and units"
+          action={<Button onClick={openAdd}>Add gold holdings</Button>}
+        />
+      )}
 
       <div className={styles.metricsSection}>
         <MetricCard
