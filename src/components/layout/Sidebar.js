@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Toggle from '@/components/ui/Toggle';
 import Badge from '@/components/ui/Badge';
 import Tooltip from '@/components/ui/Tooltip';
 import styles from './Sidebar.module.css';
@@ -80,7 +79,7 @@ const pricingTrendsItems = [
   },
 ];
 
-export default function Sidebar({ mobileOpen, onMobileClose, isDark, onToggleTheme, collapsed, onToggleCollapse, userEmail }) {
+export default function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggleCollapse, userEmail }) {
   const emailUsername = userEmail ? userEmail.split('@')[0] : '';
   const emailInitial = emailUsername ? emailUsername[0].toUpperCase() : '?';
   const pathname = usePathname();
@@ -157,21 +156,6 @@ export default function Sidebar({ mobileOpen, onMobileClose, isDark, onToggleThe
             </button>
           </Link>
         </Tooltip>
-        <div className={styles.navItemBottom}>
-          <div className={styles.navIconFrame}>
-            <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-            </svg>
-          </div>
-          <span className={styles.navLabel}>Dark</span>
-          <div className={styles.toggleSlot}>
-            <Toggle
-              checked={isDark}
-              onChange={onToggleTheme}
-              ariaLabel="Toggle dark mode"
-            />
-          </div>
-        </div>
       </div>
     </aside>
   );

@@ -5,8 +5,9 @@ import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 import styles from './MainLayout.module.css';
 import { supabase } from '@/utils/supabase';
+import { ThemeProvider } from '@/context/ThemeContext';
 
-export default function MainLayout({ children }) {
+function MainLayoutInner({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [collapsed, setCollapsed] = useState(() => {
@@ -15,30 +16,7 @@ export default function MainLayout({ children }) {
     }
     return false;
   });
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('theme') || 'dark') === 'dark';
-    }
-    return true;
-  });
   const pathname = usePathname();
-
-  const toggleTheme = () => {
-    setIsDark(prev => {
-      const next = !prev;
-      const theme = next ? 'dark' : 'light';
-      localStorage.setItem('theme', theme);
-      document.documentElement.setAttribute('data-theme', theme);
-      return next;
-    });
-  };
-
-  useEffect(() => {
-    const stored = localStorage.getItem('theme') || 'dark';
-    const dark = stored === 'dark';
-    setIsDark(dark);
-    document.documentElement.setAttribute('data-theme', stored);
-  }, []);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -85,11 +63,25 @@ export default function MainLayout({ children }) {
         />
       )}
 
-      <Sidebar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} collapsed={collapsed} onToggleCollapse={toggleCollapsed} isDark={isDark} onToggleTheme={toggleTheme} userEmail={userEmail} />
+      <Sidebar
+        mobileOpen={mobileOpen}
+        onMobileClose={() => setMobileOpen(false)}
+        collapsed={collapsed}
+        onToggleCollapse={toggleCollapsed}
+        userEmail={userEmail}
+      />
 
       <main className={`${styles.content} ${collapsed ? styles.contentCollapsed : ''}`}>
         <div className={styles.inner}>{children}</div>
       </main>
     </div>
+  );
+}
+
+export default function MainLayout({ children }) {
+  return (
+    <ThemeProvider>
+      <MainLayoutInner>{children}</MainLayoutInner>
+    </ThemeProvider>
   );
 }
