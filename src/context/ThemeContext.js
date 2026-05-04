@@ -4,21 +4,27 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext(null);
 
-export function ThemeProvider({ children }) {
-  const [isDark, setIsDark] = useState(true);
+function readTheme() {
+  // Runs synchronously on the client during the lazy useState init,
+  // so the first render already has the correct value — no flash.
+  if (typeof window === 'undefined') return true; // SSR: default dark
+  const stored = localStorage.getItem('theme');
+  return stored ? stored === 'dark' : true;
+}
 
+export function ThemeProvider({ children }) {
+  const [isDark, setIsDark] = useState(readTheme);
+
+  // Sync the data-theme attribute after hydration
   useEffect(() => {
-    const stored = localStorage.getItem('theme') || 'dark';
-    setIsDark(stored === 'dark');
-    document.documentElement.setAttribute('data-theme', stored);
-  }, []);
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   const toggleTheme = () => {
     setIsDark(prev => {
       const next = !prev;
       const theme = next ? 'dark' : 'light';
       localStorage.setItem('theme', theme);
-      document.documentElement.setAttribute('data-theme', theme);
       return next;
     });
   };
