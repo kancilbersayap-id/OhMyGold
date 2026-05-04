@@ -189,6 +189,19 @@
   width: 100%;
 }
 
+/* Wrapper for profile link + collapse button in navBottom */
+.navItemRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.navItemRow .navTooltip {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+}
+
 /* Hide tooltip when sidebar is expanded */
 .navTooltip::after {
   display: none;
@@ -239,6 +252,15 @@
   margin-left: 0;
 }
 
+.sidebarCollapsed .navItemRow {
+  justify-content: center;
+  gap: 4px;
+}
+
+.sidebarCollapsed .navItemRow .navTooltip {
+  flex: 0 0 auto;
+}
+
 /* Tablet: md (768px) to lg (1024px) — icon-only sidebar */
 @media (min-width: 768px) and (max-width: 1023px) {
   .navTooltip::after {
@@ -284,6 +306,15 @@
 
   .collapseBtn {
     margin-left: 0;
+  }
+
+  .navItemRow {
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .navItemRow .navTooltip {
+    flex: 0 0 auto;
   }
 }
 

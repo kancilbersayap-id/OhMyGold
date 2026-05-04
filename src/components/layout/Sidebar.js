@@ -129,33 +129,35 @@ export default function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggle
         </div>
       </nav>
       <div className={styles.navBottom}>
-        <Tooltip content={emailUsername} position="right" className={styles.navTooltip}>
-          <Link href="/profile" className={styles.navItem} onClick={onMobileClose}>
-            <div className={styles.navIconFrame}>
-              <div className={styles.userAvatar}>{emailInitial}</div>
-            </div>
-            <span className={styles.navLabel}>{emailUsername}</span>
-            <button
-              className={styles.collapseBtn}
-              onClick={(e) => { e.preventDefault(); onToggleCollapse(); }}
-              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              {collapsed ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="4" y1="6" x2="4" y2="18" />
-                  <path d="M8 12h12" />
-                  <path d="M14 7l5 5-5 5" />
-                </svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="4" y1="6" x2="4" y2="18" />
-                  <path d="M20 12H8" />
-                  <path d="M14 7l-5 5 5 5" />
-                </svg>
-              )}
-            </button>
-          </Link>
-        </Tooltip>
+        <div className={styles.navItemRow}>
+          <Tooltip content={emailUsername} position="right" className={styles.navTooltip}>
+            <Link href="/profile" className={styles.navItem} onClick={onMobileClose}>
+              <div className={styles.navIconFrame}>
+                <div className={styles.userAvatar}>{emailInitial}</div>
+              </div>
+              <span className={styles.navLabel}>{emailUsername}</span>
+            </Link>
+          </Tooltip>
+          <button
+            className={styles.collapseBtn}
+            onClick={onToggleCollapse}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {collapsed ? (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" y1="6" x2="4" y2="18" />
+                <path d="M8 12h12" />
+                <path d="M14 7l5 5-5 5" />
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" y1="6" x2="4" y2="18" />
+                <path d="M20 12H8" />
+                <path d="M14 7l-5 5 5 5" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
     </aside>
   );
