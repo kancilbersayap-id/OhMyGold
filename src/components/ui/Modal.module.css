@@ -23,10 +23,26 @@
   border-radius: var(--radius-lg);
   max-width: 500px;
   width: 90%;
-  max-height: 90vh;
+  /* dvh prevents resize jumps when the mobile browser chrome shows/hides */
+  max-height: min(90dvh, 90vh);
   overflow-y: auto;
   z-index: 1001;
   animation: modalIn 0.15s ease;
+}
+
+@media (max-width: 767px) {
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    /* Push content above the home indicator on iOS */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .overlay {
+    align-items: flex-end;
+  }
 }
 
 .modal.closing {
