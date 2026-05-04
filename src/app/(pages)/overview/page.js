@@ -52,8 +52,8 @@ export default async function OverviewPage() {
       getUserTotalAssets(user?.id),
       getMonthlyBuybackHistory(),
       getAntamPriceDailyHistory(8),
-      getAntamPriceHistory(730),
-      getAntamSellPriceHistory(730),
+      getAntamPriceHistory(90),
+      getAntamSellPriceHistory(90),
     ]);
 
   const history = allBuybackHistory;

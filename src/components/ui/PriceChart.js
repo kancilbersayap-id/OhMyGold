@@ -64,6 +64,7 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
   const [pickerEnd, setPickerEnd] = useState('');
   const [customRange, setCustomRange] = useState(null);
   const [customData, setCustomData] = useState([]);
+  const [rangeData, setRangeData] = useState({});
   const [isLoadingCustom, setIsLoadingCustom] = useState(false);
   const pickerRef = useRef(null);
   const cacheRef = useRef(new Map());
@@ -73,6 +74,7 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
     cacheRef.current.clear();
     setCustomData([]);
     setCustomRange(null);
+    setRangeData({});
     setRange('1M');
   }, [data]);
 
@@ -90,6 +92,7 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
 
   const getSlice = () => {
     if (range === 'custom') return customData;
+    if (rangeData[range]) return rangeData[range];
     return data.slice(-(RANGE_DAYS[range] || 30));
   };
 
@@ -98,11 +101,39 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
   const isScrollable = range === '24M' || (range === 'custom' && slice.length > 365);
   const formattedValue = currentValue != null ? currentValue.toLocaleString('id-ID') : '-';
 
+  const fetchPresetRange = async (r) => {
+    const days = RANGE_DAYS[r];
+    const key = `preset:${r}`;
+    if (cacheRef.current.has(key)) {
+      setRangeData(prev => ({ ...prev, [r]: cacheRef.current.get(key) }));
+      return;
+    }
+    if (!onFetchRange) return;
+    setIsLoadingCustom(true);
+    try {
+      const end = new Date().toISOString().split('T')[0];
+      const d = new Date();
+      d.setDate(d.getDate() - days);
+      const start = d.toISOString().split('T')[0];
+      const result = await onFetchRange(start, end);
+      cacheRef.current.set(key, result);
+      setRangeData(prev => ({ ...prev, [r]: result }));
+    } catch (err) {
+      console.error('PriceChart: failed to load range', err);
+    } finally {
+      setIsLoadingCustom(false);
+    }
+  };
+
   const handleRangeClick = (r) => {
     setRange(r);
     setShowPicker(false);
     setCustomRange(null);
     setCustomData([]);
+    const days = RANGE_DAYS[r] || 30;
+    if (onFetchRange && data.length < days && !rangeData[r]) {
+      fetchPresetRange(r);
+    }
   };
 
   const handleDotsClick = () => {
