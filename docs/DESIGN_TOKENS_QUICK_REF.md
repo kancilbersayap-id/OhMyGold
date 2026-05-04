@@ -275,4 +275,3 @@ Open DevTools → Rendering tab → Emulate CSS media feature `prefers-color-sch
 | `design-system/styles/vercel-design.css` | `@theme` block for tooling |
 | `src/app/globals.css` | App entry — imports tokens + dark mode media query |
 | `docs/vercel-DESIGN.md` | Full design system guide |
-| `docs/DESIGN_SYSTEM_AUDIT.md` | Audit history + change log |

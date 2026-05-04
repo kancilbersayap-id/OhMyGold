@@ -28,14 +28,14 @@ OhMyGold is a gold portfolio and investment tracking dashboard for Indonesian us
 | `design-system/styles/design-variables.css` | CSS custom properties derived from tokens |
 | `design-system/styles/vercel-design.css` | Additional Vercel-inspired variables |
 | `docs/vercel-DESIGN.md` | Full design system guide — read before styling |
-| `docs/vercel-design-system-compact.md` | Condensed reference |
+| `docs/DESIGN_TOKENS_QUICK_REF.md` | Copy-paste token reference |
 
 ### Key Tokens (CSS Custom Properties)
 
 **Colors**
 - `--color-background` — page background (#fff / #fafafa)
 - `--color-text` — primary text (#171717)
-- `--color-text-secondary` — muted text (#4d4d4d)
+- `--color-text-muted` — muted text (#4d4d4d)
 - `--color-primary` — brand amber/gold (#bd5200)
 - `--color-secondary` — blue (#0070f3)
 - `--color-accent` — sky blue (#0096ff)
