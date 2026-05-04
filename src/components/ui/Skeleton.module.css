@@ -1,0 +1,82 @@
+/* Shared skeleton/shimmer styles used by loading.js files */
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.block {
+  background: linear-gradient(
+    90deg,
+    var(--color-border) 25%,
+    var(--color-background-2) 50%,
+    var(--color-border) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+/* PageHeader stand-in */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 0 20px;
+}
+
+.headerTitle {
+  composes: block;
+  height: 28px;
+  width: 220px;
+  max-width: 60%;
+}
+
+.headerSubtitle {
+  composes: block;
+  height: 16px;
+  width: 340px;
+  max-width: 80%;
+}
+
+/* Metric cards row */
+.metricsRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.metricCard {
+  composes: block;
+  flex: 1;
+  min-width: 160px;
+  height: 100px;
+  border-radius: var(--radius-lg);
+}
+
+/* Generic content block (chart / table stand-in) */
+.card {
+  composes: block;
+  width: 100%;
+  height: 200px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+}
+
+.cardShort {
+  composes: block;
+  width: 100%;
+  height: 120px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+}
+
+/* Table rows stand-in */
+.tableCard {
+  composes: block;
+  width: 100%;
+  height: 240px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+}
