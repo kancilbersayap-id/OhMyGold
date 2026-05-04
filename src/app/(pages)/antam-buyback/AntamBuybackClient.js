@@ -10,7 +10,7 @@ import Toast from '@/components/ui/Toast';
 import Calendar from '@/components/ui/Calendar';
 import { TextField, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
-import { supabase } from '@/utils/supabase';
+import { addBuybackPrice, updateBuybackPrice, deleteBuybackPrice } from '@/utils/priceActions';
 import styles from './antam-buyback.module.css';
 
 const EMPTY_FORM = { date: '', buybackPrice: '' };
@@ -27,7 +27,7 @@ const ChevronIcon = ({ direction }) => (
   </svg>
 );
 
-export default function AntamBuybackClient({ initialData, userId }) {
+export default function AntamBuybackClient({ initialData }) {
   const today = new Date();
   const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 
@@ -36,30 +36,10 @@ export default function AntamBuybackClient({ initialData, userId }) {
   const [addOpen, setAddOpen] = useState(false);
   const [addForm, setAddForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [toast, setToast] = useState(null);
-
-  const fetchData = async () => {
-    try {
-      const PAGE = 1000;
-      const all = [];
-      for (let from = 0; ; from += PAGE) {
-        const { data: page, error } = await supabase
-          .from('antam_buyback_prices')
-          .select('*')
-          .eq('user_id', userId)
-          .order('date', { ascending: false })
-          .range(from, from + PAGE - 1);
-        if (error) throw error;
-        if (!page || page.length === 0) break;
-        all.push(...page);
-        if (page.length < PAGE) break;
-      }
-      setData(all);
-    } catch {
-      setToast('Failed to load data');
-    }
-  };
 
   const openAdd = () => {
     setEditingId(null);
@@ -88,39 +68,41 @@ export default function AntamBuybackClient({ initialData, userId }) {
       return;
     }
 
-    if (editingId !== null) {
-      const { error } = await supabase
-        .from('antam_buyback_prices')
-        .update({
-          date: addForm.date,
-          buyback_price: parseInt(addForm.buybackPrice),
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', editingId);
-
-      if (error) { setToast('Failed to update'); }
-      else { setToast('Buyback price successfully updated!'); fetchData(); }
-    } else {
-      const { error } = await supabase
-        .from('antam_buyback_prices')
-        .insert({ user_id: userId, date: addForm.date, buyback_price: parseInt(addForm.buybackPrice) });
-
-      if (error) { setToast('Failed to add'); }
-      else { setToast('Buyback price successfully added!'); fetchData(); }
+    setSubmitting(true);
+    try {
+      const updated = editingId !== null
+        ? await updateBuybackPrice({
+            id: editingId,
+            date: addForm.date,
+            buybackPrice: parseInt(addForm.buybackPrice),
+          })
+        : await addBuybackPrice({
+            date: addForm.date,
+            buybackPrice: parseInt(addForm.buybackPrice),
+          });
+      setData(updated);
+      setToast(editingId !== null ? 'Buyback price successfully updated!' : 'Buyback price successfully added!');
+      closeAdd();
+    } catch {
+      setToast(editingId !== null ? 'Failed to update' : 'Failed to add');
+    } finally {
+      setSubmitting(false);
     }
-    closeAdd();
   };
 
   const confirmDelete = useCallback(async () => {
-    const { error } = await supabase
-      .from('antam_buyback_prices')
-      .delete()
-      .eq('id', deleteTarget);
-
-    if (error) { setToast('Failed to delete'); }
-    else { setToast('Buyback price successfully deleted!'); fetchData(); }
-    setDeleteTarget(null);
-  }, [deleteTarget, userId]);
+    setDeleting(true);
+    try {
+      const updated = await deleteBuybackPrice(deleteTarget);
+      setData(updated);
+      setToast('Buyback price successfully deleted!');
+      setDeleteTarget(null);
+    } catch {
+      setToast('Failed to delete');
+    } finally {
+      setDeleting(false);
+    }
+  }, [deleteTarget]);
 
   const getAvailableMonths = () => {
     const months = new Set();
@@ -260,8 +242,8 @@ export default function AntamBuybackClient({ initialData, userId }) {
         title={editingId !== null ? 'Edit buyback price' : 'Add buyback price'}
         onCancel={closeAdd}
         onConfirm={handleAdd}
-        confirmLabel={editingId !== null ? 'Update' : 'Add'}
-        confirmDisabled={!canSubmit && addForm.date !== ''}
+        confirmLabel={submitting ? 'Saving…' : editingId !== null ? 'Update' : 'Add'}
+        confirmDisabled={!canSubmit || submitting}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px', marginBottom: '12px' }}>
           <DatePicker
@@ -293,8 +275,9 @@ export default function AntamBuybackClient({ initialData, userId }) {
             title={rowToDelete ? `Delete ${formatDateIndonesian(rowToDelete.date)}` : 'Delete Buyback Price'}
             onCancel={() => setDeleteTarget(null)}
             onConfirm={confirmDelete}
-            confirmLabel="Delete"
+            confirmLabel={deleting ? 'Deleting…' : 'Delete'}
             confirmVariant="danger"
+            confirmDisabled={deleting}
           >
             <p style={{ fontFamily: 'var(--font-heading-5-family)', fontSize: '14px', color: 'var(--color-text-muted)' }}>
               Are you sure you want to delete this record? This action cannot be undone.

@@ -124,9 +124,6 @@ export function DatePicker({ label, value, onChange }) {
         value={value ?? ''}
         onChange={(e) => onChange?.(e.target.value)}
         onClick={handleClick}
-        onKeyDown={(e) => {
-          if (e.key !== 'Tab' && e.key !== 'Escape') e.preventDefault();
-        }}
       />
     </div>
   );

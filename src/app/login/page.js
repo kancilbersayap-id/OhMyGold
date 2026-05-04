@@ -25,23 +25,16 @@ export default function LoginPage() {
         password,
       });
 
-      console.log('Sign in response:', { data, error });
-
       if (error) {
-        console.error('Sign in error:', error);
         setError(error.message);
         setLoading(false);
-      } else if (data) {
-        console.log('Sign in success, data:', data);
-        await new Promise(resolve => setTimeout(resolve, 500));
+      } else if (data?.user) {
         router.push('/overview');
       } else {
-        console.warn('No error but no data returned');
         setError('Unknown error occurred');
         setLoading(false);
       }
     } catch (err) {
-      console.error('Sign in exception:', err);
       setError(err.message || 'An error occurred');
       setLoading(false);
     }

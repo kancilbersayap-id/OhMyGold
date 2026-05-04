@@ -89,14 +89,16 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [submitting, setSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [toast, setToast] = useState(null);
 
   const fetchData = async () => {
     try {
       const { data: holdings, error } = await supabase
         .from('user_gold_holdings')
-        .select('*')
+        .select('id, date, type, type_unit, paid_amount, unit_price, units')
         .eq('user_id', userId)
         .order('date', { ascending: false });
 
@@ -137,6 +139,7 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
   const handleSubmit = async () => {
     if (!form.date || !form.type || !form.typeUnit || !form.paidAmount || !form.unitPrice) return;
 
+    setSubmitting(true);
     try {
       if (editingId !== null) {
         const { error } = await supabase
@@ -175,10 +178,13 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
       closeModal();
     } catch {
       setToast('Failed to save');
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const confirmDelete = useCallback(async () => {
+    setDeleting(true);
     try {
       const { error } = await supabase
         .from('user_gold_holdings')
@@ -192,6 +198,8 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
       fetchData();
     } catch {
       setToast('Failed to delete');
+    } finally {
+      setDeleting(false);
     }
   }, [deleteTarget, userId]);
 
@@ -284,7 +292,8 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
         title={editingId !== null ? 'Edit Gold Holdings' : 'Add Gold Holdings'}
         onCancel={closeModal}
         onConfirm={handleSubmit}
-        confirmLabel={editingId !== null ? 'Update' : 'Add gold holdings'}
+        confirmLabel={submitting ? 'Saving…' : editingId !== null ? 'Update' : 'Add gold holdings'}
+        confirmDisabled={submitting}
       >
         {formBody}
       </Modal>
@@ -295,8 +304,9 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
         title="Delete Gold Holdings"
         onCancel={() => setDeleteTarget(null)}
         onConfirm={confirmDelete}
-        confirmLabel="Delete"
+        confirmLabel={deleting ? 'Deleting…' : 'Delete'}
         confirmVariant="danger"
+        confirmDisabled={deleting}
       >
         <p style={{ fontFamily: 'var(--font-heading-5-family)', fontSize: '14px', color: 'var(--color-text-muted)' }}>
           Are you sure you want to delete this record? This action cannot be undone.

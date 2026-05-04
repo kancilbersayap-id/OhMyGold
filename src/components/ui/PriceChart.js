@@ -76,6 +76,14 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
   const pickerRef = useRef(null);
   const cacheRef = useRef(new Map());
 
+  // Bust the local cache whenever the source data changes (e.g. after a mutation).
+  useEffect(() => {
+    cacheRef.current.clear();
+    setCustomData([]);
+    setCustomRange(null);
+    setRange('1M');
+  }, [data]);
+
   const today = new Date().toISOString().split('T')[0];
   const isCustomActive = range === 'custom';
 

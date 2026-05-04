@@ -55,9 +55,9 @@ export default function MetricChart({
       {showBaseline && <div className={styles.baseline} />}
 
       <div className={styles.labels}>
-        {data.map((d) => (
+        {data.map((d, i) => (
           <div
-            key={d.label}
+            key={`${d.label}-${i}`}
             className={styles.labelSlot}
             style={{ width: barWidth, fontSize: labelFontSize, color: labelColor }}
           >
