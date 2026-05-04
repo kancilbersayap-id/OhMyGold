@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Badge from './Badge';
 import styles from './Calendar.module.css';
 import { formatRp } from '@/utils/format';
@@ -35,13 +35,20 @@ const DotsIcon = () => (
 export default function Calendar({ data = [], minDate = new Date(2025, 0, 1), maxDate = new Date(), onDayAction }) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const currentMonthData = data.filter(d => {
-    const [year, month] = d.date.split('-').map(Number);
-    return year === currentDate.getFullYear() && month === currentDate.getMonth() + 1;
-  });
+  // O(1) date lookup — rebuilt only when data changes
+  const dateMap = useMemo(() => new Map(data.map(d => [d.date, d])), [data]);
 
-  const minPrice = currentMonthData.length > 0 ? Math.min(...currentMonthData.map(d => d.buybackPrice)) : null;
-  const maxPrice = currentMonthData.length > 0 ? Math.max(...currentMonthData.map(d => d.buybackPrice)) : null;
+  const { minPrice, maxPrice } = useMemo(() => {
+    const yr = currentDate.getFullYear();
+    const mo = currentDate.getMonth() + 1;
+    const prices = data
+      .filter(d => { const [y, m] = d.date.split('-').map(Number); return y === yr && m === mo; })
+      .map(d => d.buybackPrice);
+    return {
+      minPrice: prices.length > 0 ? Math.min(...prices) : null,
+      maxPrice: prices.length > 0 ? Math.max(...prices) : null,
+    };
+  }, [data, currentDate]);
 
   const getDaysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 
@@ -49,8 +56,7 @@ export default function Calendar({ data = [], minDate = new Date(2025, 0, 1), ma
 
   const getPriceForDate = (day) => {
     const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    const item = data.find(d => d.date === dateStr);
-    return item;
+    return dateMap.get(dateStr);
   };
 
   const goToPreviousMonth = () => {
