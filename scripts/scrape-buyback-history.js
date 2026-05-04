@@ -11,40 +11,34 @@ import { chromium } from "playwright";
 import readline from "readline";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-// Use admin key from env, fallback to anon key
-const SUPABASE_KEY = process.env.SUPABASE_ADMIN_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const SUPABASE_KEY = process.env.SUPABASE_ADMIN_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error("❌ Missing Supabase env vars");
+  console.error("❌ Missing Supabase env vars (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_ADMIN_KEY)");
   process.exit(1);
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Interactive prompt
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-function prompt(question) {
-  return new Promise((resolve) => {
-    rl.question(question, resolve);
-  });
+async function readUserIdFromStdin() {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    return await new Promise((resolve) =>
+      rl.question("📝 Enter your Supabase user ID: ", resolve)
+    );
+  } finally {
+    rl.close();
+  }
 }
 
 async function scrapeLogamMulia() {
   console.log("🚀 Starting scrape of logammulia.com...\n");
 
-  // Get user ID
-  const userId = await prompt("📝 Enter your Supabase user ID: ");
-  if (!userId.trim()) {
-    console.error("❌ User ID is required");
-    rl.close();
+  const userId = (process.env.SUPABASE_USER_ID || (await readUserIdFromStdin())).trim();
+  if (!userId) {
+    console.error("❌ User ID is required (set SUPABASE_USER_ID or pass via stdin)");
     process.exit(1);
   }
-
-  rl.close();
 
   const browser = await chromium.launch({ headless: true });
   // Logammulia appears to block default Playwright headless UA from CI IPs,

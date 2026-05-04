@@ -2,9 +2,10 @@ name: Daily Galeri24 Retail Price Scrape
 
 on:
   schedule:
-    # GitHub cron is unreliable (silent skips, large delays), so retry hourly
-    # from 10:20 to 17:20 Jakarta (03:20 to 10:20 UTC). Upsert makes reruns no-op.
-    - cron: '20 3,4,5,6,7,8,9,10 * * *'
+    # GitHub cron has ~3h observed delay, so start early enough to land after
+    # Galeri24's 10:00 WIB update. 00:20 UTC (07:20 WIB) + ~3h delay ≈ 10:20 WIB.
+    # Retry hourly through 17:20 WIB (10:20 UTC) as fallback. Upsert makes reruns no-op.
+    - cron: '20 0,1,2,3,4,5,6,7,8,9,10 * * *'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
@@ -40,13 +41,3 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ADMIN_KEY: ${{ secrets.SUPABASE_ADMIN_KEY }}
         run: node scripts/scrape-retail-prices.js
-
-      - name: Commit results (if changed)
-        if: always()
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update retail prices" && git push)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
