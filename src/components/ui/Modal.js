@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import styles from './Modal.module.css';
 
 export default function Modal({
@@ -18,6 +18,7 @@ export default function Modal({
 }) {
   const [visible, setVisible] = useState(isOpen);
   const [closing, setClosing] = useState(false);
+  const titleId = useId();
 
   useEffect(() => {
     if (isOpen) {
@@ -34,6 +35,16 @@ export default function Modal({
       return () => clearTimeout(t);
     }
   }, [isOpen]);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose?.();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     return () => {
@@ -72,12 +83,15 @@ export default function Modal({
       onClick={onClose}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? titleId : undefined}
         className={`${styles.modal} ${closing ? styles.closing : ''}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.header}>
           <div className={styles.headerText}>
-            {title && <h2 className={styles.title}>{title}</h2>}
+            {title && <h2 id={titleId} className={styles.title}>{title}</h2>}
             {description && <p className={styles.description}>{description}</p>}
           </div>
         </div>
