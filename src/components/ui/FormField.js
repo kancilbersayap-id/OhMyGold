@@ -1,13 +1,15 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useId } from 'react';
 import styles from './FormField.module.css';
 
 export function TextField({ label, value, onChange, placeholder, type = 'text', disabled }) {
+  const id = useId();
   return (
     <div className={styles.field}>
-      {label && <label className={styles.label}>{label}</label>}
+      {label && <label className={styles.label} htmlFor={id}>{label}</label>}
       <input
+        id={id}
         className={styles.input}
         type={type}
         value={value}
@@ -22,6 +24,8 @@ export function TextField({ label, value, onChange, placeholder, type = 'text', 
 export function Select({ label, value, onChange, options }) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
+  const labelId = useId();
+  const listboxId = useId();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -40,11 +44,21 @@ export function Select({ label, value, onChange, options }) {
 
   return (
     <div className={styles.field}>
-      {label && <label className={styles.label}>{label}</label>}
+      {label && <span id={labelId} className={styles.label}>{label}</span>}
       <div className={styles.selectWrapper} ref={wrapperRef}>
         <div
+          role="combobox"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-labelledby={label ? labelId : undefined}
+          aria-controls={listboxId}
+          tabIndex={0}
           className={`${styles.selectTrigger} ${open ? styles.open : ''}`}
           onClick={() => setOpen((o) => !o)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen((o) => !o); }
+            if (e.key === 'Escape') setOpen(false);
+          }}
         >
           {value
             ? <span>{value}</span>
@@ -60,15 +74,18 @@ export function Select({ label, value, onChange, options }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
           >
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </div>
         {open && (
-          <div className={styles.dropdown}>
+          <div id={listboxId} role="listbox" className={styles.dropdown}>
             {options.map((opt) => (
               <div
                 key={opt}
+                role="option"
+                aria-selected={value === opt}
                 className={`${styles.dropdownOption} ${value === opt ? styles.selected : ''}`}
                 onClick={() => handleSelect(opt)}
               >
@@ -83,22 +100,27 @@ export function Select({ label, value, onChange, options }) {
 }
 
 export function Stepper({ label, value, onChange, min = 1, max = 100 }) {
+  const labelId = useId();
   return (
     <div className={styles.field}>
-      {label && <label className={styles.label}>{label}</label>}
-      <div className={styles.stepper}>
+      {label && <span id={labelId} className={styles.label}>{label}</span>}
+      <div className={styles.stepper} role="group" aria-labelledby={label ? labelId : undefined}>
         <button
+          type="button"
           className={styles.stepperButton}
           onClick={() => onChange?.(Math.max(min, value - 1))}
           disabled={value <= min}
+          aria-label={`Decrease ${label ?? 'value'}`}
         >
           −
         </button>
-        <div className={styles.stepperValue}>{value}</div>
+        <div className={styles.stepperValue} aria-live="polite">{value}</div>
         <button
+          type="button"
           className={styles.stepperButton}
           onClick={() => onChange?.(Math.min(max, value + 1))}
           disabled={value >= max}
+          aria-label={`Increase ${label ?? 'value'}`}
         >
           +
         </button>
@@ -108,6 +130,7 @@ export function Stepper({ label, value, onChange, min = 1, max = 100 }) {
 }
 
 export function DatePicker({ label, value, onChange }) {
+  const id = useId();
   const inputRef = useRef(null);
 
   const handleClick = () => {
@@ -116,9 +139,10 @@ export function DatePicker({ label, value, onChange }) {
 
   return (
     <div className={styles.field}>
-      {label && <label className={styles.label}>{label}</label>}
+      {label && <label className={styles.label} htmlFor={id}>{label}</label>}
       <input
         ref={inputRef}
+        id={id}
         className={styles.input}
         type="date"
         value={value ?? ''}
