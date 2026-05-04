@@ -40,6 +40,13 @@
 }
 
 .popoverItem {
+  /* Reset button defaults */
+  appearance: none;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+
   padding: 10px 8px;
   font-family: var(--font-heading-5-family);
   font-size: var(--font-heading-5-size);
