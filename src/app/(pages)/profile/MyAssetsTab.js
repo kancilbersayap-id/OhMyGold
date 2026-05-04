@@ -10,7 +10,7 @@ import Toast from '@/components/ui/Toast';
 import MetricCard from '@/components/ui/MetricCard';
 import { TextField, Select, Stepper, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
-import { supabase } from '@/utils/supabase';
+import { addUserHolding, updateUserHolding, deleteUserHolding } from '@/utils/priceActions';
 import styles from './my-assets.module.css';
 
 const typeUnits = ['2g', '5g', '10g', '50g', '100g'];
@@ -94,20 +94,9 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
   const [deleting, setDeleting] = useState(false);
   const [toast, setToast] = useState(null);
 
-  const fetchData = async () => {
-    try {
-      const { data: holdings, error } = await supabase
-        .from('user_gold_holdings')
-        .select('id, date, type, type_unit, paid_amount, unit_price, units')
-        .eq('user_id', userId)
-        .order('date', { ascending: false });
-
-      if (error) throw error;
-      setRawData(holdings || []);
-      setData((holdings || []).map(toRow));
-    } catch {
-      setToast('Failed to load data');
-    }
+  const applyHoldings = (holdings) => {
+    setRawData(holdings);
+    setData(holdings.map(toRow));
   };
 
   const gramPrice = form.paidAmount && form.typeUnit
@@ -141,40 +130,21 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
 
     setSubmitting(true);
     try {
-      if (editingId !== null) {
-        const { error } = await supabase
-          .from('user_gold_holdings')
-          .update({
-            date: form.date,
-            type: form.type,
-            type_unit: form.typeUnit,
-            paid_amount: parseInt(form.paidAmount),
-            unit_price: parseInt(form.unitPrice),
-            units: parseInt(form.units),
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', editingId)
-          .eq('user_id', userId);
+      const payload = {
+        date: form.date,
+        type: form.type,
+        typeUnit: form.typeUnit,
+        paidAmount: parseInt(form.paidAmount),
+        unitPrice: parseInt(form.unitPrice),
+        units: parseInt(form.units),
+      };
 
-        if (error) throw error;
-        setToast('Data successfully updated!');
-      } else {
-        const { error } = await supabase
-          .from('user_gold_holdings')
-          .insert({
-            user_id: userId,
-            date: form.date,
-            type: form.type,
-            type_unit: form.typeUnit,
-            paid_amount: parseInt(form.paidAmount),
-            unit_price: parseInt(form.unitPrice),
-            units: parseInt(form.units),
-          });
+      const updated = editingId !== null
+        ? await updateUserHolding({ id: editingId, ...payload })
+        : await addUserHolding(payload);
 
-        if (error) throw error;
-        setToast('Data successfully added!');
-      }
-      fetchData();
+      applyHoldings(updated);
+      setToast(editingId !== null ? 'Data successfully updated!' : 'Data successfully added!');
       closeModal();
     } catch {
       setToast('Failed to save');
@@ -186,22 +156,16 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
   const confirmDelete = useCallback(async () => {
     setDeleting(true);
     try {
-      const { error } = await supabase
-        .from('user_gold_holdings')
-        .delete()
-        .eq('id', deleteTarget)
-        .eq('user_id', userId);
-
-      if (error) throw error;
+      const updated = await deleteUserHolding(deleteTarget);
+      applyHoldings(updated);
       setDeleteTarget(null);
       setToast('Data successfully deleted!');
-      fetchData();
     } catch {
       setToast('Failed to delete');
     } finally {
       setDeleting(false);
     }
-  }, [deleteTarget, userId]);
+  }, [deleteTarget]);
 
   const { totalInvested, totalGrams, totalUnits, investedChartData, gramsChartData, unitsChartData } = buildMetrics(rawData);
 

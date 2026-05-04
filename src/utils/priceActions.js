@@ -394,21 +394,123 @@ export async function deleteBuybackPrice(id) {
   return await getUserAntamBuybackHistory(user.id);
 }
 
-export async function getUserTotalAssets(userId) {
-  try {
-    const supabase = await getActionSupabase();
-
+const _fetchUserTotalAssets = unstable_cache(
+  async (userId) => {
+    const { createClient } = require('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_ADMIN_KEY
+    );
     const { data: holdings, error } = await supabase
       .from('user_gold_holdings')
       .select('paid_amount')
       .eq('user_id', userId);
-
     if (error) throw error;
+    return (holdings || []).reduce((sum, h) => sum + (h.paid_amount || 0), 0);
+  },
+  ['user-total-assets'],
+  { revalidate: 3600, tags: ['user-holdings'] }
+);
 
-    const total = (holdings || []).reduce((sum, h) => sum + (h.paid_amount || 0), 0);
-    return total;
+export async function getUserTotalAssets(userId) {
+  if (!userId) return 0;
+  try {
+    return await _fetchUserTotalAssets(userId);
   } catch (error) {
     console.error('Error fetching user assets:', error);
     return 0;
   }
+}
+
+// ─── User Holdings CRUD ────────────────────────────────────────────────────────
+
+const _fetchUserHoldings = unstable_cache(
+  async (userId) => {
+    const { createClient } = require('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_ADMIN_KEY
+    );
+    const { data, error } = await supabase
+      .from('user_gold_holdings')
+      .select('id, date, type, type_unit, paid_amount, unit_price, units')
+      .eq('user_id', userId)
+      .order('date', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  },
+  ['user-holdings'],
+  { revalidate: 3600, tags: ['user-holdings'] }
+);
+
+export async function getUserHoldings(userId) {
+  if (!userId) return [];
+  try {
+    return await _fetchUserHoldings(userId);
+  } catch (error) {
+    console.error('Error fetching user holdings:', error);
+    return [];
+  }
+}
+
+export async function addUserHolding({ date, type, typeUnit, paidAmount, unitPrice, units }) {
+  const supabase = await getActionSupabase();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) throw new Error('Unauthorized');
+
+  const { error } = await supabase
+    .from('user_gold_holdings')
+    .insert({
+      user_id: user.id,
+      date,
+      type,
+      type_unit: typeUnit,
+      paid_amount: paidAmount,
+      unit_price: unitPrice,
+      units,
+    });
+  if (error) throw error;
+
+  revalidateTag('user-holdings');
+  return await getUserHoldings(user.id);
+}
+
+export async function updateUserHolding({ id, date, type, typeUnit, paidAmount, unitPrice, units }) {
+  const supabase = await getActionSupabase();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) throw new Error('Unauthorized');
+
+  const { error } = await supabase
+    .from('user_gold_holdings')
+    .update({
+      date,
+      type,
+      type_unit: typeUnit,
+      paid_amount: paidAmount,
+      unit_price: unitPrice,
+      units,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .eq('user_id', user.id);
+  if (error) throw error;
+
+  revalidateTag('user-holdings');
+  return await getUserHoldings(user.id);
+}
+
+export async function deleteUserHolding(id) {
+  const supabase = await getActionSupabase();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) throw new Error('Unauthorized');
+
+  const { error } = await supabase
+    .from('user_gold_holdings')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', user.id);
+  if (error) throw error;
+
+  revalidateTag('user-holdings');
+  return await getUserHoldings(user.id);
 }
