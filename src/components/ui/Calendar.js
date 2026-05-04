@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Badge from './Badge';
 import styles from './Calendar.module.css';
+import { formatRp } from '@/utils/format';
 
 const monthNames = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -33,8 +34,6 @@ const DotsIcon = () => (
 
 export default function Calendar({ data = [], minDate = new Date(2025, 0, 1), maxDate = new Date(), onDayAction }) {
   const [currentDate, setCurrentDate] = useState(new Date());
-
-  const formatRp = (num) => `Rp ${parseInt(num).toLocaleString('id-ID')}`;
 
   const currentMonthData = data.filter(d => {
     const [year, month] = d.date.split('-').map(Number);

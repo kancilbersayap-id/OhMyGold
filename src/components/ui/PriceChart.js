@@ -7,6 +7,7 @@ import HorizontalBarChart from '@/components/ui/HorizontalBarChart';
 import RangeChip from '@/components/ui/RangeChip';
 import FilterChip from '@/components/ui/FilterChip';
 import styles from './PriceChart.module.css';
+import { toShortDayNum, toMonthLabel, toFullLabelWithYear } from '@/utils/format';
 
 const RANGES = ['1M', '3M', '6M', '12M', '24M'];
 
@@ -20,23 +21,14 @@ const RANGE_TOOLTIP_LABELS = {
   '24M': 'Filter by 24 Months',
 };
 
-const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-const toShortDay = (d) => String(new Date(d + 'T00:00:00').getDate());
-const toMonthLabel = (d) => MONTH_NAMES[new Date(d + 'T00:00:00').getMonth()];
-const toFullLabelWithYear = (d) => {
-  const dt = new Date(d + 'T00:00:00');
-  return `${dt.getDate()} ${MONTH_NAMES[dt.getMonth()]} ${dt.getFullYear()}`;
-};
-
 function buildChartData(slice, range) {
   const n = slice.length;
   return slice.map((r, i) => {
     let label = null;
     if (range === '1M') {
-      if (i === 0 || (i + 1) % 5 === 0 || i === n - 1) label = toShortDay(r.date);
+      if (i === 0 || (i + 1) % 5 === 0 || i === n - 1) label = toShortDayNum(r.date);
     } else if (range === '3M') {
-      if (i === 0 || (i + 1) % 14 === 0 || i === n - 1) label = toShortDay(r.date);
+      if (i === 0 || (i + 1) % 14 === 0 || i === n - 1) label = toShortDayNum(r.date);
     } else if (range === '6M') {
       const step = Math.round(n / 6);
       if (i % step === 0) label = toMonthLabel(r.date);

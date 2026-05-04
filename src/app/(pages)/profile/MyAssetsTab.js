@@ -10,6 +10,7 @@ import Toast from '@/components/ui/Toast';
 import MetricCard from '@/components/ui/MetricCard';
 import { TextField, Select, Stepper, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
+import { formatRp, toShortDay } from '@/utils/format';
 import { addUserHolding, updateUserHolding, deleteUserHolding } from '@/utils/priceActions';
 import styles from './my-assets.module.css';
 
@@ -17,12 +18,6 @@ const typeUnits = ['2g', '5g', '10g', '50g', '100g'];
 const typeOptions = ['Antam certi', 'Antam retro', 'Galeri 24'];
 
 const EMPTY_FORM = { date: '', type: '', typeUnit: '', paidAmount: '', unitPrice: '', units: 1 };
-
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const toShortDate = (dateStr) => {
-  const d = new Date(dateStr + 'T00:00:00');
-  return `${d.getDate()} ${MONTHS[d.getMonth()]}`;
-};
 
 const buildMetrics = (holdings) => {
   const sorted = [...holdings].sort((a, b) => a.date.localeCompare(b.date));
@@ -32,8 +27,8 @@ const buildMetrics = (holdings) => {
   const totalUnits    = holdings.reduce((s, h) => s + (h.units || 0), 0);
 
   const investedChartData = sorted.map(h => ({
-    label: toShortDate(h.date),
-    tooltip: `${toShortDate(h.date)}  Rp ${h.paid_amount.toLocaleString('id-ID')}`,
+    label: toShortDay(h.date),
+    tooltip: `${toShortDay(h.date)}  Rp ${h.paid_amount.toLocaleString('id-ID')}`,
     value: h.paid_amount,
   }));
 
@@ -51,15 +46,13 @@ const buildMetrics = (holdings) => {
     }));
 
   const unitsChartData = sorted.map(h => ({
-    label: toShortDate(h.date),
-    tooltip: `${toShortDate(h.date)}  ${h.units} unit${h.units !== 1 ? 's' : ''}`,
+    label: toShortDay(h.date),
+    tooltip: `${toShortDay(h.date)}  ${h.units} unit${h.units !== 1 ? 's' : ''}`,
     value: h.units,
   }));
 
   return { totalInvested, totalGrams, totalUnits, investedChartData, gramsChartData, unitsChartData };
 };
-
-const formatRp = (num) => `Rp ${parseInt(num).toLocaleString('id-ID')}`;
 
 const toRow = (data) => {
   const grams = parseInt(data.type_unit.replace('g', ''));

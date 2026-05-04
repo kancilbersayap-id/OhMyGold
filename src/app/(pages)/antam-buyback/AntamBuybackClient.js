@@ -10,12 +10,11 @@ import Toast from '@/components/ui/Toast';
 import Calendar from '@/components/ui/Calendar';
 import { TextField, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
+import { formatRp } from '@/utils/format';
 import { addBuybackPrice, updateBuybackPrice, deleteBuybackPrice } from '@/utils/priceActions';
 import styles from './antam-buyback.module.css';
 
 const EMPTY_FORM = { date: '', buybackPrice: '' };
-
-const formatRp = (num) => `Rp ${parseInt(num).toLocaleString('id-ID')}`;
 
 const ChevronIcon = ({ direction }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

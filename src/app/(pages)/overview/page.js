@@ -12,18 +12,13 @@ import {
   getAntamPriceDailyHistory,
   getAntamSellPriceHistory,
 } from '@/utils/priceActions';
+import { formatInt, toShortDayNum, toFullLabelWithYear, MONTH_NAMES, yearMonthToMonthLabel } from '@/utils/format';
 import styles from './overview.module.css';
 
-const formatNumber = (num) => parseInt(num).toLocaleString('id-ID');
-
-const toShortLabel = (dateStr) => {
-  const d = new Date(dateStr + 'T00:00:00');
-  return String(d.getDate());
-};
-
+// toFullLabel: "Apr 15" style for metric chart tooltips
 const toFullLabel = (dateStr) => {
   const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`;
 };
 
 const monthsSinceNov2024 = (dateStr) => {
@@ -34,8 +29,6 @@ const monthsSinceNov2024 = (dateStr) => {
     (d.getMonth() - nov2024.getMonth());
   return Math.max(1, months);
 };
-
-const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 const yearMonthToLabel = (yearMonth) => {
   const [, m] = yearMonth.split('-');
@@ -86,7 +79,7 @@ export default async function OverviewPage() {
 
   if (history.length > 0) {
     antamPriceChartData = dailyHistory.map((r) => ({
-      label: toShortLabel(r.date),
+      label: toShortDayNum(r.date),
       tooltip: r.price
         ? `${toFullLabel(r.date)}  ${r.price.toLocaleString('id-ID')}`
         : toFullLabel(r.date),
@@ -94,7 +87,7 @@ export default async function OverviewPage() {
     }));
 
     estimateRevenueChartData = recentHistory.map((r) => ({
-      label: toShortLabel(r.date),
+      label: toShortDayNum(r.date),
       tooltip: toFullLabel(r.date),
       value: Math.max(0, (r.buyback_price * 600) - assets),
     }));
@@ -123,18 +116,18 @@ export default async function OverviewPage() {
       <div className={styles.metricsSection}>
         <MetricCard
           label="Estimate Revenue"
-          value={estimateRevenue !== null ? formatNumber(estimateRevenue) : '-'}
+          value={estimateRevenue !== null ? formatInt(estimateRevenue) : '-'}
           data={estimateRevenueChartData}
         />
         <MetricCard
           label="Antam Price Today"
-          value={price?.price ? formatNumber(price.price) : '-'}
+          value={price?.price ? formatInt(price.price) : '-'}
           data={antamPriceChartData}
           info="Data sourced from Galeri24 daily scraper"
         />
         <MetricCard
           label="Monthly Revenue"
-          value={monthlyRevenue !== null ? formatNumber(monthlyRevenue) : '-'}
+          value={monthlyRevenue !== null ? formatInt(monthlyRevenue) : '-'}
           data={monthlyRevenueChartData}
         />
       </div>
