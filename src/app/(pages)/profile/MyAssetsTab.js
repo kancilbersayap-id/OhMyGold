@@ -252,6 +252,7 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
         onConfirm={handleSubmit}
         confirmLabel={submitting ? 'Saving…' : editingId !== null ? 'Update' : 'Add gold holdings'}
         confirmDisabled={submitting}
+        closeOnBackdrop={false}
       >
         {formBody}
       </Modal>

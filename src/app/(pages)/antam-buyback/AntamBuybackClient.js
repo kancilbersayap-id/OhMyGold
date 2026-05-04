@@ -244,6 +244,7 @@ export default function AntamBuybackClient({ initialData }) {
         onConfirm={handleAdd}
         confirmLabel={submitting ? 'Saving…' : editingId !== null ? 'Update' : 'Add'}
         confirmDisabled={!canSubmit || submitting}
+        closeOnBackdrop={false}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px', marginBottom: '12px' }}>
           <DatePicker
