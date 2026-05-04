@@ -26,10 +26,20 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
-
   const pathname = request.nextUrl.pathname;
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
+
+  let user = null;
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) throw error;
+    user = data.user;
+  } catch {
+    if (!isPublicRoute) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+    return response;
+  }
 
   if (!user && !isPublicRoute) {
     return NextResponse.redirect(new URL('/login', request.url));
