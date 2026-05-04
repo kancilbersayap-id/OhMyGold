@@ -1,48 +1,22 @@
 'use server';
 
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import { unstable_cache } from 'next/cache';
-
-const getSupabaseClient = async () => {
-  const cookieStore = await cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll?.() ?? [];
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              if (cookieStore.set) {
-                cookieStore.set(name, value, options);
-              }
-            });
-          } catch {
-            // Handle cookie setting errors
-          }
-        },
-      },
-    }
-  );
-};
+import { unstable_cache, revalidateTag } from 'next/cache';
+import { getActionSupabase } from '@/utils/supabase-server';
 
 const getAdminClient = () => {
   const { createClient } = require('@supabase/supabase-js');
+  if (!process.env.SUPABASE_ADMIN_KEY) {
+    throw new Error('SUPABASE_ADMIN_KEY is not configured');
+  }
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_ADMIN_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    process.env.SUPABASE_ADMIN_KEY
   );
 };
 
-export async function getAntamPriceData() {
-  try {
+const _fetchAntamPriceData = unstable_cache(
+  async () => {
     const supabase = getAdminClient();
-
-    // Fetch latest 2 Antam 1g prices (weight can be 1 or '1')
     const { data: prices, error } = await supabase
       .from('galeri24_antam_prices')
       .select('harga_jual, date')
@@ -50,35 +24,28 @@ export async function getAntamPriceData() {
       .in('weight', [1, '1'])
       .order('date', { ascending: false })
       .limit(2);
-
     if (error) throw error;
+    return prices || [];
+  },
+  ['antam-price-data'],
+  { revalidate: 3600, tags: ['retail-prices'] }
+);
 
-    if (!prices || prices.length === 0) {
-      return {
-        price: null,
-        change: null,
-        changePercent: null,
-        error: 'No data available',
-      };
+export async function getAntamPriceData() {
+  try {
+    const prices = await _fetchAntamPriceData();
+    if (prices.length === 0) {
+      return { price: null, change: null, changePercent: null, error: 'No data available' };
     }
-
     const todayPrice = prices[0]?.harga_jual;
     const yesterdayPrice = prices[1]?.harga_jual;
-
     let change = 0;
     let changePercent = 0;
-
     if (yesterdayPrice) {
       change = todayPrice - yesterdayPrice;
       changePercent = Math.round((change / yesterdayPrice) * 100);
     }
-
-    return {
-      price: todayPrice,
-      change,
-      changePercent,
-      error: null,
-    };
+    return { price: todayPrice, change, changePercent, error: null };
   } catch (error) {
     return {
       price: null,
@@ -89,37 +56,40 @@ export async function getAntamPriceData() {
   }
 }
 
-export async function getRetailPrices() {
-  try {
+const _fetchRetailPrices = unstable_cache(
+  async (sinceDate) => {
     const supabase = getAdminClient();
-
-    // Fetch scraped prices from galeri24_antam_prices
-    const { data: scrapedPrices, error } = await supabase
+    const { data, error } = await supabase
       .from('galeri24_antam_prices')
-      .select('*')
+      .select('id, vendor, weight, harga_jual, harga_buyback, date')
+      .gte('date', sinceDate)
       .order('date', { ascending: false });
-
     if (error) throw error;
-
-    // Transform to match retail_prices schema
-    const transformed = (scrapedPrices || []).map((price) => ({
+    return (data || []).map((price) => ({
       ...price,
       brand: price.vendor === 'antam' ? 'Antam' : 'Galeri 24',
       weight: `${price.weight}g`,
     }));
+  },
+  ['retail-prices'],
+  { revalidate: 3600, tags: ['retail-prices'] }
+);
 
-    return transformed;
+export async function getRetailPrices() {
+  try {
+    const since = new Date();
+    since.setDate(since.getDate() - 90);
+    const sinceDate = since.toISOString().slice(0, 10);
+    return await _fetchRetailPrices(sinceDate);
   } catch (error) {
     console.error('Error fetching retail prices:', error);
     return [];
   }
 }
 
-export async function getAntamBuybackPrice() {
-  try {
+const _fetchAntamBuybackPrice = unstable_cache(
+  async () => {
     const supabase = getAdminClient();
-
-    // Fetch latest 2 Antam 1g buyback prices to compare with yesterday
     const { data: prices, error } = await supabase
       .from('galeri24_antam_prices')
       .select('harga_buyback, date')
@@ -127,60 +97,62 @@ export async function getAntamBuybackPrice() {
       .in('weight', [1, '1'])
       .order('date', { ascending: false })
       .limit(2);
+    if (error && error.code !== 'PGRST116') throw error;
+    return prices || [];
+  },
+  ['antam-buyback-price-latest'],
+  { revalidate: 3600, tags: ['retail-prices'] }
+);
 
-    if (error && error.code !== 'PGRST116') {
-      throw error;
-    }
-
-    if (!prices || prices.length === 0) {
+export async function getAntamBuybackPrice() {
+  try {
+    const prices = await _fetchAntamBuybackPrice();
+    if (prices.length === 0) {
       return { price: null, changePercent: 0, error: 'No data available' };
     }
-
     const todayPrice = prices[0]?.harga_buyback;
     const yesterdayPrice = prices[1]?.harga_buyback;
-
     let changePercent = 0;
     if (yesterdayPrice && todayPrice) {
       const change = todayPrice - yesterdayPrice;
       changePercent = Math.round((change / yesterdayPrice) * 100);
     }
-
-    return {
-      price: todayPrice,
-      changePercent,
-      error: null,
-    };
+    return { price: todayPrice, changePercent, error: null };
   } catch (error) {
     console.error('Error fetching Antam buyback price:', error);
     return { price: null, changePercent: 0, error: error?.message || 'Failed to fetch' };
   }
 }
 
+const _fetchAntamPriceDailyHistory = unstable_cache(
+  async (startDate, endDate) => {
+    const supabase = getAdminClient();
+    const { data, error } = await supabase
+      .from('galeri24_antam_prices')
+      .select('date, harga_jual')
+      .eq('vendor', 'antam')
+      .in('weight', [1, '1'])
+      .gte('date', startDate)
+      .lte('date', endDate)
+      .order('date', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  },
+  ['antam-price-daily-history'],
+  { revalidate: 3600, tags: ['retail-prices'] }
+);
+
 export async function getAntamPriceDailyHistory(days = 8) {
   try {
-    const supabase = getAdminClient();
-
     const dates = [];
     for (let i = days - 1; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       dates.push(d.toISOString().slice(0, 10));
     }
-
-    const { data, error } = await supabase
-      .from('galeri24_antam_prices')
-      .select('date, harga_jual')
-      .eq('vendor', 'antam')
-      .in('weight', [1, '1'])
-      .gte('date', dates[0])
-      .lte('date', dates[dates.length - 1])
-      .order('date', { ascending: true });
-
-    if (error) throw error;
-
+    const data = await _fetchAntamPriceDailyHistory(dates[0], dates[dates.length - 1]);
     const byDate = {};
-    for (const row of data || []) byDate[row.date] = row.harga_jual;
-
+    for (const row of data) byDate[row.date] = row.harga_jual;
     return dates.map((d) => ({ date: d, price: byDate[d] ?? null }));
   } catch (error) {
     console.error('Error fetching daily price history:', error);
@@ -188,30 +160,37 @@ export async function getAntamPriceDailyHistory(days = 8) {
   }
 }
 
+const _fetchMonthlyBuybackHistory = unstable_cache(
+  async (userId, fromDate) => {
+    const supabase = getAdminClient();
+    const { data, error } = await supabase
+      .from('antam_buyback_prices')
+      .select('date, buyback_price')
+      .eq('user_id', userId)
+      .gte('date', fromDate)
+      .order('date', { ascending: true });
+    if (error) throw error;
+    return data || [];
+  },
+  ['monthly-buyback-history'],
+  { revalidate: 3600, tags: ['antam-buyback'] }
+);
+
 export async function getMonthlyBuybackHistory() {
   try {
-    const supabase = getAdminClient();
+    const supabase = await getActionSupabase();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
 
-    // Fetch from 8 months ago to today
     const from = new Date();
     from.setMonth(from.getMonth() - 7);
     from.setDate(1);
     const fromDate = from.toISOString().slice(0, 10);
-
-    const { data, error } = await supabase
-      .from('antam_buyback_prices')
-      .select('date, buyback_price')
-      .gte('date', fromDate)
-      .order('date', { ascending: true });
-
-    if (error) throw error;
-
-    // Keep last record per month (ascending order so last write wins)
+    const data = await _fetchMonthlyBuybackHistory(user.id, fromDate);
     const monthMap = {};
-    for (const row of data || []) {
+    for (const row of data) {
       monthMap[row.date.slice(0, 7)] = row;
     }
-
     return Object.entries(monthMap).map(([yearMonth, row]) => ({
       yearMonth,
       date: row.date,
@@ -223,14 +202,13 @@ export async function getMonthlyBuybackHistory() {
   }
 }
 
-// Cached fetch by date range — used for the custom date picker on the Antam buyback chart.
-// Cached for 1 hour and tagged so it can be invalidated when new prices are scraped.
 const _fetchAntamPriceRange = unstable_cache(
-  async (startDate, endDate) => {
+  async (userId, startDate, endDate) => {
     const supabase = getAdminClient();
     const { data, error } = await supabase
       .from('antam_buyback_prices')
       .select('date, buyback_price')
+      .eq('user_id', userId)
       .gte('date', startDate)
       .lte('date', endDate)
       .order('date', { ascending: true });
@@ -238,40 +216,52 @@ const _fetchAntamPriceRange = unstable_cache(
     return data || [];
   },
   ['antam-price-history-by-range'],
-  { revalidate: 3600, tags: ['antam-buyback-prices'] }
+  { revalidate: 3600, tags: ['antam-buyback'] }
 );
 
 export async function getAntamPriceHistoryByRange(startDate, endDate) {
   if (!startDate || !endDate) return [];
   try {
-    return await _fetchAntamPriceRange(startDate, endDate);
+    const supabase = await getActionSupabase();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+    return await _fetchAntamPriceRange(user.id, startDate, endDate);
   } catch (error) {
     console.error('Error fetching Antam price history range:', error);
     return [];
   }
 }
 
-export async function getAntamPriceHistory(limit = 8) {
-  try {
+const _fetchAntamPriceHistory = unstable_cache(
+  async (userId, limit) => {
     const supabase = getAdminClient();
-
     const { data: prices, error } = await supabase
       .from('antam_buyback_prices')
       .select('date, buyback_price')
+      .eq('user_id', userId)
       .order('date', { ascending: false })
       .limit(limit);
-
     if (error) throw error;
-
     return (prices || []).reverse();
+  },
+  ['antam-price-history'],
+  { revalidate: 3600, tags: ['antam-buyback'] }
+);
+
+export async function getAntamPriceHistory(limit = 8) {
+  try {
+    const supabase = await getActionSupabase();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+    return await _fetchAntamPriceHistory(user.id, limit);
   } catch (error) {
     console.error('Error fetching Antam price history:', error);
     return [];
   }
 }
 
-export async function getAntamSellPriceHistory(limit = 730) {
-  try {
+const _fetchAntamSellPriceHistory = unstable_cache(
+  async (limit) => {
     const supabase = getAdminClient();
     const { data, error } = await supabase
       .from('galeri24_antam_prices')
@@ -282,6 +272,14 @@ export async function getAntamSellPriceHistory(limit = 730) {
       .limit(limit);
     if (error) throw error;
     return (data || []).reverse();
+  },
+  ['antam-sell-price-history'],
+  { revalidate: 3600, tags: ['retail-prices'] }
+);
+
+export async function getAntamSellPriceHistory(limit = 730) {
+  try {
+    return await _fetchAntamSellPriceHistory(limit);
   } catch (error) {
     console.error('Error fetching Antam sell price history:', error);
     return [];
@@ -303,7 +301,7 @@ const _fetchAntamSellPriceRange = unstable_cache(
     return data || [];
   },
   ['antam-sell-price-history-by-range'],
-  { revalidate: 3600, tags: ['antam-sell-prices'] }
+  { revalidate: 3600, tags: ['retail-prices'] }
 );
 
 export async function getAntamSellPriceHistoryByRange(startDate, endDate) {
@@ -316,9 +314,89 @@ export async function getAntamSellPriceHistoryByRange(startDate, endDate) {
   }
 }
 
+const _fetchUserAntamBuybackHistory = unstable_cache(
+  async (userId) => {
+    const supabase = getAdminClient();
+    const PAGE = 1000;
+    const all = [];
+    for (let from = 0; ; from += PAGE) {
+      const { data: page, error } = await supabase
+        .from('antam_buyback_prices')
+        .select('id, date, buyback_price')
+        .eq('user_id', userId)
+        .order('date', { ascending: false })
+        .range(from, from + PAGE - 1);
+      if (error || !page || page.length === 0) break;
+      all.push(...page);
+      if (page.length < PAGE) break;
+    }
+    return all;
+  },
+  ['user-antam-buyback-history'],
+  { revalidate: 3600, tags: ['antam-buyback'] }
+);
+
+export async function getUserAntamBuybackHistory(userId) {
+  if (!userId) return [];
+  try {
+    return await _fetchUserAntamBuybackHistory(userId);
+  } catch (error) {
+    console.error('Error fetching user antam buyback history:', error);
+    return [];
+  }
+}
+
+export async function addBuybackPrice({ date, buybackPrice }) {
+  const supabase = await getActionSupabase();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) throw new Error('Unauthorized');
+
+  const { error } = await supabase
+    .from('antam_buyback_prices')
+    .insert({ user_id: user.id, date, buyback_price: buybackPrice });
+  if (error) throw error;
+
+  revalidateTag('antam-buyback');
+  return await getUserAntamBuybackHistory(user.id);
+}
+
+export async function updateBuybackPrice({ id, date, buybackPrice }) {
+  const supabase = await getActionSupabase();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) throw new Error('Unauthorized');
+
+  const { error } = await supabase
+    .from('antam_buyback_prices')
+    .update({
+      date,
+      buyback_price: buybackPrice,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id);
+  if (error) throw error;
+
+  revalidateTag('antam-buyback');
+  return await getUserAntamBuybackHistory(user.id);
+}
+
+export async function deleteBuybackPrice(id) {
+  const supabase = await getActionSupabase();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) throw new Error('Unauthorized');
+
+  const { error } = await supabase
+    .from('antam_buyback_prices')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
+
+  revalidateTag('antam-buyback');
+  return await getUserAntamBuybackHistory(user.id);
+}
+
 export async function getUserTotalAssets(userId) {
   try {
-    const supabase = await getSupabaseClient();
+    const supabase = await getActionSupabase();
 
     const { data: holdings, error } = await supabase
       .from('user_gold_holdings')

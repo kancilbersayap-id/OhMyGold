@@ -1,5 +1,4 @@
-import { cookies } from 'next/headers';
-import { createServerClient } from '@supabase/ssr';
+import { getServerSupabase } from '@/utils/supabase-server';
 import PageHeader from '@/components/ui/PageHeader';
 import MetricCard from '@/components/ui/MetricCard';
 import BuybackChart from './BuybackChart';
@@ -50,30 +49,21 @@ const yearMonthToTooltip = (yearMonth, value) => {
 
 
 export default async function OverviewPage() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll?.() ?? []; },
-        setAll() {},
-      },
-    }
-  );
+  const supabase = await getServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const [price, buybackData, totalAssets, history, monthlyHistory, dailyHistory, allBuybackHistory, allSellHistory] =
+  const [price, buybackData, totalAssets, monthlyHistory, dailyHistory, allBuybackHistory, allSellHistory] =
     await Promise.all([
       getAntamPriceData(),
       getAntamBuybackPrice(),
       getUserTotalAssets(user?.id),
-      getAntamPriceHistory(30),
       getMonthlyBuybackHistory(),
       getAntamPriceDailyHistory(8),
       getAntamPriceHistory(730),
       getAntamSellPriceHistory(730),
     ]);
+
+  const history = allBuybackHistory;
 
   const assets = totalAssets ?? 0;
   const bp = buybackData.price;
