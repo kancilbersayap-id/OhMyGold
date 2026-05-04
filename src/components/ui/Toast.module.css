@@ -26,6 +26,14 @@
   color: #22c55e;
 }
 
+.iconError {
+  color: var(--color-danger, #ef4444);
+}
+
+.toastError {
+  border-color: var(--color-danger, #ef4444);
+}
+
 @keyframes slideIn {
   from { transform: translateY(8px); opacity: 0; }
   to   { transform: translateY(0);   opacity: 1; }

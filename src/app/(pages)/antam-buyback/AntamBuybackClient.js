@@ -39,7 +39,8 @@ export default function AntamBuybackClient({ initialData }) {
   const [submitting, setSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
-  const [toast, setToast] = useState(null);
+  const [toast, setToast] = useState(null); // { message, variant }
+  const showToast = (message, variant = 'success') => setToast({ message, variant });
 
   const openAdd = () => {
     setEditingId(null);
@@ -64,7 +65,7 @@ export default function AntamBuybackClient({ initialData }) {
 
   const handleAdd = async () => {
     if (!canSubmit) {
-      if (isDuplicateDate(addForm.date)) setToast('A buyback price for this date already exists!');
+      if (isDuplicateDate(addForm.date)) showToast('A buyback price for this date already exists!', 'error');
       return;
     }
 
@@ -81,10 +82,10 @@ export default function AntamBuybackClient({ initialData }) {
             buybackPrice: parseInt(addForm.buybackPrice),
           });
       setData(updated);
-      setToast(editingId !== null ? 'Buyback price successfully updated!' : 'Buyback price successfully added!');
+      showToast(editingId !== null ? 'Buyback price successfully updated!' : 'Buyback price successfully added!');
       closeAdd();
     } catch {
-      setToast(editingId !== null ? 'Failed to update' : 'Failed to add');
+      showToast(editingId !== null ? 'Failed to update' : 'Failed to add', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -95,10 +96,10 @@ export default function AntamBuybackClient({ initialData }) {
     try {
       const updated = await deleteBuybackPrice(deleteTarget);
       setData(updated);
-      setToast('Buyback price successfully deleted!');
+      showToast('Buyback price successfully deleted!');
       setDeleteTarget(null);
     } catch {
-      setToast('Failed to delete');
+      showToast('Failed to delete', 'error');
     } finally {
       setDeleting(false);
     }
@@ -286,7 +287,7 @@ export default function AntamBuybackClient({ initialData }) {
         );
       })()}
 
-      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
+      {toast && <Toast message={toast.message} variant={toast.variant} onDismiss={() => setToast(null)} />}
     </>
   );
 }

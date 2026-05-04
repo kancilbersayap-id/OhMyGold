@@ -92,7 +92,8 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
   const [submitting, setSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
-  const [toast, setToast] = useState(null);
+  const [toast, setToast] = useState(null); // { message, variant }
+  const showToast = (message, variant = 'success') => setToast({ message, variant });
 
   const applyHoldings = (holdings) => {
     setRawData(holdings);
@@ -144,10 +145,10 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
         : await addUserHolding(payload);
 
       applyHoldings(updated);
-      setToast(editingId !== null ? 'Data successfully updated!' : 'Data successfully added!');
+      showToast(editingId !== null ? 'Data successfully updated!' : 'Data successfully added!');
       closeModal();
     } catch {
-      setToast('Failed to save');
+      showToast('Failed to save', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -159,9 +160,9 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
       const updated = await deleteUserHolding(deleteTarget);
       applyHoldings(updated);
       setDeleteTarget(null);
-      setToast('Data successfully deleted!');
+      showToast('Data successfully deleted!');
     } catch {
-      setToast('Failed to delete');
+      showToast('Failed to delete', 'error');
     } finally {
       setDeleting(false);
     }
@@ -278,7 +279,7 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
       </Modal>
 
       {toast && (
-        <Toast message={toast} onDismiss={() => setToast(null)} />
+        <Toast message={toast.message} variant={toast.variant} onDismiss={() => setToast(null)} />
       )}
     </>
   );

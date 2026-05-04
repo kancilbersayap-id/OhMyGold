@@ -16,7 +16,8 @@ export default function SettingsTab({ initialEmail }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordSaving, setPasswordSaving] = useState(false);
 
-  const [toast, setToast] = useState(null);
+  const [toast, setToast] = useState(null); // { message, variant }
+  const showToast = (message, variant = 'success') => setToast({ message, variant });
 
   const handleEmailSave = async () => {
     if (!email || email === initialEmail) return;
@@ -24,9 +25,9 @@ export default function SettingsTab({ initialEmail }) {
     try {
       const { error } = await supabase.auth.updateUser({ email });
       if (error) throw error;
-      setToast('Confirmation sent to new email. Check your inbox.');
+      showToast('Confirmation sent to new email. Check your inbox.');
     } catch (err) {
-      setToast(err.message || 'Failed to update email');
+      showToast(err.message || 'Failed to update email', 'error');
     } finally {
       setEmailSaving(false);
     }
@@ -34,11 +35,11 @@ export default function SettingsTab({ initialEmail }) {
 
   const handlePasswordSave = async () => {
     if (!newPassword || newPassword.length < 6) {
-      setToast('Password must be at least 6 characters');
+      showToast('Password must be at least 6 characters', 'error');
       return;
     }
     if (newPassword !== confirmPassword) {
-      setToast('Passwords do not match');
+      showToast('Passwords do not match', 'error');
       return;
     }
     setPasswordSaving(true);
@@ -47,9 +48,9 @@ export default function SettingsTab({ initialEmail }) {
       if (error) throw error;
       setNewPassword('');
       setConfirmPassword('');
-      setToast('Password updated successfully');
+      showToast('Password updated successfully');
     } catch (err) {
-      setToast(err.message || 'Failed to update password');
+      showToast(err.message || 'Failed to update password', 'error');
     } finally {
       setPasswordSaving(false);
     }
@@ -100,7 +101,7 @@ export default function SettingsTab({ initialEmail }) {
         </div>
       </Card>
 
-      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
+      {toast && <Toast message={toast.message} variant={toast.variant} onDismiss={() => setToast(null)} />}
     </div>
   );
 }
