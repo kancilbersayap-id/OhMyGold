@@ -5,7 +5,7 @@ import styles from './HorizontalBarChart.module.css';
 
 const SVG_W = 800;
 const SVG_H = 200;
-const MARGIN = { top: 12, right: 12, bottom: 12, left: 44 };
+const MARGIN = { top: 12, right: 10, bottom: 12, left: 0 };
 const BAR_R = 4;
 const VALUE_GAP = 10;
 const VALUE_FONT = 12;
@@ -86,14 +86,6 @@ export default function HorizontalBarChart({
 
             return (
               <g key={i}>
-                {/* Track */}
-                <rect
-                  x={0} y={barY}
-                  width={CHART_W} height={BAR_H}
-                  rx={BAR_R}
-                  fill={color}
-                  fillOpacity={isHovered ? 0.12 : 0.07}
-                />
                 {/* Bar */}
                 {d.value != null && (
                   <rect
@@ -101,18 +93,9 @@ export default function HorizontalBarChart({
                     width={barW} height={BAR_H}
                     rx={BAR_R}
                     fill={color}
-                    fillOpacity={isHovered ? 1 : 0.65}
+                    fillOpacity={hoveredIndex !== null && !isHovered ? 0.4 : 1}
                   />
                 )}
-                {/* Date label — left */}
-                <text
-                  x={-8}
-                  y={rowY + ROW_H / 2 + 4}
-                  textAnchor="end"
-                  className={isHovered ? styles.yLabelActive : styles.yLabel}
-                >
-                  {d.label}
-                </text>
                 {/* Value label — right of bar */}
                 {d.value != null && (
                   <text

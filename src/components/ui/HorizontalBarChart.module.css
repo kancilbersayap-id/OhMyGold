@@ -1,6 +1,6 @@
 .wrapper {
   width: 100%;
-  padding: 8px 8px 4px;
+  padding: 0;
   overflow: visible;
   position: relative;
 }
@@ -12,26 +12,26 @@
 }
 
 .yLabel {
-  font-size: 11px;
+  font-size: 12px;
   fill: var(--color-text-muted);
   font-family: 'Geist Mono', 'Courier New', monospace;
 }
 
 .yLabelActive {
-  font-size: 11px;
+  font-size: 12px;
   fill: var(--color-text);
   font-weight: 600;
   font-family: 'Geist Mono', 'Courier New', monospace;
 }
 
 .valueLabel {
-  font-size: 11px;
+  font-size: 12px;
   fill: var(--color-text-muted);
   font-family: 'Geist Mono', 'Courier New', monospace;
 }
 
 .valueLabelActive {
-  font-size: 11px;
+  font-size: 12px;
   fill: var(--color-text);
   font-weight: 600;
   font-family: 'Geist Mono', 'Courier New', monospace;

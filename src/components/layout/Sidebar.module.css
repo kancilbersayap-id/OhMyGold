@@ -250,10 +250,12 @@
 
 .sidebarCollapsed .collapseBtn {
   margin-left: 0;
+  order: -1;
 }
 
 .sidebarCollapsed .navItemRow {
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   gap: 4px;
 }
 
@@ -305,7 +307,7 @@
   }
 
   .collapseBtn {
-    margin-left: 0;
+    display: none;
   }
 
   .navItemRow {
@@ -355,12 +357,26 @@
   }
 
   .navItem {
-    max-width: 240px;
+    max-width: unset;
+    width: 100%;
     justify-content: flex-start;
   }
 
   .navLabel {
     display: inline;
+  }
+
+  .navBottom {
+    padding-bottom: 0;
+  }
+
+  .navItemRow {
+    justify-content: flex-start;
+  }
+
+  .navItemRow .navTooltip {
+    flex: 1;
+    width: 100%;
   }
 
   .closeButton {

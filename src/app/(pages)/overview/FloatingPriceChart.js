@@ -19,6 +19,7 @@ export default function FloatingPriceChart({ allData, currentPrice }) {
         data={data}
         onFetchRange={onFetchRange}
         chartType="hbar"
+        info="Retail sell price scraped daily from Galeri24"
       />
     </div>
   );

@@ -18,6 +18,7 @@ export default function BuybackChart({ allData, currentPrice }) {
         currentValue={currentPrice}
         data={data}
         onFetchRange={onFetchRange}
+        info="Data sourced from Logam mulia web"
       />
     </div>
   );

@@ -57,7 +57,16 @@ function buildChartData(slice, range) {
  *   data         — [{ date: 'YYYY-MM-DD', value: number }] full dataset (up to 730 items)
  *   onFetchRange — async (start, end) => [{ date, value }] — called for custom range
  */
-export default function PriceChart({ label, currentValue, data = [], onFetchRange, chartType = 'line' }) {
+const InfoIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <line x1="12" y1="16" x2="12" y2="12" />
+    <line x1="12" y1="8" x2="12.01" y2="8" />
+  </svg>
+);
+
+export default function PriceChart({ label, currentValue, data = [], onFetchRange, chartType = 'line', info }) {
+  const [showInfo, setShowInfo] = useState(false);
   const [range, setRange] = useState('1M');
   const [showPicker, setShowPicker] = useState(false);
   const [pickerStart, setPickerStart] = useState('');
@@ -169,7 +178,19 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
     <div className={styles.card}>
       <div className={styles.header}>
         <div>
-          <div className={styles.label}>{label}</div>
+          <div className={styles.labelRow}>
+            <div className={styles.label}>{label}</div>
+            {info && (
+              <div
+                className={styles.infoWrapper}
+                onMouseEnter={() => setShowInfo(true)}
+                onMouseLeave={() => setShowInfo(false)}
+              >
+                <InfoIcon />
+                {showInfo && <div className={styles.infoTooltip}>{info}</div>}
+              </div>
+            )}
+          </div>
           <div className={styles.value}>{formattedValue}</div>
         </div>
         <div className={styles.chipsWrapper} ref={pickerRef}>
