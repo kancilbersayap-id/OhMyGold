@@ -8,6 +8,7 @@ import Modal from '@/components/ui/Modal';
 import ActionButton from '@/components/ui/ActionButton';
 import Toast from '@/components/ui/Toast';
 import MetricCard from '@/components/ui/MetricCard';
+import LineChart from '@/components/ui/LineChart';
 import { TextField, Select, Stepper, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
 import { formatRp, toShortDay } from '@/utils/format';
@@ -76,7 +77,7 @@ const toRow = (data) => {
   };
 };
 
-export default function MyAssetsClient({ initialData, userId, hideHeader = false, addTrigger = 0 }) {
+export default function MyAssetsClient({ initialData, userId, hideHeader = false, addTrigger = 0, onHoldingsChange, buybackHistory = [] }) {
   const [rawData, setRawData] = useState(initialData);
   const [data, setData] = useState(initialData.map(toRow));
   const [modalOpen, setModalOpen] = useState(false);
@@ -91,6 +92,7 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
   const applyHoldings = (holdings) => {
     setRawData(holdings);
     setData(holdings.map(toRow));
+    onHoldingsChange?.(holdings);
   };
 
   const gramPrice = form.paidAmount && form.typeUnit
@@ -161,7 +163,7 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
     }
   }, [deleteTarget]);
 
-  const { totalInvested, totalGrams, totalUnits, investedChartData, gramsChartData, unitsChartData } = buildMetrics(rawData);
+  const { totalInvested, totalGrams, investedChartData, gramsChartData } = buildMetrics(rawData);
 
   const totalPaid = rawData.reduce((s, h) => s + (h.paid_amount || 0), 0);
 
@@ -222,27 +224,48 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
         />
       )}
 
-      <div className={styles.metricsSection}>
-        <MetricCard
-          label="Total Invested"
-          value={totalInvested.toLocaleString('id-ID')}
-          data={investedChartData}
-        />
-        <MetricCard
-          label="Total Grams"
-          value={`${totalGrams}g`}
-          data={gramsChartData}
-        />
-        <MetricCard
-          label="Total Units"
-          value={String(totalUnits)}
-          data={unitsChartData}
-        />
-      </div>
+      {rawData.length === 0 ? (
+        <div className={styles.emptyWrapper}>
+          <div className={styles.emptyState}>
+            {buybackHistory.length > 0 && (
+              <div className={styles.emptyChart} aria-hidden="true">
+                <LineChart
+                  data={buybackHistory}
+                  showYAxis={false}
+                  showDots={false}
+                  color="var(--color-text)"
+                />
+              </div>
+            )}
+            <div className={styles.emptyContent}>
+              <div className={styles.emptyTitle}>No gold holdings yet</div>
+              <div className={styles.emptyDescription}>
+                Add your first ANTAM, Logammulia, or Galeri 24 purchase to start tracking your portfolio.
+              </div>
+              <Button onClick={openAdd}>Add gold holdings</Button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className={styles.metricsSection}>
+            <MetricCard
+              label="Total Invested"
+              value={totalInvested.toLocaleString('id-ID')}
+              data={investedChartData}
+            />
+            <MetricCard
+              label="Total Grams"
+              value={`${totalGrams}g`}
+              data={gramsChartData}
+            />
+          </div>
 
-      <div className={styles.tableCard}>
-        <Table columns={columns} data={tableData} />
-      </div>
+          <div className={styles.tableCard}>
+            <Table columns={columns} data={tableData} />
+          </div>
+        </>
+      )}
 
       <Modal
         isOpen={modalOpen}

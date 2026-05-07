@@ -1,4 +1,5 @@
 import { getServerSupabase } from '@/utils/supabase-server';
+import { getAntamPriceHistory } from '@/utils/priceActions';
 import ProfileClient from './ProfileClient';
 
 export default async function ProfilePage() {
@@ -10,11 +11,22 @@ export default async function ProfilePage() {
     .eq('user_id', user?.id)
     .order('date', { ascending: false });
 
+  const email = user?.email || '';
+  const displayName = user?.user_metadata?.display_name || email.split('@')[0] || 'User';
+
+  const initialHoldings = holdings || [];
+
+  const buybackHistory = initialHoldings.length === 0
+    ? (await getAntamPriceHistory(180)).map((r) => ({ date: r.date, value: r.buyback_price }))
+    : [];
+
   return (
     <ProfileClient
-      initialHoldings={holdings || []}
+      initialHoldings={initialHoldings}
       userId={user?.id}
-      email={user?.email || ''}
+      email={email}
+      displayName={displayName}
+      buybackHistory={buybackHistory}
     />
   );
 }

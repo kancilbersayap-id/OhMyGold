@@ -66,6 +66,21 @@ Reusable UI components live in `src/components/ui/`. **Always prefer these over 
 - Support dark mode via CSS custom properties (already handled in `globals.css`).
 - Follow the visual guidelines in `docs/vercel-DESIGN.md` for layout, hierarchy, and tone.
 
+### Common slip-ups (read before styling)
+
+These are the recurring ways changes drift from the design system. Skim before any UI work.
+
+- **Custom controls instead of system components.** Don't roll a toggle, modal, dropdown, or menu inline — use `Toggle`, `Modal`, `FormField`, `Popover`, etc. from `src/components/ui/`. If a component is missing, add it to `src/components/ui/` so the next person reuses it.
+- **Hardcoded values.** Every color, font-size, spacing, radius, and font-family must reference a token. No raw hex, px, or system fonts.
+- **Hardcoded fonts on `<button>`/`<input>`.** Form elements have their own UA fonts. `globals.css` resets this with `font: inherit`, but if you set `font-size`/`font-weight` without `font-family`, double-check the result. When in doubt, set `font-family: var(--font-mono)` or another token explicitly.
+- **Hover/focus states with raw colors.** Use `var(--color-surface-hover)`, `var(--color-danger-bg)`, etc. — not `rgba(0,0,0,0.04)`.
+- **Skipping dark mode check.** Verify any new UI in both themes — a hardcoded `#fff` will look fine in light and break in dark.
+- **Inline `style={{...}}` for layout.** Prefer CSS Modules. Inline styles bypass the design system and aren't searchable.
+- **New SVG icons inline.** Match stroke-width/size of nearby icons (typically 16×16, `strokeWidth=1.5–1.75`). Inconsistent icon weight is the most common visual giveaway.
+- **Popovers/menus without outside-click dismissal.** Always use the `Popover` component — it handles outside click + Escape consistently.
+
+If you're unsure whether something belongs in the design system, ask before building it inline.
+
 ---
 
 ## Committing

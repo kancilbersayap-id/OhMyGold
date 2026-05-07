@@ -22,6 +22,13 @@
   z-index: 50;
 }
 
+.wrap::after {
+  white-space: normal;
+  word-break: break-word;
+  max-width: var(--tooltip-max-width, 320px);
+  width: max-content;
+}
+
 .wrapper[data-position='top']::after {
   bottom: calc(100% + 6px);
   top: auto;

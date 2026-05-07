@@ -4,18 +4,20 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext(null);
 
-function readTheme() {
-  // Runs synchronously on the client during the lazy useState init,
-  // so the first render already has the correct value — no flash.
-  if (typeof window === 'undefined') return true; // SSR: default dark
-  const stored = localStorage.getItem('theme');
-  return stored ? stored === 'dark' : true;
-}
-
 export function ThemeProvider({ children }) {
-  const [isDark, setIsDark] = useState(readTheme);
+  // Always start with the server default (dark) so SSR and first client render
+  // produce identical HTML. The inline script in app/layout.js has already set
+  // `data-theme` on <html> from localStorage before paint, so CSS variables are
+  // correct from the start — only the toggle's icon may flip on mount.
+  const [isDark, setIsDark] = useState(true);
 
-  // Sync the data-theme attribute after hydration
+  // After hydration, sync state with the value the inline script applied.
+  useEffect(() => {
+    const applied = document.documentElement.getAttribute('data-theme');
+    setIsDark(applied !== 'light');
+  }, []);
+
+  // Keep the data-theme attribute in sync with state changes from toggling.
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
   }, [isDark]);

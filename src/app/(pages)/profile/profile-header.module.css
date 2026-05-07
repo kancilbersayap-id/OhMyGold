@@ -1,11 +1,71 @@
+.profileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--color-text);
+  color: var(--color-background);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.avatarInitial {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.identityText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.displayName {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.2;
+  margin: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.email {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .headerActions {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* Logout icon button — same height as Button sizeM (34px) */
-.logoutBtn {
+.iconBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -16,19 +76,106 @@
   background: transparent;
   color: var(--color-text-muted);
   cursor: pointer;
-  transition: background-color var(--transition-base), color var(--transition-base);
+  transition: background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base);
   flex-shrink: 0;
 }
 
-.logoutBtn:hover {
-  background-color: var(--color-danger-bg);
-  border-color: var(--color-danger-border);
-  color: var(--color-danger);
+.iconBtn:hover {
+  background-color: var(--color-surface-hover, rgba(127, 127, 127, 0.1));
+  color: var(--color-text);
 }
 
-.logoutBtn:disabled {
+.iconBtn:disabled {
   opacity: var(--opacity-disabled);
   cursor: not-allowed;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-mono), 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+}
+
+.menuItem > span:not([class]) {
+  flex: 1;
+}
+
+.menuItem:hover,
+.menuItem:focus-visible {
+  background-color: var(--color-surface-hover, rgba(127, 127, 127, 0.1));
+}
+
+.menuItem:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+.menuItemDanger {
+  color: var(--color-danger, #e5484d);
+}
+
+.menuDivider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 4px 0;
+}
+
+.toggle {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--color-border);
+  transition: background-color var(--transition-base);
+  flex-shrink: 0;
+}
+
+.toggleOn {
+  background: var(--color-text);
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-background);
+  transition: transform var(--transition-base);
+}
+
+.toggleOn .toggleThumb {
+  transform: translateX(14px);
+}
+
+.assetsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.assetsTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
 }
 
 @media (max-width: 767px) {

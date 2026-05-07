@@ -1,10 +1,69 @@
 .metricsSection {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   margin-top: 24px;
 }
 
+
+.emptyWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 220px);
+  margin-top: 24px;
+}
+
+.emptyState {
+  position: relative;
+  width: 100%;
+  padding: 80px 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background-2);
+  overflow: hidden;
+}
+
+.emptyChart {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyChart > * {
+  width: 100%;
+  height: 100%;
+}
+
+.emptyContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.emptyTitle {
+  font-family: var(--font-heading-4-family);
+  font-size: var(--font-heading-4-size);
+  font-weight: var(--font-heading-4-weight);
+  line-height: var(--font-heading-4-line-height);
+  letter-spacing: var(--font-heading-4-letter-spacing);
+  color: var(--color-text);
+  margin-bottom: 12px;
+}
+
+.emptyDescription {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  max-width: 360px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
 
 .tableCard {
   background-color: var(--color-background);

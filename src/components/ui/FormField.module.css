@@ -18,7 +18,7 @@
   padding: 10px 14px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background-color: rgba(17, 17, 17, 0.8);
+  background-color: var(--color-background-2);
   color: var(--color-text);
   font-family: var(--font-body-text-family);
   font-size: 14px;
@@ -30,7 +30,7 @@
 .input:focus,
 .selectTrigger:focus {
   outline: none;
-  border-color: #ffffff;
+  border-color: var(--color-text);
 }
 
 /* Hide number input spinner */
@@ -49,9 +49,8 @@
   color: var(--color-text-muted);
 }
 
-/* Date input - dark calendar */
 .input[type="date"] {
-  color-scheme: dark;
+  color-scheme: light dark;
 }
 
 .input[type="date"]::-webkit-calendar-picker-indicator {
@@ -88,7 +87,7 @@
 }
 
 .selectTrigger.open {
-  border-color: #ffffff;
+  border-color: var(--color-text);
 }
 
 .selectPlaceholder {
@@ -110,7 +109,7 @@
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background-color: #0a0a0a;
+  background-color: var(--color-background-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 6px;
@@ -130,7 +129,7 @@
 }
 
 .dropdownOption:hover {
-  background-color: #1a1a1a;
+  background-color: var(--color-border);
 }
 
 .dropdownOption.selected {
@@ -155,7 +154,7 @@
   width: 100%;
   flex: 1;
   box-sizing: border-box;
-  background-color: rgba(17, 17, 17, 0.8);
+  background-color: var(--color-background-2);
 }
 
 .stepperButton {

@@ -2,33 +2,53 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import PageHeader from '@/components/ui/PageHeader';
+import Link from 'next/link';
 import Button from '@/components/ui/Button';
-import Tabs from '@/components/ui/Tabs';
-import ThemeToggle from '@/components/ui/ThemeToggle';
+import Toast from '@/components/ui/Toast';
+import Tooltip from '@/components/ui/Tooltip';
+import Popover from '@/components/ui/Popover';
 import MyAssetsClient from './MyAssetsTab';
-import SettingsTab from './SettingsTab';
 import { supabase } from '@/utils/supabase';
+import { useTheme } from '@/context/ThemeContext';
 import styles from './profile-header.module.css';
 
-const TAB_OPTIONS = [
-  { value: 'my-assets', label: 'My Assets' },
-  { value: 'settings', label: 'Settings' },
-];
+const NAME_MAX = 20;
+
+const SettingsIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+  </svg>
+);
 
 const LogoutIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
     <polyline points="16 17 21 12 16 7" />
     <line x1="21" y1="12" x2="9" y2="12" />
   </svg>
 );
 
-export default function ProfileClient({ initialHoldings, userId, email }) {
-  const [tab, setTab] = useState('my-assets');
+const MoonIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+);
+
+const getInitial = (name) => (name?.trim()?.[0] || '?').toUpperCase();
+
+export default function ProfileClient({ initialHoldings, userId, email, displayName, buybackHistory = [] }) {
   const [addTrigger, setAddTrigger] = useState(0);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [hasHoldings, setHasHoldings] = useState(initialHoldings.length > 0);
   const router = useRouter();
+  const { isDark, toggleTheme } = useTheme();
+
+  const showToast = (message, variant = 'success') => setToast({ message, variant });
+
+  const isTruncated = displayName.length > NAME_MAX;
+  const visibleName = isTruncated ? `${displayName.slice(0, NAME_MAX)}…` : displayName;
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -36,41 +56,103 @@ export default function ProfileClient({ initialHoldings, userId, email }) {
     router.push('/login');
   };
 
-  const headerAction = (
-    <div className={styles.headerActions}>
-      {tab === 'my-assets' && (
-        <Button onClick={() => setAddTrigger((t) => t + 1)}>Add gold holdings</Button>
-      )}
-      <ThemeToggle />
-      <button
-        className={styles.logoutBtn}
-        onClick={handleLogout}
-        disabled={loggingOut}
-        aria-label="Log out"
-        title="Log out"
-      >
-        <LogoutIcon />
-      </button>
+  const nameNode = (
+    <div className={styles.displayName} title={isTruncated ? undefined : displayName}>
+      {visibleName}
     </div>
   );
 
   return (
     <>
-      <PageHeader
-        title="Profile"
-        description="Your account information and gold holdings"
-        action={headerAction}
+      <div className={styles.profileHeader}>
+        <div className={styles.identity}>
+          <div className={styles.avatar} aria-hidden="true">
+            <span className={styles.avatarInitial}>{getInitial(displayName)}</span>
+          </div>
+          <div className={styles.identityText}>
+            {isTruncated ? (
+              <Tooltip content={displayName} position="bottom" maxWidth={480}>
+                {nameNode}
+              </Tooltip>
+            ) : (
+              nameNode
+            )}
+            <div className={styles.email}>{email}</div>
+          </div>
+        </div>
+        <div className={styles.headerActions}>
+          {hasHoldings && (
+            <Button onClick={() => setAddTrigger((t) => t + 1)}>Add gold holdings</Button>
+          )}
+          <Popover
+            align="right"
+            trigger={(toggle, isOpen) => (
+              <button
+                type="button"
+                className={styles.iconBtn}
+                onClick={toggle}
+                aria-label="Open settings menu"
+                aria-haspopup="menu"
+                aria-expanded={isOpen}
+              >
+                <SettingsIcon />
+              </button>
+            )}
+          >
+            {({ close }) => (
+              <>
+                <Link
+                  href="/profile/settings"
+                  className={styles.menuItem}
+                  role="menuitem"
+                  onClick={close}
+                >
+                  <SettingsIcon />
+                  <span>Settings</span>
+                </Link>
+                <button
+                  type="button"
+                  className={styles.menuItem}
+                  role="menuitemcheckbox"
+                  aria-checked={isDark}
+                  onClick={toggleTheme}
+                >
+                  <MoonIcon />
+                  <span>Dark</span>
+                  <span
+                    className={`${styles.toggle} ${isDark ? styles.toggleOn : ''}`}
+                    aria-hidden="true"
+                  >
+                    <span className={styles.toggleThumb} />
+                  </span>
+                </button>
+                <div className={styles.menuDivider} />
+                <button
+                  type="button"
+                  className={`${styles.menuItem} ${styles.menuItemDanger}`}
+                  role="menuitem"
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                >
+                  <LogoutIcon />
+                  <span>Sign out</span>
+                </button>
+              </>
+            )}
+          </Popover>
+        </div>
+      </div>
+
+      <MyAssetsClient
+        initialData={initialHoldings}
+        userId={userId}
+        hideHeader
+        addTrigger={addTrigger}
+        onHoldingsChange={(holdings) => setHasHoldings(holdings.length > 0)}
+        buybackHistory={buybackHistory}
       />
-      <Tabs tabs={TAB_OPTIONS} value={tab} onChange={setTab} />
-      {tab === 'my-assets' && (
-        <MyAssetsClient
-          initialData={initialHoldings}
-          userId={userId}
-          hideHeader
-          addTrigger={addTrigger}
-        />
-      )}
-      {tab === 'settings' && <SettingsTab initialEmail={email} />}
+
+      {toast && <Toast message={toast.message} variant={toast.variant} onDismiss={() => setToast(null)} />}
     </>
   );
 }

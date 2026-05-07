@@ -40,6 +40,18 @@
   padding: 0;
 }
 
+/* Form elements don't inherit font-family by default — force inheritance so
+   buttons/inputs/selects/textareas pick up Geist from the body and never
+   regress to the user-agent default. */
+button,
+input,
+select,
+textarea,
+optgroup {
+  font: inherit;
+  color: inherit;
+}
+
 html,
 body {
   background-color: var(--color-background);
