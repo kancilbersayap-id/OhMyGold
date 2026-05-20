@@ -4,7 +4,7 @@ import { createServerClient } from '@supabase/ssr';
 
 const PUBLIC_ROUTES = ['/login', '/signup', '/design-system'];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
