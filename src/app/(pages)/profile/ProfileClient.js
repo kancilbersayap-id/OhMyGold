@@ -10,6 +10,7 @@ import Popover from '@/components/ui/Popover';
 import MyAssetsClient from './MyAssetsTab';
 import { supabase } from '@/utils/supabase';
 import { useTheme } from '@/context/ThemeContext';
+import { useTranslation } from '@/i18n/LocaleProvider';
 import styles from './profile-header.module.css';
 
 const NAME_MAX = 20;
@@ -44,6 +45,7 @@ export default function ProfileClient({ initialHoldings, userId, email, displayN
   const [hasHoldings, setHasHoldings] = useState(initialHoldings.length > 0);
   const router = useRouter();
   const { isDark, toggleTheme } = useTheme();
+  const { t } = useTranslation();
 
   const showToast = (message, variant = 'success') => setToast({ message, variant });
 
@@ -82,7 +84,7 @@ export default function ProfileClient({ initialHoldings, userId, email, displayN
         </div>
         <div className={styles.headerActions}>
           {hasHoldings && (
-            <Button onClick={() => setAddTrigger((t) => t + 1)}>Add gold holdings</Button>
+            <Button onClick={() => setAddTrigger((n) => n + 1)}>{t('profile.addHoldings')}</Button>
           )}
           <Popover
             align="right"
@@ -91,7 +93,7 @@ export default function ProfileClient({ initialHoldings, userId, email, displayN
                 type="button"
                 className={styles.iconBtn}
                 onClick={toggle}
-                aria-label="Open settings menu"
+                aria-label={t('profile.settingsMenu')}
                 aria-haspopup="menu"
                 aria-expanded={isOpen}
               >
@@ -108,7 +110,7 @@ export default function ProfileClient({ initialHoldings, userId, email, displayN
                   onClick={close}
                 >
                   <SettingsIcon />
-                  <span>Settings</span>
+                  <span>{t('profile.settings')}</span>
                 </Link>
                 <button
                   type="button"
@@ -118,7 +120,7 @@ export default function ProfileClient({ initialHoldings, userId, email, displayN
                   onClick={toggleTheme}
                 >
                   <MoonIcon />
-                  <span>Dark</span>
+                  <span>{t('profile.dark')}</span>
                   <span
                     className={`${styles.toggle} ${isDark ? styles.toggleOn : ''}`}
                     aria-hidden="true"
@@ -135,7 +137,7 @@ export default function ProfileClient({ initialHoldings, userId, email, displayN
                   disabled={loggingOut}
                 >
                   <LogoutIcon />
-                  <span>Sign out</span>
+                  <span>{t('profile.signOut')}</span>
                 </button>
               </>
             )}

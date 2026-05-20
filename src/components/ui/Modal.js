@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
+import { useTranslation } from '@/i18n/LocaleProvider';
 import styles from './Modal.module.css';
 
 const FOCUSABLE = [
@@ -21,11 +22,12 @@ export default function Modal({
   footer,
   onCancel,
   onConfirm,
-  confirmLabel = 'Confirm',
+  confirmLabel,
   confirmVariant = 'primary',
   confirmDisabled = false,
   closeOnBackdrop = true,
 }) {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(isOpen);
   const [closing, setClosing] = useState(false);
   const titleId = useId();
@@ -114,7 +116,7 @@ export default function Modal({
       return (
         <>
           {onCancel && (
-            <button className={styles.cancelBtn} onClick={onCancel}>Cancel</button>
+            <button className={styles.cancelBtn} onClick={onCancel}>{t('common.cancel')}</button>
           )}
           {onConfirm && (
             <button
@@ -122,7 +124,7 @@ export default function Modal({
               onClick={onConfirm}
               disabled={confirmDisabled}
             >
-              {confirmLabel}
+              {confirmLabel ?? t('common.confirm')}
             </button>
           )}
         </>

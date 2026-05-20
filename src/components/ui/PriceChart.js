@@ -8,17 +8,18 @@ import RangeChip from '@/components/ui/RangeChip';
 import FilterChip from '@/components/ui/FilterChip';
 import styles from './PriceChart.module.css';
 import { toShortDayNum, toMonthLabel, toFullLabelWithYear } from '@/utils/format';
+import { useTranslation } from '@/i18n/LocaleProvider';
 
 const RANGES = ['1M', '3M', '6M', '12M', '24M'];
 
 const RANGE_DAYS = { '1M': 30, '3M': 90, '6M': 180, '12M': 365, '24M': 730 };
 
-const RANGE_TOOLTIP_LABELS = {
-  '1M': 'Filter by 1 Month',
-  '3M': 'Filter by 3 Months',
-  '6M': 'Filter by 6 Months',
-  '12M': 'Filter by 12 Months',
-  '24M': 'Filter by 24 Months',
+const RANGE_TOOLTIP_KEYS = {
+  '1M': 'priceChart.filterBy1M',
+  '3M': 'priceChart.filterBy3M',
+  '6M': 'priceChart.filterBy6M',
+  '12M': 'priceChart.filterBy12M',
+  '24M': 'priceChart.filterBy24M',
 };
 
 function buildChartData(slice, range) {
@@ -66,6 +67,7 @@ const InfoIcon = () => (
 );
 
 export default function PriceChart({ label, currentValue, data = [], onFetchRange, chartType = 'line', info }) {
+  const { t } = useTranslation();
   const [showInfo, setShowInfo] = useState(false);
   const [range, setRange] = useState('1M');
   const [showPicker, setShowPicker] = useState(false);
@@ -198,8 +200,11 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
             {RANGES.map((r) => {
               const isActive = range === r;
               const tooltip = isActive && slice.length > 0
-                ? `Active from ${toFullLabelWithYear(slice[0].date)} to ${toFullLabelWithYear(slice[slice.length - 1].date)}`
-                : RANGE_TOOLTIP_LABELS[r];
+                ? t('priceChart.activeRange', {
+                    start: toFullLabelWithYear(slice[0].date),
+                    end: toFullLabelWithYear(slice[slice.length - 1].date),
+                  })
+                : t(RANGE_TOOLTIP_KEYS[r]);
               return (
                 <RangeChip key={r} label={r} isActive={isActive} onClick={() => handleRangeClick(r)} tooltip={tooltip} />
               );
@@ -208,8 +213,11 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
               isActive={isCustomActive}
               onClick={handleDotsClick}
               tooltip={isCustomActive && customRange
-                ? `Selected from ${toFullLabelWithYear(customRange.start)} to ${toFullLabelWithYear(customRange.end)}`
-                : 'Custom date range'}
+                ? t('priceChart.selectedRange', {
+                    start: toFullLabelWithYear(customRange.start),
+                    end: toFullLabelWithYear(customRange.end),
+                  })
+                : t('priceChart.customRange')}
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M1 2.5h12M3 7h8M5 11.5h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -221,19 +229,19 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
             <div className={styles.datePicker}>
               <div className={styles.datePickerRow}>
                 <div className={styles.datePickerField}>
-                  <label className={styles.datePickerLabel}>From</label>
+                  <label className={styles.datePickerLabel}>{t('priceChart.from')}</label>
                   <input type="date" className={styles.datePickerInput} value={pickerStart}
                     max={pickerEnd || today} onChange={e => setPickerStart(e.target.value)}
                     onClick={e => e.target.showPicker?.()} />
                 </div>
                 <div className={styles.datePickerField}>
-                  <label className={styles.datePickerLabel}>To</label>
+                  <label className={styles.datePickerLabel}>{t('priceChart.to')}</label>
                   <input type="date" className={styles.datePickerInput} value={pickerEnd}
                     min={pickerStart || undefined} max={today} onChange={e => setPickerEnd(e.target.value)}
                     onClick={e => e.target.showPicker?.()} />
                 </div>
                 <button className={styles.datePickerApply} onClick={handleApplyCustom}
-                  disabled={!pickerStart || !pickerEnd || pickerStart > pickerEnd} title="Apply">
+                  disabled={!pickerStart || !pickerEnd || pickerStart > pickerEnd} title={t('priceChart.apply')}>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3 8l3.5 3.5L13 4.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
@@ -245,12 +253,14 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
       </div>
 
       {isLoadingCustom ? (
-        <div className={styles.emptyState}>Loading…</div>
+        <div className={styles.emptyState}>{t('priceChart.loading')}</div>
       ) : chartData.length === 0 ? (
         <div className={styles.emptyState}>
-          No data available for {customRange
-            ? `${toFullLabelWithYear(customRange.start)} — ${toFullLabelWithYear(customRange.end)}`
-            : 'this range'}
+          {t('priceChart.noDataRange', {
+            range: customRange
+              ? `${toFullLabelWithYear(customRange.start)} — ${toFullLabelWithYear(customRange.end)}`
+              : t('priceChart.thisRange'),
+          })}
         </div>
       ) : chartType === 'dot' ? (
         <DotGridChart data={chartData} color="var(--color-text)" scrollable={isScrollable} />

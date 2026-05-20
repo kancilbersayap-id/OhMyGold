@@ -4,13 +4,7 @@ import { useState, useMemo } from 'react';
 import Badge from './Badge';
 import styles from './Calendar.module.css';
 import { formatRp } from '@/utils/format';
-
-const monthNames = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
-
-const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+import { useTranslation } from '@/i18n/LocaleProvider';
 
 const ChevronLeft = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
@@ -33,6 +27,9 @@ const DotsIcon = () => (
 );
 
 export default function Calendar({ data = [], minDate = new Date(2025, 0, 1), maxDate = new Date(), onDayAction }) {
+  const { t } = useTranslation();
+  const monthNames = t('calendar.months');
+  const dayNames = t('calendar.days');
   const [currentDate, setCurrentDate] = useState(new Date());
 
   // O(1) date lookup — rebuilt only when data changes
@@ -111,7 +108,7 @@ export default function Calendar({ data = [], minDate = new Date(2025, 0, 1), ma
             className={styles.navButton}
             onClick={goToPreviousMonth}
             disabled={!canGoPrevious}
-            aria-label="Previous month"
+            aria-label={t('calendar.prevMonth')}
           >
             <ChevronLeft />
           </button>
@@ -119,7 +116,7 @@ export default function Calendar({ data = [], minDate = new Date(2025, 0, 1), ma
             className={styles.navButton}
             onClick={goToNextMonth}
             disabled={!canGoNext}
-            aria-label="Next month"
+            aria-label={t('calendar.nextMonth')}
           >
             <ChevronRight />
           </button>
@@ -145,10 +142,10 @@ export default function Calendar({ data = [], minDate = new Date(2025, 0, 1), ma
                   {priceItem && (
                     <div className={styles.priceContainer}>
                       {priceItem.buybackPrice === minPrice && (
-                        <Badge type="positive">Low</Badge>
+                        <Badge type="positive">{t('calendar.low')}</Badge>
                       )}
                       {priceItem.buybackPrice === maxPrice && (
-                        <Badge type="negative">High</Badge>
+                        <Badge type="negative">{t('calendar.high')}</Badge>
                       )}
                       <div className={styles.price}>
                         {formatRp(priceItem.buybackPrice)}

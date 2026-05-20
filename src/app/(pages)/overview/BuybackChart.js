@@ -2,8 +2,10 @@
 
 import PriceChart from '@/components/ui/PriceChart';
 import { getAntamPriceHistoryByRange } from '@/utils/priceActions';
+import { useTranslation } from '@/i18n/LocaleProvider';
 
 export default function BuybackChart({ allData, currentPrice }) {
+  const { t } = useTranslation();
   const data = allData.map(r => ({ date: r.date, value: r.buyback_price }));
 
   const onFetchRange = async (start, end) => {
@@ -14,11 +16,11 @@ export default function BuybackChart({ allData, currentPrice }) {
   return (
     <div style={{ marginTop: '16px' }}>
       <PriceChart
-        label="Antam Buyback Price"
+        label={t('overview.buybackChartLabel')}
         currentValue={currentPrice}
         data={data}
         onFetchRange={onFetchRange}
-        info="Data sourced from Logam mulia web"
+        info={t('overview.buybackChartInfo')}
       />
     </div>
   );

@@ -13,6 +13,7 @@ import { TextField, Select, Stepper, DatePicker } from '@/components/ui/FormFiel
 import { formatDateIndonesian } from '@/utils/dateFormatter';
 import { formatRp, toShortDay } from '@/utils/format';
 import { addUserHolding, updateUserHolding, deleteUserHolding } from '@/utils/priceActions';
+import { useTranslation } from '@/i18n/LocaleProvider';
 import styles from './my-assets.module.css';
 
 const typeUnits = ['2g', '5g', '10g', '50g', '100g'];
@@ -48,7 +49,7 @@ const buildMetrics = (holdings) => {
 
   const unitsChartData = sorted.map(h => ({
     label: toShortDay(h.date),
-    tooltip: `${toShortDay(h.date)}  ${h.units} unit${h.units !== 1 ? 's' : ''}`,
+    tooltip: `${toShortDay(h.date)}  ${h.units} unit`,
     value: h.units,
   }));
 
@@ -78,6 +79,7 @@ const toRow = (data) => {
 };
 
 export default function MyAssetsClient({ initialData, userId, hideHeader = false, addTrigger = 0, onHoldingsChange, buybackHistory = [] }) {
+  const { t } = useTranslation();
   const [rawData, setRawData] = useState(initialData);
   const [data, setData] = useState(initialData.map(toRow));
   const [modalOpen, setModalOpen] = useState(false);
@@ -140,10 +142,10 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
         : await addUserHolding(payload);
 
       applyHoldings(updated);
-      showToast(editingId !== null ? 'Data successfully updated!' : 'Data successfully added!');
+      showToast(editingId !== null ? t('myAssets.toastUpdated') : t('myAssets.toastAdded'));
       closeModal();
     } catch {
-      showToast('Failed to save', 'error');
+      showToast(t('myAssets.toastFailSave'), 'error');
     } finally {
       setSubmitting(false);
     }
@@ -155,25 +157,25 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
       const updated = await deleteUserHolding(deleteTarget);
       applyHoldings(updated);
       setDeleteTarget(null);
-      showToast('Data successfully deleted!');
+      showToast(t('myAssets.toastDeleted'));
     } catch {
-      showToast('Failed to delete', 'error');
+      showToast(t('myAssets.toastFailDelete'), 'error');
     } finally {
       setDeleting(false);
     }
-  }, [deleteTarget]);
+  }, [deleteTarget, t]);
 
   const { totalInvested, totalGrams, investedChartData, gramsChartData } = buildMetrics(rawData);
 
   const totalPaid = rawData.reduce((s, h) => s + (h.paid_amount || 0), 0);
 
   const columns = [
-    { key: 'date',      label: 'Date Purchase' },
-    { key: 'type',      label: 'Type' },
-    { key: 'amount',    label: 'Paid amount' },
-    { key: 'unitPrice', label: 'Unit Price' },
-    { key: 'gramPrice', label: 'Gram Price' },
-    { key: 'units',     label: 'Units' },
+    { key: 'date',      label: t('myAssets.colDate') },
+    { key: 'type',      label: t('myAssets.colType') },
+    { key: 'amount',    label: t('myAssets.colAmount') },
+    { key: 'unitPrice', label: t('myAssets.colUnitPrice') },
+    { key: 'gramPrice', label: t('myAssets.colGramPrice') },
+    { key: 'units',     label: t('myAssets.colUnits') },
     { key: 'actions',   label: '' },
   ];
 
@@ -188,7 +190,7 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
       ),
     })),
     {
-      date: 'Total', type: '', amount: formatRp(totalPaid),
+      date: t('common.total'), type: '', amount: formatRp(totalPaid),
       unitPrice: '', gramPrice: '', units: String(rawData.reduce((s, h) => s + (h.units || 0), 0)),
       actions: '', isTotal: true,
     },
@@ -197,19 +199,19 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
   const formBody = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div style={{ marginTop: '12px' }}>
-        <DatePicker label="Date Purchase" value={form.date} onChange={v => setForm(f => ({ ...f, date: v }))} />
+        <DatePicker label={t('myAssets.fieldDate')} value={form.date} onChange={v => setForm(f => ({ ...f, date: v }))} />
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '12px' }}>
-        <Select label="Type"      value={form.type}     onChange={v => setForm(f => ({ ...f, type: v }))}     options={typeOptions} />
-        <Select label="Type Unit" value={form.typeUnit} onChange={v => setForm(f => ({ ...f, typeUnit: v }))} options={typeUnits} />
+        <Select label={t('myAssets.fieldType')}     value={form.type}     onChange={v => setForm(f => ({ ...f, type: v }))}     options={typeOptions} />
+        <Select label={t('myAssets.fieldTypeUnit')} value={form.typeUnit} onChange={v => setForm(f => ({ ...f, typeUnit: v }))} options={typeUnits} />
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '12px' }}>
-        <TextField label="Paid Amount" value={form.paidAmount} onChange={v => setForm(f => ({ ...f, paidAmount: v }))} placeholder="Enter amount"     type="number" />
-        <TextField label="Unit Price"  value={form.unitPrice}  onChange={v => setForm(f => ({ ...f, unitPrice: v }))}  placeholder="Enter unit price" type="number" />
+        <TextField label={t('myAssets.fieldPaidAmount')} value={form.paidAmount} onChange={v => setForm(f => ({ ...f, paidAmount: v }))} placeholder={t('myAssets.fieldPaidAmountPlaceholder')} type="number" />
+        <TextField label={t('myAssets.fieldUnitPrice')}  value={form.unitPrice}  onChange={v => setForm(f => ({ ...f, unitPrice: v }))}  placeholder={t('myAssets.fieldUnitPricePlaceholder')} type="number" />
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '12px', alignItems: 'stretch', marginBottom: '12px' }}>
-        <TextField label="Gram Price" value={gramPrice} onChange={() => {}} placeholder="Auto calculated" disabled />
-        <Stepper   label="Units"      value={form.units} onChange={v => setForm(f => ({ ...f, units: v }))} min={1} max={100} />
+        <TextField label={t('myAssets.fieldGramPrice')} value={gramPrice} onChange={() => {}} placeholder={t('myAssets.fieldGramPricePlaceholder')} disabled />
+        <Stepper   label={t('myAssets.fieldUnits')}     value={form.units} onChange={v => setForm(f => ({ ...f, units: v }))} min={1} max={100} />
       </div>
     </div>
   );
@@ -218,9 +220,9 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
     <>
       {!hideHeader && (
         <PageHeader
-          title="My Assets"
-          description="All gold holdings details and structure, include type and units"
-          action={<Button onClick={openAdd}>Add gold holdings</Button>}
+          title={t('myAssets.title')}
+          description={t('myAssets.description')}
+          action={<Button onClick={openAdd}>{t('myAssets.addHoldings')}</Button>}
         />
       )}
 
@@ -238,11 +240,11 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
               </div>
             )}
             <div className={styles.emptyContent}>
-              <div className={styles.emptyTitle}>No gold holdings yet</div>
+              <div className={styles.emptyTitle}>{t('myAssets.emptyTitle')}</div>
               <div className={styles.emptyDescription}>
-                Add your first ANTAM, Logammulia, or Galeri 24 purchase to start tracking your portfolio.
+                {t('myAssets.emptyDescription')}
               </div>
-              <Button onClick={openAdd}>Add gold holdings</Button>
+              <Button onClick={openAdd}>{t('myAssets.addHoldings')}</Button>
             </div>
           </div>
         </div>
@@ -250,12 +252,12 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
         <>
           <div className={styles.metricsSection}>
             <MetricCard
-              label="Total Invested"
+              label={t('myAssets.totalInvested')}
               value={totalInvested.toLocaleString('id-ID')}
               data={investedChartData}
             />
             <MetricCard
-              label="Total Grams"
+              label={t('myAssets.totalGrams')}
               value={`${totalGrams}g`}
               data={gramsChartData}
             />
@@ -270,10 +272,10 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
       <Modal
         isOpen={modalOpen}
         onClose={closeModal}
-        title={editingId !== null ? 'Edit Gold Holdings' : 'Add Gold Holdings'}
+        title={editingId !== null ? t('myAssets.modalEditTitle') : t('myAssets.modalAddTitle')}
         onCancel={closeModal}
         onConfirm={handleSubmit}
-        confirmLabel={submitting ? 'Saving…' : editingId !== null ? 'Update' : 'Add gold holdings'}
+        confirmLabel={submitting ? t('common.saving') : editingId !== null ? t('common.update') : t('myAssets.addHoldings')}
         confirmDisabled={submitting}
         closeOnBackdrop={false}
       >
@@ -283,15 +285,15 @@ export default function MyAssetsClient({ initialData, userId, hideHeader = false
       <Modal
         isOpen={deleteTarget !== null}
         onClose={() => setDeleteTarget(null)}
-        title="Delete Gold Holdings"
+        title={t('myAssets.modalDeleteTitle')}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={confirmDelete}
-        confirmLabel={deleting ? 'Deleting…' : 'Delete'}
+        confirmLabel={deleting ? t('common.deleting') : t('common.delete')}
         confirmVariant="danger"
         confirmDisabled={deleting}
       >
         <p style={{ fontFamily: 'var(--font-heading-5-family)', fontSize: '14px', color: 'var(--color-text-muted)' }}>
-          Are you sure you want to delete this record? This action cannot be undone.
+          {t('common.deleteConfirm')}
         </p>
       </Modal>
 
