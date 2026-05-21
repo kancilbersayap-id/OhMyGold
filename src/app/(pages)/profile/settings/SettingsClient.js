@@ -15,9 +15,15 @@ import styles from './settings.module.css';
 
 const CURRENCY_OPTIONS = ['IDR', 'USD'];
 
+// Language names are shown in their own language (endonyms), regardless of
+// the active UI locale — standard i18n practice.
+const LANGUAGE_LABELS = { id: 'Bahasa Indonesia', en: 'English' };
+const LOCALE_BY_LABEL = { 'Bahasa Indonesia': 'id', English: 'en' };
+const LANGUAGE_OPTIONS = ['Bahasa Indonesia', 'English'];
+
 export default function SettingsClient({ initialEmail, initialDisplayName, initialCurrency }) {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, locale, setLocale } = useTranslation();
 
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [displayNameSaving, setDisplayNameSaving] = useState(false);
@@ -110,6 +116,14 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
     } finally {
       setCurrencySaving(false);
     }
+  };
+
+  const handleLanguageChange = (label) => {
+    const next = LOCALE_BY_LABEL[label];
+    if (!next || next === locale) return;
+    setLocale(next);
+    // Refresh so server-rendered content picks up the new locale cookie.
+    router.refresh();
   };
 
   const handleDeleteAccount = async () => {
@@ -215,6 +229,27 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
               <Button onClick={handleCurrencySave} disabled={currencySaving}>
                 {currencySaving ? t('settings.saving') : t('settings.updateCurrency')}
               </Button>
+            </div>
+          </div>
+        </Card>
+
+        <Card className={styles.card}>
+          <div className={styles.cardTitle}>{t('settings.languageCard')}</div>
+          <div className={styles.cardBody}>
+            <div className={styles.themeRow}>
+              <div className={styles.themeText}>
+                <div className={styles.themeHeading}>{t('settings.languageHeading')}</div>
+                <div className={styles.themeDescription}>
+                  {t('settings.languageDesc')}
+                </div>
+              </div>
+              <div className={styles.languageControl}>
+                <Select
+                  value={LANGUAGE_LABELS[locale]}
+                  onChange={handleLanguageChange}
+                  options={LANGUAGE_OPTIONS}
+                />
+              </div>
             </div>
           </div>
         </Card>
