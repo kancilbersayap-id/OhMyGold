@@ -34,8 +34,24 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
   const [deleteEmail, setDeleteEmail] = useState('');
   const [deleting, setDeleting] = useState(false);
 
+  const [resettingOnboarding, setResettingOnboarding] = useState(false);
+
   const [toast, setToast] = useState(null);
   const showToast = (message, variant = 'success') => setToast({ message, variant });
+
+  const handleResetOnboarding = async () => {
+    setResettingOnboarding(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { onboarding_completed: false },
+      });
+      if (error) throw error;
+      router.refresh();
+    } catch (err) {
+      showToast(err.message || 'Failed to reset onboarding', 'error');
+      setResettingOnboarding(false);
+    }
+  };
 
   const emailMatches =
     deleteEmail.trim().toLowerCase() === (initialEmail || '').toLowerCase() &&
@@ -231,6 +247,25 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
             </div>
           </div>
         </Card>
+
+        {process.env.NODE_ENV !== 'production' && (
+          <Card className={styles.card}>
+            <div className={styles.cardTitle}>Developer</div>
+            <div className={styles.cardBody}>
+              <div className={styles.themeRow}>
+                <div className={styles.themeText}>
+                  <div className={styles.themeHeading}>Restart onboarding</div>
+                  <div className={styles.themeDescription}>
+                    Clears the onboarding flag so the welcome flow reappears on next page load. Dev-only.
+                  </div>
+                </div>
+                <Button onClick={handleResetOnboarding} disabled={resettingOnboarding}>
+                  {resettingOnboarding ? 'Resetting…' : 'Restart onboarding'}
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
 
         <Card className={`${styles.card} ${styles.dangerCard}`}>
           <div className={styles.cardTitle}>Danger zone</div>

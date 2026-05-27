@@ -3,9 +3,17 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
+import OnboardingModal from '@/components/onboarding/OnboardingModal';
 import styles from './MainLayout.module.css';
 
-export default function SidebarShell({ userEmail, children }) {
+export default function SidebarShell({
+  userEmail,
+  userId,
+  onboardingCompleted,
+  initialDisplayName,
+  welcomeChart,
+  children,
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
@@ -29,6 +37,8 @@ export default function SidebarShell({ userEmail, children }) {
   if (isAuthPage || isStandalonePage) {
     return <>{children}</>;
   }
+
+  const showOnboarding = !!userId && !onboardingCompleted;
 
   return (
     <div className={styles.layout}>
@@ -66,6 +76,13 @@ export default function SidebarShell({ userEmail, children }) {
       <main className={`${styles.content} ${collapsed ? styles.contentCollapsed : ''}`}>
         <div className={styles.inner}>{children}</div>
       </main>
+
+      {showOnboarding && (
+        <OnboardingModal
+          initialDisplayName={initialDisplayName}
+          welcomeChart={welcomeChart}
+        />
+      )}
     </div>
   );
 }

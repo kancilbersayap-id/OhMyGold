@@ -65,9 +65,18 @@ const InfoIcon = () => (
   </svg>
 );
 
-export default function PriceChart({ label, currentValue, data = [], onFetchRange, chartType = 'line', info }) {
+export default function PriceChart({
+  label,
+  currentValue,
+  data = [],
+  onFetchRange,
+  chartType = 'line',
+  info,
+  hideRange = false,
+  defaultRange = '1M',
+}) {
   const [showInfo, setShowInfo] = useState(false);
-  const [range, setRange] = useState('1M');
+  const [range, setRange] = useState(defaultRange);
   const [showPicker, setShowPicker] = useState(false);
   const [pickerStart, setPickerStart] = useState('');
   const [pickerEnd, setPickerEnd] = useState('');
@@ -84,8 +93,8 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
     setCustomData([]);
     setCustomRange(null);
     setRangeData({});
-    setRange('1M');
-  }, [data]);
+    setRange(defaultRange);
+  }, [data, defaultRange]);
 
   const today = new Date().toISOString().split('T')[0];
   const isCustomActive = range === 'custom';
@@ -193,55 +202,57 @@ export default function PriceChart({ label, currentValue, data = [], onFetchRang
           </div>
           <div className={styles.value}>{formattedValue}</div>
         </div>
-        <div className={styles.chipsWrapper} ref={pickerRef}>
-          <div className={styles.chips}>
-            {RANGES.map((r) => {
-              const isActive = range === r;
-              const tooltip = isActive && slice.length > 0
-                ? `Active from ${toFullLabelWithYear(slice[0].date)} to ${toFullLabelWithYear(slice[slice.length - 1].date)}`
-                : RANGE_TOOLTIP_LABELS[r];
-              return (
-                <RangeChip key={r} label={r} isActive={isActive} onClick={() => handleRangeClick(r)} tooltip={tooltip} />
-              );
-            })}
-            <FilterChip
-              isActive={isCustomActive}
-              onClick={handleDotsClick}
-              tooltip={isCustomActive && customRange
-                ? `Selected from ${toFullLabelWithYear(customRange.start)} to ${toFullLabelWithYear(customRange.end)}`
-                : 'Custom date range'}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 2.5h12M3 7h8M5 11.5h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            </FilterChip>
-          </div>
-
-          {showPicker && (
-            <div className={styles.datePicker}>
-              <div className={styles.datePickerRow}>
-                <div className={styles.datePickerField}>
-                  <label className={styles.datePickerLabel}>From</label>
-                  <input type="date" className={styles.datePickerInput} value={pickerStart}
-                    max={pickerEnd || today} onChange={e => setPickerStart(e.target.value)}
-                    onClick={e => e.target.showPicker?.()} />
-                </div>
-                <div className={styles.datePickerField}>
-                  <label className={styles.datePickerLabel}>To</label>
-                  <input type="date" className={styles.datePickerInput} value={pickerEnd}
-                    min={pickerStart || undefined} max={today} onChange={e => setPickerEnd(e.target.value)}
-                    onClick={e => e.target.showPicker?.()} />
-                </div>
-                <button className={styles.datePickerApply} onClick={handleApplyCustom}
-                  disabled={!pickerStart || !pickerEnd || pickerStart > pickerEnd} title="Apply">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 8l3.5 3.5L13 4.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
-              </div>
+        {!hideRange && (
+          <div className={styles.chipsWrapper} ref={pickerRef}>
+            <div className={styles.chips}>
+              {RANGES.map((r) => {
+                const isActive = range === r;
+                const tooltip = isActive && slice.length > 0
+                  ? `Active from ${toFullLabelWithYear(slice[0].date)} to ${toFullLabelWithYear(slice[slice.length - 1].date)}`
+                  : RANGE_TOOLTIP_LABELS[r];
+                return (
+                  <RangeChip key={r} label={r} isActive={isActive} onClick={() => handleRangeClick(r)} tooltip={tooltip} />
+                );
+              })}
+              <FilterChip
+                isActive={isCustomActive}
+                onClick={handleDotsClick}
+                tooltip={isCustomActive && customRange
+                  ? `Selected from ${toFullLabelWithYear(customRange.start)} to ${toFullLabelWithYear(customRange.end)}`
+                  : 'Custom date range'}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 2.5h12M3 7h8M5 11.5h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+              </FilterChip>
             </div>
-          )}
-        </div>
+
+            {showPicker && (
+              <div className={styles.datePicker}>
+                <div className={styles.datePickerRow}>
+                  <div className={styles.datePickerField}>
+                    <label className={styles.datePickerLabel}>From</label>
+                    <input type="date" className={styles.datePickerInput} value={pickerStart}
+                      max={pickerEnd || today} onChange={e => setPickerStart(e.target.value)}
+                      onClick={e => e.target.showPicker?.()} />
+                  </div>
+                  <div className={styles.datePickerField}>
+                    <label className={styles.datePickerLabel}>To</label>
+                    <input type="date" className={styles.datePickerInput} value={pickerEnd}
+                      min={pickerStart || undefined} max={today} onChange={e => setPickerEnd(e.target.value)}
+                      onClick={e => e.target.showPicker?.()} />
+                  </div>
+                  <button className={styles.datePickerApply} onClick={handleApplyCustom}
+                    disabled={!pickerStart || !pickerEnd || pickerStart > pickerEnd} title="Apply">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 8l3.5 3.5L13 4.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {isLoadingCustom ? (

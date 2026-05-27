@@ -1,0 +1,272 @@
+/* Footer layout — step dots on the left, primary action on the right */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 16px;
+}
+
+.steps {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stepDot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-border);
+  transition: background-color 0.15s ease, width 0.15s ease;
+}
+
+.stepDotDone {
+  background-color: var(--color-text-muted);
+}
+
+.stepDotActive {
+  width: 18px;
+  background-color: var(--color-text);
+}
+
+.footerActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skipBtn {
+  font-family: var(--font-heading-5-family);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background-color: transparent;
+  border: none;
+  padding: 8px 4px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.skipBtn:hover:not(:disabled) {
+  color: var(--color-text);
+}
+
+.skipBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nextBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading-5-family);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 6px;
+  border: none;
+  background-color: var(--color-text);
+  color: var(--color-background);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.nextBtn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.nextBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Step bodies — desktop modal locks all three to the same min-height so the
+   modal frame doesn't jump between steps.
+   ───────────────────────────────────────────────────────────────────────── */
+.welcomeBody,
+.nameBody,
+.holdingBody {
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Step 1 — welcome */
+.welcomeBody {
+  gap: 16px;
+  justify-content: flex-start;
+}
+
+.welcomeChart {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.featureList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--font-heading-5-family);
+  font-size: 14px;
+  color: var(--color-text);
+  flex: 1;
+  justify-content: center;
+}
+
+.featureList li {
+  position: relative;
+  padding-left: 20px;
+  line-height: 1.5;
+}
+
+.featureList li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+}
+
+/* Step 2 — name */
+.nameBody {
+  gap: 8px;
+  padding: 4px 0 8px;
+  justify-content: center;
+}
+
+.nameCount {
+  font-family: var(--font-heading-5-family);
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
+/* Step 3 — holdings */
+.holdingBody {
+  gap: 14px;
+  padding: 4px 0 4px;
+  justify-content: flex-start;
+}
+
+.holdingRow {
+  display: block;
+}
+
+.holdingGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 12px;
+  align-items: stretch;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Mobile full-page shell — renders instead of <Modal> below 768px. Fills
+   the viewport, scrollable middle, sticky footer with iOS safe-area.
+   ───────────────────────────────────────────────────────────────────────── */
+.page {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background-color: var(--color-background);
+  display: flex;
+  flex-direction: column;
+  /* dvh keeps the layout stable when mobile browser chrome shows/hides */
+  height: 100dvh;
+}
+
+.pageHeader {
+  padding: 16px 20px 12px;
+  padding-top: calc(16px + env(safe-area-inset-top, 0px));
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.pageTitle {
+  font-family: var(--font-heading-2-family);
+  font-size: var(--font-modal-title-size);
+  font-weight: var(--font-modal-title-weight);
+  line-height: var(--font-modal-title-line-height);
+  letter-spacing: var(--font-modal-title-letter-spacing);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.pageDescription {
+  font-family: var(--font-heading-5-family);
+  font-size: var(--font-heading-5-size);
+  font-weight: var(--font-heading-5-weight);
+  line-height: var(--font-heading-5-line-height);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.pageBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The single step body inside .pageBody fills the available vertical space
+   so each step's internal flex layout (center/start) lays out against the
+   real screen height, not against an arbitrary min-height. */
+.pageBody > div {
+  flex: 1;
+  min-height: 0;
+}
+
+.pageFooter {
+  padding: 16px 20px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Mobile overrides for the step bodies — drop the desktop min-height so
+   content flexes against the page, and stack the holdings form vertically.
+   ───────────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .welcomeBody,
+  .nameBody,
+  .holdingBody {
+    min-height: 0;
+  }
+
+  .holdingGrid {
+    grid-template-columns: 1fr;
+    row-gap: 14px;
+  }
+
+  .footer {
+    gap: 8px;
+  }
+
+  .footerActions {
+    gap: 8px;
+  }
+
+  .skipBtn {
+    padding: 8px 0;
+    font-size: 13px;
+  }
+
+  .nextBtn {
+    padding: 10px 14px;
+  }
+}

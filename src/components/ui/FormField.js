@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect, useId } from 'react';
 import styles from './FormField.module.css';
 
-export function TextField({ label, value, onChange, placeholder, type = 'text', disabled }) {
+export function TextField({ label, value, onChange, placeholder, type = 'text', disabled, maxLength, autoFocus }) {
   const id = useId();
   return (
     <div className={styles.field}>
@@ -16,6 +16,8 @@ export function TextField({ label, value, onChange, placeholder, type = 'text', 
         onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
+        maxLength={maxLength}
+        autoFocus={autoFocus}
       />
     </div>
   );
