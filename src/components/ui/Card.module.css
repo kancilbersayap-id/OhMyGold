@@ -3,7 +3,6 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 16px;
-  overflow: hidden;
 }
 
 .cardTitle {
@@ -15,9 +14,11 @@
   margin-bottom: 16px;
 }
 
-/* No-padding variant (for chart cards) */
+/* No-padding variant (for chart cards) — clips edge-to-edge content
+   to the card's rounded corners. */
 .cardNoPadding {
   padding: 0;
+  overflow: hidden;
 }
 
 .cardTitleIndented {
