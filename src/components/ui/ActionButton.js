@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from '@/i18n/LocaleProvider';
 import styles from './ActionButton.module.css';
 
 export default function ActionButton({ onEdit, onDelete }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
   const triggerRef = useRef(null);
@@ -43,8 +45,8 @@ export default function ActionButton({ onEdit, onDelete }) {
   };
 
   const items = [
-    { label: 'Edit',   className: styles.popoverItem,                                    action: onEdit },
-    { label: 'Delete', className: `${styles.popoverItem} ${styles.deleteItem}`, action: onDelete },
+    { label: t('common.edit'),   className: styles.popoverItem,                          action: onEdit },
+    { label: t('common.delete'), className: `${styles.popoverItem} ${styles.deleteItem}`, action: onDelete },
   ];
 
   return (
@@ -56,7 +58,7 @@ export default function ActionButton({ onEdit, onDelete }) {
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Actions"
+        aria-label={t('common.actions')}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
           <circle cx="5" cy="12" r="2" />

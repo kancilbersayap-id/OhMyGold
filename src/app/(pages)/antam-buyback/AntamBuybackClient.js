@@ -12,6 +12,7 @@ import { TextField, DatePicker } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
 import { formatRp } from '@/utils/format';
 import { addBuybackPrice, updateBuybackPrice, deleteBuybackPrice } from '@/utils/priceActions';
+import { useTranslation } from '@/i18n/LocaleProvider';
 import styles from './antam-buyback.module.css';
 
 const EMPTY_FORM = { date: '', buybackPrice: '' };
@@ -27,6 +28,7 @@ const ChevronIcon = ({ direction }) => (
 );
 
 export default function AntamBuybackClient({ initialData }) {
+  const { t } = useTranslation();
   const today = new Date();
   const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 
@@ -64,7 +66,7 @@ export default function AntamBuybackClient({ initialData }) {
 
   const handleAdd = async () => {
     if (!canSubmit) {
-      if (isDuplicateDate(addForm.date)) showToast('A buyback price for this date already exists!', 'error');
+      if (isDuplicateDate(addForm.date)) showToast(t('antamBuyback.toastDuplicate'), 'error');
       return;
     }
 
@@ -81,10 +83,10 @@ export default function AntamBuybackClient({ initialData }) {
             buybackPrice: parseInt(addForm.buybackPrice),
           });
       setData(updated);
-      showToast(editingId !== null ? 'Buyback price successfully updated!' : 'Buyback price successfully added!');
+      showToast(editingId !== null ? t('antamBuyback.toastUpdated') : t('antamBuyback.toastAdded'));
       closeAdd();
     } catch {
-      showToast(editingId !== null ? 'Failed to update' : 'Failed to add', 'error');
+      showToast(editingId !== null ? t('antamBuyback.toastFailUpdate') : t('antamBuyback.toastFailAdd'), 'error');
     } finally {
       setSubmitting(false);
     }
@@ -95,14 +97,14 @@ export default function AntamBuybackClient({ initialData }) {
     try {
       const updated = await deleteBuybackPrice(deleteTarget);
       setData(updated);
-      showToast('Buyback price successfully deleted!');
+      showToast(t('antamBuyback.toastDeleted'));
       setDeleteTarget(null);
     } catch {
-      showToast('Failed to delete', 'error');
+      showToast(t('antamBuyback.toastFailDelete'), 'error');
     } finally {
       setDeleting(false);
     }
-  }, [deleteTarget]);
+  }, [deleteTarget, t]);
 
   const getAvailableMonths = () => {
     const months = new Set();
@@ -120,8 +122,8 @@ export default function AntamBuybackClient({ initialData }) {
   });
 
   const columns = [
-    { key: 'date', label: 'Date' },
-    { key: 'buybackPrice', label: 'Buyback Price' },
+    { key: 'date', label: t('antamBuyback.colDate') },
+    { key: 'buybackPrice', label: t('antamBuyback.colBuybackPrice') },
     { key: 'actions', label: '' },
   ];
 
@@ -172,8 +174,8 @@ export default function AntamBuybackClient({ initialData }) {
   return (
     <>
       <PageHeader
-        title="Antam buyback"
-        description="Antam gold buyback prices"
+        title={t('antamBuyback.title')}
+        description={t('antamBuyback.description')}
         action={
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <select
@@ -194,7 +196,7 @@ export default function AntamBuybackClient({ initialData }) {
                 <option key={month} value={month}>{formatMonthDisplay(month)}</option>
               ))}
             </select>
-            <Button onClick={openAdd}>Add buyback price</Button>
+            <Button onClick={openAdd}>{t('antamBuyback.addButton')}</Button>
           </div>
         }
       />
@@ -208,7 +210,7 @@ export default function AntamBuybackClient({ initialData }) {
             <button
               onClick={() => prevMonth && setSelectedMonth(prevMonth)}
               disabled={!prevMonth}
-              aria-label="Previous month"
+              aria-label={t('antamBuyback.prevMonth')}
               style={navBtnStyle(!!prevMonth)}
               onMouseEnter={(e) => prevMonth && (e.currentTarget.style.backgroundColor = 'var(--color-background-2)')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
@@ -218,7 +220,7 @@ export default function AntamBuybackClient({ initialData }) {
             <button
               onClick={() => nextMonth && setSelectedMonth(nextMonth)}
               disabled={!nextMonth}
-              aria-label="Next month"
+              aria-label={t('antamBuyback.nextMonth')}
               style={navBtnStyle(!!nextMonth)}
               onMouseEnter={(e) => nextMonth && (e.currentTarget.style.backgroundColor = 'var(--color-background-2)')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
@@ -239,30 +241,30 @@ export default function AntamBuybackClient({ initialData }) {
       <Modal
         isOpen={addOpen}
         onClose={closeAdd}
-        title={editingId !== null ? 'Edit buyback price' : 'Add buyback price'}
+        title={editingId !== null ? t('antamBuyback.modalEditTitle') : t('antamBuyback.modalAddTitle')}
         onCancel={closeAdd}
         onConfirm={handleAdd}
-        confirmLabel={submitting ? 'Saving…' : editingId !== null ? 'Update' : 'Add'}
+        confirmLabel={submitting ? t('common.saving') : editingId !== null ? t('common.update') : t('common.add')}
         confirmDisabled={!canSubmit || submitting}
         closeOnBackdrop={false}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px', marginBottom: '12px' }}>
           <DatePicker
-            label="Date"
+            label={t('antamBuyback.dateLabel')}
             value={addForm.date}
             onChange={v => setAddForm(f => ({ ...f, date: v }))}
           />
           <TextField
-            label="Buyback Price"
+            label={t('antamBuyback.priceLabel')}
             type="number"
             value={addForm.buybackPrice}
             onChange={v => setAddForm(f => ({ ...f, buybackPrice: v }))}
-            placeholder="Enter buyback price"
+            placeholder={t('antamBuyback.pricePlaceholder')}
           />
         </div>
         {isDuplicateDate(addForm.date) && addForm.date && (
           <p style={{ color: '#ef4444', fontSize: '12px', marginTop: '8px', marginBottom: '-8px' }}>
-            A buyback price for this date already exists.
+            {t('antamBuyback.duplicateInline')}
           </p>
         )}
       </Modal>
@@ -273,15 +275,15 @@ export default function AntamBuybackClient({ initialData }) {
           <Modal
             isOpen={deleteTarget !== null}
             onClose={() => setDeleteTarget(null)}
-            title={rowToDelete ? `Delete ${formatDateIndonesian(rowToDelete.date)}` : 'Delete Buyback Price'}
+            title={rowToDelete ? t('antamBuyback.deleteTitle', { date: formatDateIndonesian(rowToDelete.date) }) : t('antamBuyback.deleteTitleFallback')}
             onCancel={() => setDeleteTarget(null)}
             onConfirm={confirmDelete}
-            confirmLabel={deleting ? 'Deleting…' : 'Delete'}
+            confirmLabel={deleting ? t('common.deleting') : t('common.delete')}
             confirmVariant="danger"
             confirmDisabled={deleting}
           >
             <p style={{ fontFamily: 'var(--font-heading-5-family)', fontSize: '14px', color: 'var(--color-text-muted)' }}>
-              Are you sure you want to delete this record? This action cannot be undone.
+              {t('common.deleteConfirm')}
             </p>
           </Modal>
         );

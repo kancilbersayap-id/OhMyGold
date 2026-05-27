@@ -103,7 +103,19 @@
       "Bash(git -C /Users/farizpie/Documents/claude-code/ohmygold commit -m ' *)",
       "Bash(git -C /Users/farizpie/Documents/claude-code/ohmygold diff HEAD -- docs/)",
       "Bash(git -C /Users/farizpie/Documents/claude-code/ohmygold ls-files --others --exclude-standard supabase/)",
-      "Bash(git -C /Users/farizpie/Documents/claude-code/ohmygold add src/middleware.ts src/utils/supabase.js)"
+      "Bash(git -C /Users/farizpie/Documents/claude-code/ohmygold add src/middleware.ts src/utils/supabase.js)",
+      "Bash(npm audit *)",
+      "Bash(ls -la .env* 2>/dev/null; echo \"---main---\"; ls -la /Users/farizpie/Documents/claude-code/ohmygold/.env* 2>/dev/null)",
+      "Bash(cp /Users/farizpie/Documents/claude-code/ohmygold/.env.local .env.local && echo \"copied\" && wc -l < .env.local)",
+      "Bash(git stash *)",
+      "Bash(git rebase *)",
+      "Bash(git -c 'user.name=Fariz Maulana' -c user.email=kancilbersayap@gmail.com commit -m ' *)",
+      "Bash(git fetch *)",
+      "Read(//Users/farizpie/.ssh/**)",
+      "Read(//Users/farizpie/**)",
+      "Bash(gh --version)",
+      "Bash(git -c credential.helper='!gh auth git-credential' fetch https://github.com/kancilbersayap-id/OhMyGold.git main)",
+      "Bash(gh api *)"
     ]
   }
 }

@@ -6,17 +6,19 @@ import Table from '@/components/ui/Table';
 import { TextField } from '@/components/ui/FormField';
 import { formatDateIndonesian } from '@/utils/dateFormatter';
 import { formatRp } from '@/utils/format';
+import { useTranslation } from '@/i18n/LocaleProvider';
 import styles from './antam-price.module.css';
 
-const columns = [
-  { key: 'weight',       label: 'Weight' },
-  { key: 'hargaJual',    label: 'Harga Jual' },
-  { key: 'hargaBuyback', label: 'Harga Buyback' },
-];
-
 export default function RetailPriceClient({ initialData }) {
+  const { t } = useTranslation();
   const today = new Date().toISOString().split('T')[0];
   const [date, setDate] = useState(today);
+
+  const columns = [
+    { key: 'weight',       label: t('retailPrice.colWeight') },
+    { key: 'hargaJual',    label: t('retailPrice.colSellPrice') },
+    { key: 'hargaBuyback', label: t('retailPrice.colBuybackPrice') },
+  ];
 
   const buildTableData = (brand) => {
     const vendorFilter = brand.toLowerCase() === 'antam' ? 'antam' : 'galeri24';
@@ -30,13 +32,13 @@ export default function RetailPriceClient({ initialData }) {
       }));
   };
 
-  const mutedDateText = `Data from ${formatDateIndonesian(date)}`;
+  const mutedDateText = t('retailPrice.dataFrom', { date: formatDateIndonesian(date) });
 
   return (
     <>
       <PageHeader
-        title="Retail price"
-        description="Official retail price taken from Galeri 24 or Pegadaian for research purpose"
+        title={t('retailPrice.title')}
+        description={t('retailPrice.description')}
         action={
           <div className={styles.headerActions}>
             <div className={styles.dateWrapper}>

@@ -1,16 +1,18 @@
 import PageHeader from '@/components/ui/PageHeader';
+import { getT } from '@/i18n/server';
 import styles from './buysimulation.module.css';
 
-export default function BuySimulationPage() {
+export default async function BuySimulationPage() {
+  const t = await getT();
   return (
     <>
       <PageHeader
-        title="Buy Simulation"
-        description="Simulate your gold purchase decisions with real-time market data"
+        title={t('buySimulation.title')}
+        description={t('buySimulation.description')}
       />
       <div className={styles.container}>
         <div className={styles.content}>
-          <p>Buy Simulation feature coming soon...</p>
+          <p>{t('buySimulation.comingSoon')}</p>
         </div>
       </div>
     </>

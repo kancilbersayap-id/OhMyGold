@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 import OnboardingModal from '@/components/onboarding/OnboardingModal';
+import { useTranslation } from '@/i18n/LocaleProvider';
 import styles from './MainLayout.module.css';
 
 export default function SidebarShell({
@@ -14,6 +15,7 @@ export default function SidebarShell({
   welcomeChart,
   children,
 }) {
+  const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
@@ -46,7 +48,7 @@ export default function SidebarShell({
         <button
           className={styles.hamburger}
           onClick={() => setMobileOpen(true)}
-          aria-label="Open navigation"
+          aria-label={t('nav.openNavigation')}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="3" y1="6" x2="21" y2="6" />

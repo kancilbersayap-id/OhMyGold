@@ -2,8 +2,10 @@
 
 import PriceChart from '@/components/ui/PriceChart';
 import { getAntamSellPriceHistoryByRange } from '@/utils/priceActions';
+import { useTranslation } from '@/i18n/LocaleProvider';
 
 export default function FloatingPriceChart({ allData, currentPrice }) {
+  const { t } = useTranslation();
   const data = allData.map(r => ({ date: r.date, value: r.harga_jual }));
 
   const onFetchRange = async (start, end) => {
@@ -14,12 +16,12 @@ export default function FloatingPriceChart({ allData, currentPrice }) {
   return (
     <div style={{ marginTop: '16px' }}>
       <PriceChart
-        label="Antam Floating Price"
+        label={t('overview.floatingChartLabel')}
         currentValue={currentPrice}
         data={data}
         onFetchRange={onFetchRange}
         chartType="hbar"
-        info="Retail sell price scraped daily from Galeri24"
+        info={t('overview.floatingChartInfo')}
       />
     </div>
   );

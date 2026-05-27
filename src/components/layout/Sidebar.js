@@ -4,85 +4,73 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Badge from '@/components/ui/Badge';
 import Tooltip from '@/components/ui/Tooltip';
+import { useTranslation } from '@/i18n/LocaleProvider';
 import styles from './Sidebar.module.css';
 
-const navItems = [
-  {
-    label: 'Overview',
-    href: '/overview',
-    icon: (
-      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
-      </svg>
-    ),
-  },
-];
+const overviewIcon = (
+  <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="7" height="7" rx="1" />
+    <rect x="14" y="3" width="7" height="7" rx="1" />
+    <rect x="3" y="14" width="7" height="7" rx="1" />
+    <rect x="14" y="14" width="7" height="7" rx="1" />
+  </svg>
+);
 
-const retailPriceItem = {
-  label: 'Retail price',
-  href: '/antam-price',
-  icon: (
-    <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="1" x2="12" y2="23" />
-      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-    </svg>
-  ),
-};
+const retailPriceIcon = (
+  <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="1" x2="12" y2="23" />
+    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+  </svg>
+);
 
-const simulationItems = [
-  {
-    label: 'Sell Simulation',
-    href: '/sell-simulation',
-    icon: (
-      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="2 12 8 6 14 12 22 4" />
-        <polyline points="22 4 22 12 14 12" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Buy Simulation',
-    href: '/buy-simulation',
-    icon: (
-      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="9" cy="21" r="1" />
-        <circle cx="20" cy="21" r="1" />
-        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-      </svg>
-    ),
-  },
-];
+const sellSimulationIcon = (
+  <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="2 12 8 6 14 12 22 4" />
+    <polyline points="22 4 22 12 14 12" />
+  </svg>
+);
 
-const pricingTrendsItems = [
-  retailPriceItem,
-  {
-    label: 'Forecasting',
-    href: '/forecasting',
-    icon: (
-      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Antam buyback',
-    href: '/antam-buyback',
-    icon: (
-      <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="12" y1="1" x2="12" y2="23" />
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-      </svg>
-    ),
-  },
-];
+const buySimulationIcon = (
+  <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="9" cy="21" r="1" />
+    <circle cx="20" cy="21" r="1" />
+    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+  </svg>
+);
+
+const forecastingIcon = (
+  <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+  </svg>
+);
+
+const antamBuybackIcon = (
+  <svg className={styles.navIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="1" x2="12" y2="23" />
+    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+  </svg>
+);
 
 export default function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggleCollapse, userEmail }) {
+  const { t } = useTranslation();
   const emailUsername = userEmail ? userEmail.split('@')[0] : '';
   const emailInitial = emailUsername ? emailUsername[0].toUpperCase() : '?';
   const pathname = usePathname();
+
+  const navItems = [
+    { label: t('nav.overview'), href: '/overview', icon: overviewIcon },
+  ];
+
+  const simulationItems = [
+    { label: t('nav.sellSimulation'), href: '/sell-simulation', icon: sellSimulationIcon },
+    { label: t('nav.buySimulation'), href: '/buy-simulation', icon: buySimulationIcon },
+  ];
+
+  const pricingTrendsItems = [
+    { label: t('nav.retailPrice'), href: '/antam-price', icon: retailPriceIcon },
+    { label: t('nav.forecasting'), href: '/forecasting', icon: forecastingIcon },
+    { label: t('nav.antamBuyback'), href: '/antam-buyback', icon: antamBuybackIcon },
+  ];
 
   const renderNavItem = (item) => {
     const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
@@ -109,7 +97,7 @@ export default function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggle
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span className={styles.logoBadge}><Badge type="neutral">BETA</Badge></span>
-          <button className={styles.closeButton} onClick={onMobileClose} aria-label="Close sidebar">
+          <button className={styles.closeButton} onClick={onMobileClose} aria-label={t('nav.closeSidebar')}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
@@ -120,11 +108,11 @@ export default function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggle
       <nav className={styles.nav}>
         {navItems.map(renderNavItem)}
         <div className={styles.navGroup}>
-          <div className={styles.navGroupTitle}>Simulation</div>
+          <div className={styles.navGroupTitle}>{t('nav.groupSimulation')}</div>
           {simulationItems.map(renderNavItem)}
         </div>
         <div className={styles.navGroup}>
-          <div className={styles.navGroupTitle}>Pricing Trends</div>
+          <div className={styles.navGroupTitle}>{t('nav.groupPricingTrends')}</div>
           {pricingTrendsItems.map(renderNavItem)}
         </div>
       </nav>
@@ -141,7 +129,7 @@ export default function Sidebar({ mobileOpen, onMobileClose, collapsed, onToggle
           <button
             className={styles.collapseBtn}
             onClick={onToggleCollapse}
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={collapsed ? t('nav.expandSidebar') : t('nav.collapseSidebar')}
           >
             {collapsed ? (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

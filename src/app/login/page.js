@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { TextField } from '@/components/ui/FormField';
 import { supabase } from '@/utils/supabase';
+import { useTranslation } from '@/i18n/LocaleProvider';
 import styles from './login.module.css';
 import buttonStyles from '@/components/ui/Button.module.css';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,11 +33,11 @@ export default function LoginPage() {
       } else if (data?.user) {
         router.push('/overview');
       } else {
-        setError('Unknown error occurred');
+        setError(t('auth.unknownError'));
         setLoading(false);
       }
     } catch (err) {
-      setError(err.message || 'An error occurred');
+      setError(err.message || t('auth.genericError'));
       setLoading(false);
     }
   };
@@ -44,23 +46,23 @@ export default function LoginPage() {
     <div className={styles.container}>
       <div className={styles.card}>
         <h1 className={styles.title}>OhMyGold</h1>
-        <p className={styles.subtitle}>Sign in to your account</p>
+        <p className={styles.subtitle}>{t('auth.signInSubtitle')}</p>
 
         <form onSubmit={handleLogin} className={styles.form}>
           <TextField
-            label="Email"
+            label={t('auth.emailLabel')}
             type="email"
             value={email}
             onChange={setEmail}
-            placeholder="Enter your email"
+            placeholder={t('auth.emailPlaceholder')}
           />
 
           <TextField
-            label="Password"
+            label={t('auth.passwordLabel')}
             type="password"
             value={password}
             onChange={setPassword}
-            placeholder="Enter your password"
+            placeholder={t('auth.passwordPlaceholder')}
           />
 
           {error && <div className={styles.error}>{error}</div>}
@@ -70,13 +72,13 @@ export default function LoginPage() {
             disabled={loading}
             className={`${buttonStyles.button} ${buttonStyles.primary} ${styles.submitButton}`}
           >
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? t('auth.signingIn') : t('auth.signIn')}
           </button>
         </form>
 
         <p className={styles.signupPrompt}>
-          Don't have an account?{' '}
-          <a href="/signup" className={styles.signupLink}>Sign up</a>
+          {t('auth.noAccount')}{' '}
+          <a href="/signup" className={styles.signupLink}>{t('auth.signUp')}</a>
         </p>
       </div>
     </div>

@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { TextField } from '@/components/ui/FormField';
 import { supabase } from '@/utils/supabase';
+import { useTranslation } from '@/i18n/LocaleProvider';
 import styles from './signup.module.css';
 import buttonStyles from '@/components/ui/Button.module.css';
 
 export default function SignupPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,12 +24,12 @@ export default function SignupPage() {
     setMessage(null);
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.passwordMismatch'));
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('auth.passwordTooShort'));
       return;
     }
 
@@ -41,7 +43,7 @@ export default function SignupPage() {
     if (error) {
       setError(error.message);
     } else {
-      setMessage('Account created! Redirecting to login...');
+      setMessage(t('auth.accountCreated'));
       await new Promise(resolve => setTimeout(resolve, 500));
       router.push('/login');
     }
@@ -52,31 +54,31 @@ export default function SignupPage() {
     <div className={styles.container}>
       <div className={styles.card}>
         <h1 className={styles.title}>OhMyGold</h1>
-        <p className={styles.subtitle}>Create your account</p>
+        <p className={styles.subtitle}>{t('auth.signUpSubtitle')}</p>
 
         <form onSubmit={handleSignup} className={styles.form}>
           <TextField
-            label="Email"
+            label={t('auth.emailLabel')}
             type="email"
             value={email}
             onChange={setEmail}
-            placeholder="Enter your email"
+            placeholder={t('auth.emailPlaceholder')}
           />
 
           <TextField
-            label="Password"
+            label={t('auth.passwordLabel')}
             type="password"
             value={password}
             onChange={setPassword}
-            placeholder="At least 6 characters"
+            placeholder={t('auth.passwordMinPlaceholder')}
           />
 
           <TextField
-            label="Confirm Password"
+            label={t('auth.confirmPasswordLabel')}
             type="password"
             value={confirmPassword}
             onChange={setConfirmPassword}
-            placeholder="Confirm your password"
+            placeholder={t('auth.confirmPasswordPlaceholder')}
           />
 
           {error && <div className={styles.error}>{error}</div>}
@@ -87,13 +89,13 @@ export default function SignupPage() {
             disabled={loading}
             className={`${buttonStyles.button} ${buttonStyles.primary} ${styles.submitButton}`}
           >
-            {loading ? 'Creating account...' : 'Sign up'}
+            {loading ? t('auth.creatingAccount') : t('auth.signUp')}
           </button>
         </form>
 
         <p className={styles.loginPrompt}>
-          Already have an account?{' '}
-          <a href="/login" className={styles.loginLink}>Sign in</a>
+          {t('auth.haveAccount')}{' '}
+          <a href="/login" className={styles.loginLink}>{t('auth.signIn')}</a>
         </p>
       </div>
     </div>

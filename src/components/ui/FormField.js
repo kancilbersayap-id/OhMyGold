@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, useEffect, useId } from 'react';
+import { useTranslation } from '@/i18n/LocaleProvider';
 import styles from './FormField.module.css';
 
 export function TextField({ label, value, onChange, placeholder, type = 'text', disabled, maxLength, autoFocus }) {
@@ -24,6 +25,7 @@ export function TextField({ label, value, onChange, placeholder, type = 'text', 
 }
 
 export function Select({ label, value, onChange, options }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
   const labelId = useId();
@@ -64,7 +66,7 @@ export function Select({ label, value, onChange, options }) {
         >
           {value
             ? <span>{value}</span>
-            : <span className={styles.selectPlaceholder}>Select {label?.toLowerCase()}</span>
+            : <span className={styles.selectPlaceholder}>{t('common.selectPlaceholder', { label: (label || '').toLowerCase() })}</span>
           }
           <svg
             className={`${styles.selectChevron} ${open ? styles.rotated : ''}`}
@@ -102,7 +104,9 @@ export function Select({ label, value, onChange, options }) {
 }
 
 export function Stepper({ label, value, onChange, min = 1, max = 100 }) {
+  const { t } = useTranslation();
   const labelId = useId();
+  const fieldName = label ?? t('common.value');
   return (
     <div className={styles.field}>
       {label && <span id={labelId} className={styles.label}>{label}</span>}
@@ -112,7 +116,7 @@ export function Stepper({ label, value, onChange, min = 1, max = 100 }) {
           className={styles.stepperButton}
           onClick={() => onChange?.(Math.max(min, value - 1))}
           disabled={value <= min}
-          aria-label={`Decrease ${label ?? 'value'}`}
+          aria-label={t('common.decrease', { label: fieldName })}
         >
           −
         </button>
@@ -122,7 +126,7 @@ export function Stepper({ label, value, onChange, min = 1, max = 100 }) {
           className={styles.stepperButton}
           onClick={() => onChange?.(Math.min(max, value + 1))}
           disabled={value >= max}
-          aria-label={`Increase ${label ?? 'value'}`}
+          aria-label={t('common.increase', { label: fieldName })}
         >
           +
         </button>

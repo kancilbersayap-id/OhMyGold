@@ -1,6 +1,7 @@
 import './globals.css';
 import { Geist, Geist_Mono } from 'next/font/google';
 import MainLayout from '@/components/layout/MainLayout';
+import { getLocale, getT } from '@/i18n/server';
 
 const geist = Geist({
   subsets: ['latin'],
@@ -12,14 +13,18 @@ const geistMono = Geist_Mono({
   variable: '--font-mono',
 });
 
-export const metadata = {
-  title: 'OhMyGold',
-  description: 'Gold portfolio dashboard',
-};
+export async function generateMetadata() {
+  const t = await getT();
+  return {
+    title: t('meta.title'),
+    description: t('meta.description'),
+  };
+}
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const locale = await getLocale();
   return (
-    <html lang="en" className={`${geist.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang={locale} className={`${geist.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();` }} />
       </head>

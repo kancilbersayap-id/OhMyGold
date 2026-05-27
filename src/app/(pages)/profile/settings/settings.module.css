@@ -71,6 +71,11 @@
   line-height: 1.5;
 }
 
+.languageControl {
+  width: 200px;
+  flex-shrink: 0;
+}
+
 .dangerCard {
   border-color: var(--color-error, #e5484d);
 }

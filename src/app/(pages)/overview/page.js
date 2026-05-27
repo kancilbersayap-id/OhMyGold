@@ -13,6 +13,7 @@ import {
   getAntamSellPriceHistory,
 } from '@/utils/priceActions';
 import { formatInt, toShortDayNum, toFullLabelWithYear, MONTH_NAMES, yearMonthToMonthLabel } from '@/utils/format';
+import { getT } from '@/i18n/server';
 import styles from './overview.module.css';
 
 // toFullLabel: "Apr 15" style for metric chart tooltips
@@ -43,6 +44,7 @@ const yearMonthToTooltip = (yearMonth, value) => {
 
 export default async function OverviewPage() {
   const supabase = await getServerSupabase();
+  const t = await getT();
   const { data: { user } } = await supabase.auth.getUser();
 
   const [price, buybackData, totalAssets, monthlyHistory, dailyHistory, allBuybackHistory, allSellHistory] =
@@ -109,24 +111,24 @@ export default async function OverviewPage() {
   return (
     <>
       <PageHeader
-        title="Hello, Welcome back!"
-        description="Check and mantain your current gold holdings and market data"
+        title={t('overview.title')}
+        description={t('overview.description')}
       />
 
       <div className={styles.metricsSection}>
         <MetricCard
-          label="Estimate Revenue"
+          label={t('overview.estimateRevenue')}
           value={estimateRevenue !== null ? formatInt(estimateRevenue) : '-'}
           data={estimateRevenueChartData}
         />
         <MetricCard
-          label="Antam Price Today"
+          label={t('overview.antamPriceToday')}
           value={price?.price ? formatInt(price.price) : '-'}
           data={antamPriceChartData}
-          info="Data sourced from Galeri24 daily scraper"
+          info={t('overview.antamPriceInfo')}
         />
         <MetricCard
-          label="Monthly Revenue"
+          label={t('overview.monthlyRevenue')}
           value={monthlyRevenue !== null ? formatInt(monthlyRevenue) : '-'}
           data={monthlyRevenueChartData}
         />

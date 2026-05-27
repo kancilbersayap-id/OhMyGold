@@ -1,23 +1,25 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { getActionSupabase } from '@/utils/supabase-server';
+import { getT } from '@/i18n/server';
 
 export async function POST(request) {
+  const t = await getT();
   const supabase = await getActionSupabase();
   const { data: { user }, error: userError } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    return NextResponse.json({ error: t('api.notAuthenticated') }, { status: 401 });
   }
 
   const { email } = await request.json().catch(() => ({}));
   if (!email || email.trim().toLowerCase() !== (user.email || '').toLowerCase()) {
-    return NextResponse.json({ error: 'Email does not match' }, { status: 400 });
+    return NextResponse.json({ error: t('api.emailMismatch') }, { status: 400 });
   }
 
   const serviceKey = process.env.SUPABASE_ADMIN_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceKey) {
-    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+    return NextResponse.json({ error: t('api.serverMisconfigured') }, { status: 500 });
   }
 
   const admin = createClient(

@@ -1,5 +1,7 @@
 import { getServerSupabase } from '@/utils/supabase-server';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { LocaleProvider } from '@/i18n/LocaleProvider';
+import { getLocale } from '@/i18n/server';
 import {
   getAntamSellPriceHistory,
   getAntamPriceData,
@@ -10,6 +12,7 @@ export default async function MainLayout({ children }) {
   const supabase = await getServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
   const userEmail = user?.email ?? '';
+  const locale = await getLocale();
   const onboardingCompleted = user?.user_metadata?.onboarding_completed === true;
   const initialDisplayName = user?.user_metadata?.display_name ?? '';
 
@@ -27,16 +30,18 @@ export default async function MainLayout({ children }) {
   }
 
   return (
-    <ThemeProvider>
-      <SidebarShell
-        userEmail={userEmail}
-        userId={user?.id ?? null}
-        onboardingCompleted={onboardingCompleted}
-        initialDisplayName={initialDisplayName}
-        welcomeChart={welcomeChart}
-      >
-        {children}
-      </SidebarShell>
-    </ThemeProvider>
+    <LocaleProvider initialLocale={locale}>
+      <ThemeProvider>
+        <SidebarShell
+          userEmail={userEmail}
+          userId={user?.id ?? null}
+          onboardingCompleted={onboardingCompleted}
+          initialDisplayName={initialDisplayName}
+          welcomeChart={welcomeChart}
+        >
+          {children}
+        </SidebarShell>
+      </ThemeProvider>
+    </LocaleProvider>
   );
 }

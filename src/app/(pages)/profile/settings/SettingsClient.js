@@ -10,12 +10,20 @@ import Toast from '@/components/ui/Toast';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import { TextField, Select } from '@/components/ui/FormField';
 import { supabase } from '@/utils/supabase';
+import { useTranslation } from '@/i18n/LocaleProvider';
 import styles from './settings.module.css';
 
 const CURRENCY_OPTIONS = ['IDR', 'USD'];
 
+// Language names are shown in their own language (endonyms), regardless of
+// the active UI locale — standard i18n practice.
+const LANGUAGE_LABELS = { id: 'Bahasa Indonesia', en: 'English' };
+const LOCALE_BY_LABEL = { 'Bahasa Indonesia': 'id', English: 'en' };
+const LANGUAGE_OPTIONS = ['Bahasa Indonesia', 'English'];
+
 export default function SettingsClient({ initialEmail, initialDisplayName, initialCurrency }) {
   const router = useRouter();
+  const { t, locale, setLocale } = useTranslation();
 
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [displayNameSaving, setDisplayNameSaving] = useState(false);
@@ -65,10 +73,10 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
         data: { display_name: displayName.trim() },
       });
       if (error) throw error;
-      showToast('Display name updated');
+      showToast(t('settings.toastNameUpdated'));
       router.refresh();
     } catch (err) {
-      showToast(err.message || 'Failed to update display name', 'error');
+      showToast(err.message || t('settings.toastNameFailed'), 'error');
     } finally {
       setDisplayNameSaving(false);
     }
@@ -80,9 +88,9 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
     try {
       const { error } = await supabase.auth.updateUser({ email });
       if (error) throw error;
-      showToast('Confirmation sent to new email. Check your inbox.');
+      showToast(t('settings.toastEmailSent'));
     } catch (err) {
-      showToast(err.message || 'Failed to update email', 'error');
+      showToast(err.message || t('settings.toastEmailFailed'), 'error');
     } finally {
       setEmailSaving(false);
     }
@@ -90,11 +98,11 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
 
   const handlePasswordSave = async () => {
     if (!newPassword || newPassword.length < 6) {
-      showToast('Password must be at least 6 characters', 'error');
+      showToast(t('settings.toastPasswordShort'), 'error');
       return;
     }
     if (newPassword !== confirmPassword) {
-      showToast('Passwords do not match', 'error');
+      showToast(t('settings.toastPasswordMismatch'), 'error');
       return;
     }
     setPasswordSaving(true);
@@ -103,9 +111,9 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
       if (error) throw error;
       setNewPassword('');
       setConfirmPassword('');
-      showToast('Password updated successfully');
+      showToast(t('settings.toastPasswordUpdated'));
     } catch (err) {
-      showToast(err.message || 'Failed to update password', 'error');
+      showToast(err.message || t('settings.toastPasswordFailed'), 'error');
     } finally {
       setPasswordSaving(false);
     }
@@ -117,13 +125,21 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
     try {
       const { error } = await supabase.auth.updateUser({ data: { currency } });
       if (error) throw error;
-      showToast('Currency preference saved');
+      showToast(t('settings.toastCurrencySaved'));
       router.refresh();
     } catch (err) {
-      showToast(err.message || 'Failed to update currency', 'error');
+      showToast(err.message || t('settings.toastCurrencyFailed'), 'error');
     } finally {
       setCurrencySaving(false);
     }
+  };
+
+  const handleLanguageChange = (label) => {
+    const next = LOCALE_BY_LABEL[label];
+    if (!next || next === locale) return;
+    setLocale(next);
+    // Refresh so server-rendered content picks up the new locale cookie.
+    router.refresh();
   };
 
   const handleDeleteAccount = async () => {
@@ -136,11 +152,11 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
         body: JSON.stringify({ email: deleteEmail.trim() }),
       });
       const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error || 'Failed to delete account');
+      if (!res.ok) throw new Error(json.error || t('settings.toastDeleteFailed'));
       await supabase.auth.signOut();
       router.push('/login');
     } catch (err) {
-      showToast(err.message || 'Failed to delete account', 'error');
+      showToast(err.message || t('settings.toastDeleteFailed'), 'error');
       setDeleting(false);
     }
   };
@@ -153,94 +169,115 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
 
   return (
     <>
-      <PageHeader title="Settings" description="Manage your account and preferences" />
+      <PageHeader title={t('settings.title')} description={t('settings.description')} />
 
       <div className={styles.settings}>
         <Card className={styles.card}>
-          <div className={styles.cardTitle}>Display name</div>
+          <div className={styles.cardTitle}>{t('settings.displayNameCard')}</div>
           <div className={styles.cardBody}>
             <div className={styles.inlineRow}>
               <TextField
-                label="Display name"
+                label={t('settings.displayNameLabel')}
                 value={displayName}
                 onChange={setDisplayName}
-                placeholder="How should we call you?"
+                placeholder={t('settings.displayNamePlaceholder')}
               />
               <Button onClick={handleDisplayNameSave} disabled={displayNameSaving}>
-                {displayNameSaving ? 'Saving...' : 'Update name'}
+                {displayNameSaving ? t('settings.saving') : t('settings.updateName')}
               </Button>
             </div>
           </div>
         </Card>
 
         <Card className={styles.card}>
-          <div className={styles.cardTitle}>Email address</div>
+          <div className={styles.cardTitle}>{t('settings.emailCard')}</div>
           <div className={styles.cardBody}>
             <div className={styles.inlineRow}>
               <TextField
-                label="Email address"
+                label={t('settings.emailLabel')}
                 value={email}
                 onChange={setEmail}
-                placeholder="you@example.com"
+                placeholder={t('settings.emailPlaceholder')}
                 type="email"
               />
               <Button onClick={handleEmailSave} disabled={emailSaving}>
-                {emailSaving ? 'Saving...' : 'Update email'}
+                {emailSaving ? t('settings.saving') : t('settings.updateEmail')}
               </Button>
             </div>
           </div>
         </Card>
 
         <Card className={styles.card}>
-          <div className={styles.cardTitle}>Password</div>
+          <div className={styles.cardTitle}>{t('settings.passwordCard')}</div>
           <div className={styles.cardBody}>
             <div className={styles.inlineRow}>
               <TextField
-                label="New password"
+                label={t('settings.newPasswordLabel')}
                 value={newPassword}
                 onChange={setNewPassword}
-                placeholder="At least 6 characters"
+                placeholder={t('settings.newPasswordPlaceholder')}
                 type="password"
               />
               <TextField
-                label="Confirm new password"
+                label={t('settings.confirmPasswordLabel')}
                 value={confirmPassword}
                 onChange={setConfirmPassword}
-                placeholder="Re-enter new password"
+                placeholder={t('settings.confirmPasswordPlaceholder')}
                 type="password"
               />
               <Button onClick={handlePasswordSave} disabled={passwordSaving}>
-                {passwordSaving ? 'Saving...' : 'Update password'}
+                {passwordSaving ? t('settings.saving') : t('settings.updatePassword')}
               </Button>
             </div>
           </div>
         </Card>
 
         <Card className={styles.card}>
-          <div className={styles.cardTitle}>Currency</div>
+          <div className={styles.cardTitle}>{t('settings.currencyCard')}</div>
           <div className={styles.cardBody}>
             <div className={styles.inlineRow}>
               <Select
-                label="Display currency"
+                label={t('settings.currencyLabel')}
                 value={currency}
                 onChange={setCurrency}
                 options={CURRENCY_OPTIONS}
               />
               <Button onClick={handleCurrencySave} disabled={currencySaving}>
-                {currencySaving ? 'Saving...' : 'Update currency'}
+                {currencySaving ? t('settings.saving') : t('settings.updateCurrency')}
               </Button>
             </div>
           </div>
         </Card>
 
         <Card className={styles.card}>
-          <div className={styles.cardTitle}>Theme</div>
+          <div className={styles.cardTitle}>{t('settings.languageCard')}</div>
           <div className={styles.cardBody}>
             <div className={styles.themeRow}>
               <div className={styles.themeText}>
-                <div className={styles.themeHeading}>Appearance</div>
+                <div className={styles.themeHeading}>{t('settings.languageHeading')}</div>
                 <div className={styles.themeDescription}>
-                  Switch between light and dark mode.
+                  {t('settings.languageDesc')}
+                </div>
+              </div>
+              <div className={styles.languageControl}>
+                <Select
+                  value={LANGUAGE_LABELS[locale]}
+                  onChange={handleLanguageChange}
+                  options={LANGUAGE_OPTIONS}
+                />
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card className={styles.card}>
+          <div className={styles.cardTitle}>{t('settings.themeCard')}</div>
+          <div className={styles.cardBody}>
+            <div className={styles.themeRow}>
+              <div className={styles.themeText}>
+                <div className={styles.themeHeading}>{t('settings.appearance')}</div>
+                <div className={styles.themeDescription}>
+                  {t('settings.appearanceDesc')}
                 </div>
               </div>
               <ThemeToggle />
@@ -268,17 +305,17 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
         )}
 
         <Card className={`${styles.card} ${styles.dangerCard}`}>
-          <div className={styles.cardTitle}>Danger zone</div>
+          <div className={styles.cardTitle}>{t('settings.dangerCard')}</div>
           <div className={styles.cardBody}>
             <div className={styles.dangerRow}>
               <div className={styles.dangerText}>
-                <div className={styles.dangerHeading}>Delete account</div>
+                <div className={styles.dangerHeading}>{t('settings.deleteAccountHeading')}</div>
                 <div className={styles.dangerDescription}>
-                  Permanently delete your account and all associated data. This action cannot be undone.
+                  {t('settings.deleteAccountDesc')}
                 </div>
               </div>
               <Button variant="danger" onClick={() => setDeleteOpen(true)}>
-                Delete account
+                {t('settings.deleteAccountButton')}
               </Button>
             </div>
           </div>
@@ -288,16 +325,16 @@ export default function SettingsClient({ initialEmail, initialDisplayName, initi
       <Modal
         isOpen={deleteOpen}
         onClose={closeDeleteModal}
-        title="Delete your account?"
-        description="This will permanently remove your account and all gold holdings data. This cannot be undone."
+        title={t('settings.deleteModalTitle')}
+        description={t('settings.deleteModalDesc')}
         onCancel={closeDeleteModal}
         onConfirm={handleDeleteAccount}
-        confirmLabel={deleting ? 'Deleting...' : 'Delete account'}
+        confirmLabel={deleting ? t('settings.deleting') : t('settings.deleteAccountButton')}
         confirmVariant="danger"
         confirmDisabled={!emailMatches || deleting}
       >
         <TextField
-          label={`Type your email (${initialEmail}) to confirm`}
+          label={t('settings.confirmEmailLabel', { email: initialEmail })}
           value={deleteEmail}
           onChange={setDeleteEmail}
           placeholder={initialEmail}
