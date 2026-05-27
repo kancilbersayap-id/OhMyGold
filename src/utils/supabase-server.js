@@ -7,7 +7,7 @@
  *   - For use in Server Components (pages, layouts).
  *   - Reads cookies for session verification.
  *   - Does NOT write cookies — page renders cannot set headers after
- *     streaming has started, but the middleware already handles token
+ *     streaming has started, but the proxy already handles token
  *     rotation so this is safe for read-only page use.
  *
  * getActionSupabase()
@@ -29,7 +29,7 @@ export async function getServerSupabase() {
           return cookieStore.getAll?.() ?? [];
         },
         setAll() {
-          // No-op: token rotation is handled by middleware for page renders.
+          // No-op: token rotation is handled by proxy for page renders.
         },
       },
     }

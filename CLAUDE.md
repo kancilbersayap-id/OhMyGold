@@ -151,7 +151,7 @@ These workflows commit scraped data directly back to the repo. Pull before pushi
 | Path | Notes |
 |---|---|
 | `AGENTS.md` | Breaking changes warnings — **read before writing code** |
-| `src/middleware.ts` | Supabase SSR auth middleware |
+| `src/proxy.ts` | Supabase SSR auth proxy (formerly middleware) |
 | `src/utils/` | Shared helpers (priceActions, supabase client, date formatting) |
 | `scripts/` | Manual scraping scripts |
 | `.vercel/project.json` | Vercel project config — do not modify |
