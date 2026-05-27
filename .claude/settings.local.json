@@ -109,7 +109,13 @@
       "Bash(cp /Users/farizpie/Documents/claude-code/ohmygold/.env.local .env.local && echo \"copied\" && wc -l < .env.local)",
       "Bash(git stash *)",
       "Bash(git rebase *)",
-      "Bash(git -c 'user.name=Fariz Maulana' -c user.email=kancilbersayap@gmail.com commit -m ' *)"
+      "Bash(git -c 'user.name=Fariz Maulana' -c user.email=kancilbersayap@gmail.com commit -m ' *)",
+      "Bash(git fetch *)",
+      "Read(//Users/farizpie/.ssh/**)",
+      "Read(//Users/farizpie/**)",
+      "Bash(gh --version)",
+      "Bash(git -c credential.helper='!gh auth git-credential' fetch https://github.com/kancilbersayap-id/OhMyGold.git main)",
+      "Bash(gh api *)"
     ]
   }
 }
